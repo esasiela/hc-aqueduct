@@ -1,0 +1,33 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "test.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "[Base]BaseChip_pipo.tsx": {
+            "scaleInDock": 1
+        },
+        "test.tmx": {
+            "scale": 0.6437,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 502.563305887836,
+                "y": 413.2359794935529
+            }
+        }
+    },
+    "map.height": 25,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 40,
+    "openFiles": [
+        "test.tmx"
+    ],
+    "project": "aqueduct-dev.tiled-project",
+    "recentFiles": [
+        "test.tmx"
+    ]
+}
