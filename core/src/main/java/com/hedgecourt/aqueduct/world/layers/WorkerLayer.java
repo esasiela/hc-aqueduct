@@ -3,6 +3,7 @@ package com.hedgecourt.aqueduct.world.layers;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hedgecourt.aqueduct.C;
+import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
@@ -21,9 +22,9 @@ public class WorkerLayer extends WorldLayer {
     return workers;
   }
 
-  public void commandAllMoveTo(float x, float y) {
+  public void commandAllMoveTo(float x, float y, Pathfinder pathfinder) {
     for (Worker worker : workers) {
-      worker.commandMoveTo(x, y);
+      worker.commandMoveTo(x, y, pathfinder);
     }
   }
 

@@ -4,9 +4,11 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
+import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import java.util.EnumMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -60,10 +62,13 @@ public class Worker extends WorldEntity {
 
   // ── commands ──────────────────────────────────────────────────────────────
 
-  public void commandMoveTo(float x, float y) {
+  public void commandMoveTo(float x, float y, Pathfinder pathfinder) {
     waypoints.clear();
-    waypoints.add(new Vector2(x, y));
-    enterState(WorkerState.MOVING);
+    List<Vector2> path = pathfinder.findPath(position.x, position.y, x, y);
+    if (!path.isEmpty()) {
+      waypoints.addAll(path);
+      enterState(WorkerState.MOVING);
+    }
   }
 
   // ── state machine ─────────────────────────────────────────────────────────

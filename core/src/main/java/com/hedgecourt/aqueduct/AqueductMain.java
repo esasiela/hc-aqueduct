@@ -83,7 +83,7 @@ public class AqueductMain extends ApplicationAdapter {
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             if (button == Input.Buttons.LEFT) {
               Vector2 worldPos = worldRenderer.mouseInWorld();
-              workerLayer.commandAllMoveTo(worldPos.x, worldPos.y);
+              workerLayer.commandAllMoveTo(worldPos.x, worldPos.y, worldRenderer.getPathfinder());
               return true;
             }
             return false;

@@ -6,12 +6,15 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.hedgecourt.aqueduct.world.MapGraph;
+import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public class WorldRenderer implements Disposable {
   private int mapTilesWide;
   private int mapTilesTall;
 
+  private MapGraph mapGraph;
+  private Pathfinder pathfinder;
+
   private CameraController cameraController;
 
   private final List<WorldLayer> layers = new ArrayList<>();
@@ -51,6 +57,11 @@ public class WorldRenderer implements Disposable {
     tileHeight = map.getProperties().get("tileheight", Integer.class);
     mapTilesWide = map.getProperties().get("width", Integer.class);
     mapTilesTall = map.getProperties().get("height", Integer.class);
+
+    TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
+    mapGraph = new MapGraph(mapTilesWide, mapTilesTall, wallsLayer);
+    pathfinder = new Pathfinder(mapGraph, tileWidth, tileHeight);
+
     mapRenderer = new OrthogonalTiledMapRenderer(map);
 
     cameraController = new CameraController(camera, viewport);
@@ -153,6 +164,14 @@ public class WorldRenderer implements Disposable {
     Vector2 mouse = mouseInWorld();
     shapeDrawer.line(mouse.x - 20, mouse.y, mouse.x + 20, mouse.y, Color.YELLOW, 2f);
     shapeDrawer.line(mouse.x, mouse.y - 20, mouse.x, mouse.y + 20, Color.YELLOW, 2f);
+  }
+
+  public MapGraph getMapGraph() {
+    return mapGraph;
+  }
+
+  public Pathfinder getPathfinder() {
+    return pathfinder;
   }
 
   @Override
