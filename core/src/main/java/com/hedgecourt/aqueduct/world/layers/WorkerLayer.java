@@ -3,12 +3,14 @@ package com.hedgecourt.aqueduct.world.layers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class WorkerLayer extends WorldLayer {
@@ -95,6 +97,37 @@ public class WorkerLayer extends WorldLayer {
           worker.getPosition().y - renderSize / 2f,
           renderSize,
           renderSize);
+    }
+  }
+
+  @Override
+  public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
+    for (Worker worker : workers) {
+      if (!worker.isSelected()) continue;
+      if (worker.getState() != Worker.WorkerState.MOVING) continue;
+
+      Queue<Vector2> waypoints = worker.getWaypoints();
+      if (waypoints.isEmpty()) continue;
+
+      // ── path preview ──────────────────────────────────────────────────
+      shapeDrawer.setColor(Color.YELLOW);
+      Vector2 prev = worker.getPosition();
+      for (Vector2 waypoint : waypoints) {
+        shapeDrawer.line(prev.x, prev.y, waypoint.x, waypoint.y, 1.5f);
+        prev = waypoint;
+      }
+
+      // ── destination marker ────────────────────────────────────────────
+      Vector2 dest = null;
+      for (Vector2 waypoint : waypoints) {
+        dest = waypoint;
+      }
+      if (dest != null) {
+        shapeDrawer.setColor(Color.GREEN);
+        float s = 6f;
+        shapeDrawer.line(dest.x - s, dest.y - s, dest.x + s, dest.y + s, 2f);
+        shapeDrawer.line(dest.x + s, dest.y - s, dest.x - s, dest.y + s, 2f);
+      }
     }
   }
 }

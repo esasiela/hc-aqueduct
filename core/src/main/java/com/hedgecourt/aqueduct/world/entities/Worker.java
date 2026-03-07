@@ -164,4 +164,8 @@ public class Worker extends WorldEntity {
   public void setSpeed(float speed) {
     this.speed = speed;
   }
+
+  public Queue<Vector2> getWaypoints() {
+    return waypoints;
+  }
 }
