@@ -15,14 +15,14 @@
             "scale": 0.6437,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 502.563305887836,
+                "x": 733.2608357930712,
                 "y": 413.2359794935529
             }
         }
     },
-    "map.height": 25,
+    "map.height": 60,
     "map.lastUsedFormat": "tmx",
-    "map.width": 40,
+    "map.width": 80,
     "openFiles": [
         "test.tmx"
     ],
