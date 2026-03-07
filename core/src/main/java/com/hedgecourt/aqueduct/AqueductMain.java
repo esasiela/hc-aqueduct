@@ -48,18 +48,31 @@ public class AqueductMain extends ApplicationAdapter {
     /* ****
      * Asset Manager
      */
-    String workerSpritePath = "characters/pipoya/Animal/Dog-01-3r.png";
+    String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
+    String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
     assetManager = new AssetManager();
-    assetManager.load(workerSpritePath, Texture.class);
+    assetManager.load(workerSpritePath1, Texture.class);
+    assetManager.load(workerSpritePath2, Texture.class);
     assetManager.finishLoading();
 
-    Texture workerTexture = assetManager.get(workerSpritePath, Texture.class);
-    TextureRegion[][] grid = TextureRegion.split(workerTexture, 32, 32);
+    Texture workerTexture1 = assetManager.get(workerSpritePath1, Texture.class);
+    TextureRegion[][] grid1 = TextureRegion.split(workerTexture1, 32, 32);
+
+    Texture workerTexture2 = assetManager.get(workerSpritePath2, Texture.class);
+    TextureRegion[][] grid2 = TextureRegion.split(workerTexture2, 32, 32);
 
     workerLayer = new WorkerLayer();
-    Worker worker = new Worker(worldRenderer.getMapWidth() / 2f, worldRenderer.getMapHeight() / 2f);
-    worker.buildSprites(grid);
-    workerLayer.addWorker(worker);
+
+    Worker worker1 =
+        new Worker(worldRenderer.getMapWidth() / 2f, worldRenderer.getMapHeight() / 2f);
+    worker1.buildSprites(grid1);
+    workerLayer.addWorker(worker1);
+
+    Worker worker2 =
+        new Worker(worldRenderer.getMapWidth() / 2f + 64f, worldRenderer.getMapHeight() / 2f);
+    worker2.buildSprites(grid2);
+    workerLayer.addWorker(worker2);
+
     worldRenderer.addLayer(workerLayer);
 
     /* ****
