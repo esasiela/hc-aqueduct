@@ -1,7 +1,8 @@
-package com.hedgecourt.aqueduct.ui;
+package com.hedgecourt.aqueduct.ui.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.hedgecourt.aqueduct.ui.UiElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class CrosshairUiElement extends UiElement {

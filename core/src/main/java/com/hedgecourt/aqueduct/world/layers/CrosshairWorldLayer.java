@@ -1,7 +1,8 @@
-package com.hedgecourt.aqueduct.world;
+package com.hedgecourt.aqueduct.world.layers;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.hedgecourt.aqueduct.world.WorldLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class CrosshairWorldLayer extends WorldLayer {
