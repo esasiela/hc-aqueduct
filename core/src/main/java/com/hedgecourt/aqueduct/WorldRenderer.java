@@ -136,6 +136,25 @@ public class WorldRenderer implements Disposable {
     layers.add(layer);
   }
 
+  public Vector2 getCameraPosition() {
+    return new Vector2(camera.position.x, camera.position.y);
+  }
+
+  public float getCameraVisibleWidth() {
+    return camera.viewportWidth * camera.zoom;
+  }
+
+  public float getCameraVisibleHeight() {
+    return camera.viewportHeight * camera.zoom;
+  }
+
+  public void panCameraTo(float worldX, float worldY) {
+    camera.position.x = worldX;
+    camera.position.y = worldY;
+    cameraController.clampCameraPublic();
+    camera.update();
+  }
+
   private void illustrateExtremeDrawing(SpriteBatch batch) {
     // TODO - put this in a WorldLayer once I have them
     float s = 50f;

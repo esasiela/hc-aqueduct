@@ -126,4 +126,8 @@ public class CameraController {
       camera.position.y = MathUtils.clamp(camera.position.y, minY, maxY);
     }
   }
+
+  public void clampCameraPublic() {
+    clampCamera();
+  }
 }

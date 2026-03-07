@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.ui.UiElement;
 import com.hedgecourt.aqueduct.ui.elements.CrosshairUiElement;
+import com.hedgecourt.aqueduct.ui.elements.MinimapUiElement;
+import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -24,6 +26,8 @@ public class UiRenderer implements Disposable {
   private final List<UiElement> elements = new ArrayList<>();
   private UiElement hoveredElement = null;
 
+  private MinimapUiElement minimap;
+
   public UiRenderer(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     this.shapeDrawer = shapeDrawer;
     camera = new OrthographicCamera();
@@ -31,6 +35,19 @@ public class UiRenderer implements Disposable {
     updateScreenBounds();
 
     addElement(new CrosshairUiElement());
+  }
+
+  public void setupMinimap(WorldRenderer worldRenderer, WorkerLayer workerLayer) {
+    minimap = new MinimapUiElement(worldRenderer, workerLayer);
+    addElement(minimap);
+  }
+
+  public boolean isMinimapDragging() {
+    return minimap != null && minimap.isDragging();
+  }
+
+  public void handleMinimapDrag(float mouseX, float mouseY) {
+    if (minimap != null) minimap.handleDrag(mouseX, mouseY);
   }
 
   public void addElement(UiElement element) {
@@ -97,6 +114,22 @@ public class UiRenderer implements Disposable {
     // ── draw ──────────────────────────────────────────────────────────────
     for (UiElement element : elements) {
       element.draw(batch, shapeDrawer);
+    }
+  }
+
+  public boolean handleClick(float mouseX, float mouseY) {
+    for (UiElement element : elements) {
+      if (element.containsMouse()) {
+        element.onClick(mouseX, mouseY);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void handleTouchDown(float mouseX, float mouseY) {
+    if (minimap != null && minimap.containsMouse()) {
+      minimap.onTouchDown(mouseX, mouseY);
     }
   }
 

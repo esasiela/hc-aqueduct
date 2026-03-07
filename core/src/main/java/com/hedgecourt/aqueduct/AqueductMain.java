@@ -75,6 +75,8 @@ public class AqueductMain extends ApplicationAdapter {
 
     worldRenderer.addLayer(workerLayer);
 
+    uiRenderer.setupMinimap(worldRenderer, workerLayer);
+
     /* ****
      * Input Multiplexer
      */
@@ -93,18 +95,41 @@ public class AqueductMain extends ApplicationAdapter {
           }
 
           @Override
-          public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            Vector2 worldPos = worldRenderer.mouseInWorld();
+          public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             if (button == Input.Buttons.LEFT) {
-              workerLayer.handleLeftClick(worldPos.x, worldPos.y);
+              Vector2 uiPos = uiRenderer.mouseInUi();
+              uiRenderer.handleTouchDown(uiPos.x, uiPos.y);
+            }
+            return false;
+          }
+
+          @Override
+          public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            Vector2 uiPos = uiRenderer.mouseInUi();
+            if (button == Input.Buttons.LEFT) {
+              boolean consumedByUi = uiRenderer.handleClick(uiPos.x, uiPos.y);
+              if (!consumedByUi) {
+                Vector2 worldPos = worldRenderer.mouseInWorld();
+                workerLayer.handleLeftClick(worldPos.x, worldPos.y);
+              }
               return true;
             }
             if (button == Input.Buttons.RIGHT) {
               if (workerLayer.hasSelection()) {
+                Vector2 worldPos = worldRenderer.mouseInWorld();
                 workerLayer.commandSelectedMoveTo(
                     worldPos.x, worldPos.y, worldRenderer.getPathfinder());
               }
               return true;
+            }
+            return false;
+          }
+
+          @Override
+          public boolean touchDragged(int screenX, int screenY, int pointer) {
+            Vector2 uiPos = uiRenderer.mouseInUi();
+            if (uiRenderer.isMinimapDragging()) {
+              uiRenderer.handleMinimapDrag(uiPos.x, uiPos.y);
             }
             return false;
           }
