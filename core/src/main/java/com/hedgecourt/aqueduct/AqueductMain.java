@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
@@ -9,7 +10,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.utils.ScreenUtils;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -38,33 +38,16 @@ public class AqueductMain extends ApplicationAdapter {
 
     worldRenderer.loadMap("maps/test2.tmx");
 
-    GestureDetector gestureDetector =
-        new GestureDetector(
-            new GestureDetector.GestureAdapter() {
-              @Override
-              public boolean zoom(float initialDistance, float distance) {
-                Gdx.app.log(
-                    "GESTURE", "zoom initialDistance=" + initialDistance + " distance=" + distance);
-                float zoomDelta = (initialDistance - distance) * 0.001f;
-                worldRenderer.onZoom(
-                    zoomDelta, Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f);
-                return true;
-              }
-
-              @Override
-              public boolean tap(float x, float y, int count, int button) {
-                Gdx.app.log("GESTURE", "tap x=" + x + " y=" + y);
-                return false;
-              }
-            });
-
     InputMultiplexer multiplexer = new InputMultiplexer();
-    multiplexer.addProcessor(gestureDetector);
     multiplexer.addProcessor(
         new InputAdapter() {
           @Override
           public boolean scrolled(float amountX, float amountY) {
-            worldRenderer.onScroll(amountX, amountY);
+            if (Gdx.input.isKeyPressed(Input.Keys.SYM)) {
+              worldRenderer.onZoom(amountY * C.ZOOM_SPEED, Gdx.input.getX(), Gdx.input.getY());
+            } else {
+              worldRenderer.onScroll(amountX, amountY);
+            }
             return true;
           }
         });

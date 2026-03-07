@@ -12,6 +12,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.hedgecourt.aqueduct.world.CrosshairWorldLayer;
+import com.hedgecourt.aqueduct.world.WorldLayer;
+import java.util.ArrayList;
+import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class WorldRenderer implements Disposable {
@@ -30,11 +34,15 @@ public class WorldRenderer implements Disposable {
 
   private CameraController cameraController;
 
+  private final List<WorldLayer> layers = new ArrayList<>();
+
   public WorldRenderer(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     this.shapeDrawer = shapeDrawer;
     camera = new OrthographicCamera();
     viewport = new ScreenViewport(camera);
     updateScreenBounds();
+
+    addLayer(new CrosshairWorldLayer());
   }
 
   public void loadMap(String path) {
@@ -74,6 +82,11 @@ public class WorldRenderer implements Disposable {
 
   public void update(float delta) {
     if (cameraController != null) cameraController.update(delta);
+    Vector2 mouse = mouseInWorld();
+    for (WorldLayer layer : layers) {
+      layer.preUpdate(mouse.x, mouse.y);
+      layer.update(delta);
+    }
   }
 
   public void onScroll(float dx, float dy) {
@@ -95,25 +108,30 @@ public class WorldRenderer implements Disposable {
 
   public void drawUnderlay(SpriteBatch batch) {
     batch.setProjectionMatrix(camera.combined);
+    for (WorldLayer layer : layers) layer.drawUnderlay(batch, shapeDrawer);
   }
 
   public void drawEntities(SpriteBatch batch) {
     batch.setProjectionMatrix(camera.combined);
+    for (WorldLayer layer : layers) layer.drawEntities(batch, shapeDrawer);
   }
 
   public void drawOverlay(SpriteBatch batch) {
     batch.setProjectionMatrix(camera.combined);
+    for (WorldLayer layer : layers) layer.drawOverlay(batch, shapeDrawer);
+  }
 
+  public void addLayer(WorldLayer layer) {
+    layers.add(layer);
+  }
+
+  private void illustrateExtremeDrawing(SpriteBatch batch) {
+    // TODO - put this in a WorldLayer once I have them
     float s = 50f;
 
-    // ── mouse crosshair in world space ──────────────────────────────────
-    Vector2 mouse = mouseInWorld();
-    shapeDrawer.line(mouse.x - 20, mouse.y, mouse.x + 20, mouse.y, Color.YELLOW, 2f);
-    shapeDrawer.line(mouse.x, mouse.y - 20, mouse.x, mouse.y + 20, Color.YELLOW, 2f);
-
     // ── green: map corners ───────────────────────────────────────────────
-    float mapW = mapTilesWide * tileWidth;
-    float mapH = mapTilesTall * tileHeight;
+    float mapW = getMapWidth();
+    float mapH = getMapHeight();
     shapeDrawer.filledRectangle(0, 0, s, s, Color.GREEN);
     shapeDrawer.filledRectangle(mapW - s, 0, s, s, Color.GREEN);
     shapeDrawer.filledRectangle(0, mapH - s, s, s, Color.GREEN);
@@ -130,6 +148,13 @@ public class WorldRenderer implements Disposable {
     shapeDrawer.filledRectangle(left + vw - s, bottom + vh - s, s, s, Color.ORANGE);
   }
 
+  public void illustrateCrosshairDrawing(SpriteBatch batch) {
+    // ── mouse crosshair in world space ──────────────────────────────────
+    Vector2 mouse = mouseInWorld();
+    shapeDrawer.line(mouse.x - 20, mouse.y, mouse.x + 20, mouse.y, Color.YELLOW, 2f);
+    shapeDrawer.line(mouse.x, mouse.y - 20, mouse.x, mouse.y + 20, Color.YELLOW, 2f);
+  }
+
   @Override
   public void dispose() {
     if (map != null) map.dispose();
@@ -144,6 +169,14 @@ public class WorldRenderer implements Disposable {
 
   public float getWorldHeight() {
     return viewport.getScreenHeight();
+  }
+
+  public float getMapWidth() {
+    return mapTilesWide * tileWidth;
+  }
+
+  public float getMapHeight() {
+    return mapTilesTall * tileHeight;
   }
 
   public Vector2 mouseInWorld() {

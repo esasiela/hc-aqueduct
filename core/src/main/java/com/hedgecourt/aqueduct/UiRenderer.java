@@ -8,6 +8,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.hedgecourt.aqueduct.ui.CrosshairUiElement;
+import com.hedgecourt.aqueduct.ui.UiElement;
+import java.util.ArrayList;
+import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UiRenderer implements Disposable {
@@ -17,11 +21,20 @@ public class UiRenderer implements Disposable {
   private final ShapeDrawer shapeDrawer;
   private final Vector3 unprojectScratch = new Vector3();
 
+  private final List<UiElement> elements = new ArrayList<>();
+  private UiElement hoveredElement = null;
+
   public UiRenderer(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     this.shapeDrawer = shapeDrawer;
     camera = new OrthographicCamera();
     viewport = new ScreenViewport(camera);
     updateScreenBounds();
+
+    addElement(new CrosshairUiElement());
+  }
+
+  public void addElement(UiElement element) {
+    elements.add(element);
   }
 
   public void applyViewport() {
@@ -37,14 +50,8 @@ public class UiRenderer implements Disposable {
     viewport.update(screenW, (int) C.UI_BOTTOM_HEIGHT, true);
   }
 
-  public void draw(SpriteBatch batch) {
-    batch.setProjectionMatrix(camera.combined);
-
-    // mouse crosshair in ui space
-    Vector2 mouse = mouseInUi();
-    shapeDrawer.line(mouse.x - 20, mouse.y, mouse.x + 20, mouse.y, Color.CYAN, 2f);
-    shapeDrawer.line(mouse.x, mouse.y - 20, mouse.x, mouse.y + 20, Color.CYAN, 2f);
-
+  private void illustrateExtremeDrawing(SpriteBatch batch) {
+    // TODO put this in a UiElement once i have that API
     // ui corner markers
     float w = getUiWidth();
     float h = getUiHeight();
@@ -53,6 +60,44 @@ public class UiRenderer implements Disposable {
     shapeDrawer.filledRectangle(w - s, 0, s, s, Color.PURPLE); // bottom-right
     shapeDrawer.filledRectangle(0, h - s, s, s, Color.PURPLE); // top-left
     shapeDrawer.filledRectangle(w - s, h - s, s, s, Color.PURPLE); // top-right
+  }
+
+  public void illustrateCrosshairs(SpriteBatch batch) {
+    batch.setProjectionMatrix(camera.combined);
+
+    // mouse crosshair in ui space
+    Vector2 mouse = mouseInUi();
+    shapeDrawer.line(mouse.x - 20, mouse.y, mouse.x + 20, mouse.y, Color.CYAN, 2f);
+    shapeDrawer.line(mouse.x, mouse.y - 20, mouse.x, mouse.y + 20, Color.CYAN, 2f);
+  }
+
+  public void draw(SpriteBatch batch) {
+    viewport.apply();
+    batch.setProjectionMatrix(camera.combined);
+
+    Vector2 mouse = mouseInUi();
+    for (UiElement element : elements) {
+      element.preUpdate(mouse.x, mouse.y);
+    }
+
+    // ── hover dispatch ────────────────────────────────────────────────────
+    UiElement nowHovered = null;
+    for (UiElement element : elements) {
+      if (element.containsMouse()) {
+        nowHovered = element;
+        break;
+      }
+    }
+    if (nowHovered != hoveredElement) {
+      if (hoveredElement != null) hoveredElement.onMouseExit();
+      if (nowHovered != null) nowHovered.onMouseEnter(mouse.x, mouse.y);
+      hoveredElement = nowHovered;
+    }
+
+    // ── draw ──────────────────────────────────────────────────────────────
+    for (UiElement element : elements) {
+      element.draw(batch, shapeDrawer);
+    }
   }
 
   @Override

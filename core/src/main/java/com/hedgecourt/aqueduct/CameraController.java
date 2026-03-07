@@ -16,6 +16,10 @@ public class CameraController {
   private float viewportH;
   private float maxZoom;
 
+  private float zoomAccumulator = 0f;
+  private float pendingZoomScreenX = 0f;
+  private float pendingZoomScreenY = 0f;
+
   private final Vector3 unprojectScratch = new Vector3();
 
   private final ScreenViewport viewport;
@@ -48,6 +52,11 @@ public class CameraController {
     if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
       onZoom(C.ZOOM_SPEED, Gdx.input.getX(), Gdx.input.getY());
     }
+
+    if (Math.abs(zoomAccumulator) > 0.001f) {
+      applyZoom(zoomAccumulator, pendingZoomScreenX, pendingZoomScreenY);
+      zoomAccumulator = 0f;
+    }
   }
 
   public void resetToHome() {
@@ -68,8 +77,17 @@ public class CameraController {
     camera.update();
   }
 
-  /** Called from pinch gesture. zoom toward the pinch center point. */
+  /**
+   * Accumulates zoom delta toward screen point (screenX, screenY). Applied once per frame in
+   * update().
+   */
   public void onZoom(float zoomDelta, float screenX, float screenY) {
+    zoomAccumulator += zoomDelta;
+    pendingZoomScreenX = screenX;
+    pendingZoomScreenY = screenY;
+  }
+
+  public void applyZoom(float zoomDelta, float screenX, float screenY) {
     unprojectScratch.set(screenX, screenY, 0);
     viewport.unproject(unprojectScratch);
     float worldX = unprojectScratch.x;
