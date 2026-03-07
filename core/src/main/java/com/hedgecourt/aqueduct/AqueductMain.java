@@ -5,12 +5,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.hedgecourt.aqueduct.world.entities.Worker;
+import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class AqueductMain extends ApplicationAdapter {
@@ -18,6 +22,9 @@ public class AqueductMain extends ApplicationAdapter {
   private SpriteBatch batch;
   private ShapeDrawer shapeDrawer;
   private Texture pixelTexture;
+
+  private AssetManager assetManager;
+  private WorkerLayer workerLayer;
 
   private WorldRenderer worldRenderer;
   private UiRenderer uiRenderer;
@@ -38,6 +45,27 @@ public class AqueductMain extends ApplicationAdapter {
 
     worldRenderer.loadMap("maps/test2.tmx");
 
+    /* ****
+     * Asset Manager
+     */
+    String workerSpritePath = "characters/pipoya/Animal/Dog-01-3r.png";
+    assetManager = new AssetManager();
+    assetManager.load(workerSpritePath, Texture.class);
+    assetManager.finishLoading();
+
+    Texture workerTexture = assetManager.get(workerSpritePath, Texture.class);
+    TextureRegion[][] grid = TextureRegion.split(workerTexture, 32, 32);
+
+    workerLayer = new WorkerLayer();
+    Worker worker = new Worker(worldRenderer.getMapWidth() / 2f, worldRenderer.getMapHeight() / 2f);
+    worker.buildSprites(grid);
+    workerLayer.addWorker(worker);
+    worldRenderer.addLayer(workerLayer);
+
+    /* ****
+     * Input Multiplexer
+     */
+
     InputMultiplexer multiplexer = new InputMultiplexer();
     multiplexer.addProcessor(
         new InputAdapter() {
@@ -49,6 +77,16 @@ public class AqueductMain extends ApplicationAdapter {
               worldRenderer.onScroll(amountX, amountY);
             }
             return true;
+          }
+
+          @Override
+          public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            if (button == Input.Buttons.LEFT) {
+              Vector2 worldPos = worldRenderer.mouseInWorld();
+              workerLayer.commandAllMoveTo(worldPos.x, worldPos.y);
+              return true;
+            }
+            return false;
           }
         });
 
@@ -88,6 +126,7 @@ public class AqueductMain extends ApplicationAdapter {
     worldRenderer.dispose();
     uiRenderer.dispose();
     pixelTexture.dispose();
+    assetManager.dispose();
   }
 
   @Override

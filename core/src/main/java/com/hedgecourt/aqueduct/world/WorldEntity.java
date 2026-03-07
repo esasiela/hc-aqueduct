@@ -72,4 +72,8 @@ public abstract class WorldEntity {
   // ── frame hook ────────────────────────────────────────────────────────────
 
   public abstract void update(float delta);
+
+  public Vector2 getPosition() {
+    return position;
+  }
 }

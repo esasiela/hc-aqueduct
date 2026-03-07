@@ -8,7 +8,10 @@ public class C {
   public static final float UI_BOTTOM_HEIGHT = 200f;
   public static final float UI_RIGHT_WIDTH = 0f;
 
-  // ── world ─────────────────────────────────────────────────────────────────
+  // ── entities ──────────────────────────────────────────────────────────────
+  public static final float ANIMATION_FRAME_DURATION = 0.15f;
+  public static final float WORKER_BASE_SPEED = 90f; // pixels per second
+  public static final float ENTITY_RENDER_SIZE = 24f;
 
   // ── colors ────────────────────────────────────────────────────────────────
   public static final float CLEAR_R = 0.2f;
