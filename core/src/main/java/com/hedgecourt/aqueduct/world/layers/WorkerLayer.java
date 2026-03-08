@@ -9,6 +9,8 @@ import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldLayer;
+import com.hedgecourt.aqueduct.world.entities.Node;
+import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +30,27 @@ public class WorkerLayer extends WorldLayer {
     return workers;
   }
 
-  public void commandSelectedMoveTo(float x, float y, Pathfinder pathfinder) {
+  public void commandSelectedHarvest(Node node, EntityLayer entityLayer, Pathfinder pathfinder) {
     for (Worker worker : workers) {
       if (worker.isSelected()) {
-        worker.commandMoveTo(x, y, pathfinder);
+        TownHall nearest =
+            entityLayer.getNearestTownHall(worker.getPosition().x, worker.getPosition().y);
+        worker.commandHarvest(node, nearest, pathfinder);
       }
     }
   }
 
-  public void commandAllMoveTo(float x, float y, Pathfinder pathfinder) {
+  public void commandSelectedMoveTo(Vector2 target, Pathfinder pathfinder) {
     for (Worker worker : workers) {
-      worker.commandMoveTo(x, y, pathfinder);
+      if (worker.isSelected()) {
+        worker.commandMoveTo(target, pathfinder);
+      }
+    }
+  }
+
+  public void commandAllMoveTo(Vector2 target, Pathfinder pathfinder) {
+    for (Worker worker : workers) {
+      worker.commandMoveTo(target, pathfinder);
     }
   }
 
@@ -92,22 +104,63 @@ public class WorkerLayer extends WorldLayer {
     for (Worker worker : workers) {
       worker.update(delta);
     }
+    applySeparation(delta);
+  }
+
+  private void applySeparation(float delta) {
+    for (int i = 0; i < workers.size(); i++) {
+      for (int j = i + 1; j < workers.size(); j++) {
+        Worker a = workers.get(i);
+        Worker b = workers.get(j);
+
+        float dx = a.getPosition().x - b.getPosition().x;
+        float dy = a.getPosition().y - b.getPosition().y;
+        float dist = (float) Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < C.WORKER_SEPARATION_RADIUS && dist > 0.01f) {
+          float force = (C.WORKER_SEPARATION_RADIUS - dist) / C.WORKER_SEPARATION_RADIUS;
+          float nx = dx / dist;
+          float ny = dy / dist;
+          float push = force * C.WORKER_SEPARATION_STRENGTH * delta;
+
+          a.getPosition().x += nx * push;
+          a.getPosition().y += ny * push;
+          b.getPosition().x -= nx * push;
+          b.getPosition().y -= ny * push;
+        }
+      }
+    }
   }
 
   @Override
   public void drawUnderlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     for (Worker worker : workers) {
+      /* ****
+       * Selection Decoration
+       */
       if (worker.isSelected()) {
         shapeDrawer.setColor(Color.WHITE);
         shapeDrawer.circle(
             worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.75f, 2f);
       }
+      /* ****
+       * Selection-Box Decoration
+       */
       if (activeSelBox != null && activeSelBox.contains(worker.getPosition())) {
         // subtle indicator - dim circle while inside drag box
         shapeDrawer.setColor(new Color(1f, 1f, 1f, 0.4f));
         shapeDrawer.circle(
             worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.60f, 1.5f);
       }
+      /* ****
+       * Bag Progress Bar
+       */
+      shapeDrawer.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
+      shapeDrawer.filledRectangle(
+          worker.getPosition().x,
+          worker.getPosition().y + worker.getHeight(),
+          worker.getWidth(),
+          4f);
     }
   }
 

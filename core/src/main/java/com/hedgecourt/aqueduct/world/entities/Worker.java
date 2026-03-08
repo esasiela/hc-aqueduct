@@ -1,16 +1,19 @@
 package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldEntity;
+import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Worker extends WorldEntity {
 
@@ -27,7 +30,9 @@ public class Worker extends WorldEntity {
 
   public enum WorkerState {
     IDLE,
-    MOVING
+    MOVING,
+    HARVESTING,
+    DELIVERING
   }
 
   // ── animation ─────────────────────────────────────────────────────────────
@@ -38,16 +43,27 @@ public class Worker extends WorldEntity {
 
   // ── movement ──────────────────────────────────────────────────────────────
 
+  private WorkerState state = WorkerState.IDLE;
+  private final WorkerPlan plan;
+
+  private final Queue<Vector2> waypoints = new LinkedList<>();
+
   private float speed;
   private Direction facing = Direction.SOUTH;
-  private WorkerState state = WorkerState.IDLE;
-  private final Queue<Vector2> waypoints = new LinkedList<>();
+
+  private float carrying = 0f;
+  private float carryCapacity = C.WORKER_CARRY_CAPACITY;
+  private String carryingType = null;
+
+  private final LinkedList<String> nodeMemory = new LinkedList<>();
 
   // ── constructor ───────────────────────────────────────────────────────────
 
   public Worker(float x, float y) {
     super(x, y, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
     this.speed = C.WORKER_BASE_SPEED;
+
+    this.plan = new WorkerPlan();
   }
 
   // ── sprites ───────────────────────────────────────────────────────────────
@@ -62,16 +78,41 @@ public class Worker extends WorldEntity {
 
   // ── commands ──────────────────────────────────────────────────────────────
 
-  public void commandMoveTo(float x, float y, Pathfinder pathfinder) {
-    waypoints.clear();
-    List<Vector2> path = pathfinder.findPath(position.x, position.y, x, y);
-    if (!path.isEmpty()) {
-      waypoints.addAll(path);
-      enterState(WorkerState.MOVING);
-    }
+  public void commandMoveTo(Vector2 target, Pathfinder pathfinder) {
+    clearPlan();
+    plan.planType = PlanType.MOVE;
+    // TODO why is pathfinder passed in on each command instead of inherent in the worker
+    plan.pathfinder = pathfinder;
+
+    moveTo(target);
+  }
+
+  public void commandHarvest(Node node, TownHall townHall, Pathfinder pathfinder) {
+    clearPlan();
+    plan.planType = PlanType.HARVEST;
+    plan.node = node;
+    plan.townHall = townHall;
+    // TODO why is pathfinder passed in on each command instead of inherent in the worker
+    plan.pathfinder = pathfinder;
+
+    // TODO if you are carrying something different than this node, jettison bag contents :-(
+
+    moveTo(plan.node);
   }
 
   // ── state machine ─────────────────────────────────────────────────────────
+
+  private void clearPlan() {
+    clearPlan(false);
+  }
+
+  private void clearPlan(boolean enterIdle) {
+    waypoints.clear();
+    plan.planType = PlanType.IDLE;
+    plan.node = null;
+    plan.townHall = null;
+    if (enterIdle) enterState(WorkerState.IDLE);
+  }
 
   private void enterState(WorkerState newState) {
     this.state = newState;
@@ -80,6 +121,13 @@ public class Worker extends WorldEntity {
         animTime = 0f;
         break;
       case MOVING:
+        break;
+      case HARVESTING:
+        animTime = 0f;
+        rememberNode(plan.node.getId());
+        break;
+      case DELIVERING:
+        animTime = 0f;
         break;
     }
   }
@@ -91,13 +139,19 @@ public class Worker extends WorldEntity {
       case MOVING:
         updateMoving(delta);
         break;
+      case HARVESTING:
+        updateHarvesting(delta);
+        break;
+      case DELIVERING:
+        updateDelivering(delta);
+        break;
     }
   }
 
   private void updateMoving(float delta) {
     Vector2 target = waypoints.peek();
     if (target == null) {
-      enterState(WorkerState.IDLE);
+      onArrival();
       return;
     }
 
@@ -108,12 +162,11 @@ public class Worker extends WorldEntity {
       position.set(target);
       waypoints.poll();
       if (waypoints.isEmpty()) {
-        enterState(WorkerState.IDLE);
+        onArrival();
       }
       return;
     }
 
-    // update facing direction
     dir.nor();
     if (Math.abs(dir.x) > Math.abs(dir.y)) {
       facing = dir.x > 0 ? Direction.EAST : Direction.WEST;
@@ -121,12 +174,107 @@ public class Worker extends WorldEntity {
       facing = dir.y > 0 ? Direction.NORTH : Direction.SOUTH;
     }
 
-    // move toward target
     float step = speed * delta;
     if (step > distance) step = distance;
     position.mulAdd(dir, step);
-
     animTime += delta;
+  }
+
+  private void onArrival() {
+    if (plan.planType == PlanType.HARVEST) {
+      // harvesting loop - arrived at node or town hall?
+      float distToNode = distanceTo(plan.node);
+      float distToHall = distanceTo(plan.townHall);
+
+      // TODO check if with HARVEST_RANGE or DELIVER_RANGE
+      if (distToNode <= distToHall) {
+        enterState(WorkerState.HARVESTING);
+      } else {
+        enterState(WorkerState.DELIVERING);
+      }
+    } else {
+      enterState(WorkerState.IDLE);
+    }
+  }
+
+  private void updateHarvesting(float delta) {
+    Node targetNode = plan.node;
+
+    // TODO harvest range check
+
+    if (targetNode.isEmpty()) {
+      // TODO if worker has capacity, look for nearby suitable nodes
+      if (carrying > 0f) moveTo(plan.townHall);
+      else enterState(WorkerState.IDLE);
+
+      return;
+    }
+
+    float amount = targetNode.getHarvestRate() * delta;
+    float harvested = targetNode.harvest(Math.min(amount, capacityRemaining()));
+    carrying += harvested;
+    carryingType = targetNode.getResourceType();
+
+    if (capacityRemaining() <= 0) {
+      // clamp bag contents to capacity
+      carrying = carryCapacity;
+      moveTo(plan.townHall);
+    }
+  }
+
+  private void updateDelivering(float delta) {
+    // TODO delivery range check
+    TownHall townHall = plan.townHall;
+
+    // TODO check townhall has capacity to receive delivery
+    if (carrying > 0f && carryingType != null) {
+      // TODO make DELIVER_RATE townHall-specific
+      float amount = C.DELIVER_RATE * delta;
+
+      townHall.deposit(carryingType, amount);
+
+      carrying -= amount;
+    }
+
+    if (carrying <= 0) {
+      // clamp bag contents to 0
+      carrying = 0;
+      carryingType = null;
+      moveTo(plan.node);
+    }
+  }
+
+  // ── helpers ────────────────────────────────────────────────────────────────
+
+  private void moveTo(Vector2 dest) {
+    waypoints.clear();
+    List<Vector2> path = plan.pathfinder.findPath(position.x, position.y, dest.x, dest.y);
+    if (!path.isEmpty()) {
+      waypoints.addAll(path);
+      enterState(WorkerState.MOVING);
+    }
+  }
+
+  private void moveTo(WorldEntity dest) {
+    moveTo(dest.getPosition());
+  }
+
+  private void rememberNode(String nodeId) {
+    nodeMemory.remove(nodeId);
+    nodeMemory.addFirst(nodeId);
+    while (nodeMemory.size() > C.WORKER_NODE_MEMORY_DEPTH) {
+      nodeMemory.removeLast();
+    }
+  }
+
+  private Vector2 approachPoint(WorldEntity target) {
+    Vector2 dir = new Vector2(target.getPosition()).sub(position).nor();
+    float range = (target.getWidth() / 2f) + C.INTERACTION_RANGE;
+    return new Vector2(target.getPosition()).sub(dir.scl(range));
+  }
+
+  private boolean recentlyVisited(String nodeId) {
+    return nodeMemory.contains(nodeId);
   }
 
   // ── update ────────────────────────────────────────────────────────────────
@@ -137,6 +285,11 @@ public class Worker extends WorldEntity {
   }
 
   // ── drawing ───────────────────────────────────────────────────────────────
+
+  @Override
+  public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
+    // Worker drawing is handled by WorkerLayer
+  }
 
   public TextureRegion getCurrentFrame() {
     if (animations == null) return null;
@@ -157,6 +310,10 @@ public class Worker extends WorldEntity {
     return facing;
   }
 
+  public float capacityRemaining() {
+    return carryCapacity - carrying;
+  }
+
   public float getSpeed() {
     return speed;
   }
@@ -167,5 +324,20 @@ public class Worker extends WorldEntity {
 
   public Queue<Vector2> getWaypoints() {
     return waypoints;
+  }
+
+  public static class WorkerPlan {
+    public enum PlanType {
+      IDLE,
+      MOVE,
+      HARVEST
+    }
+
+    PlanType planType;
+
+    Pathfinder pathfinder;
+
+    Node node;
+    TownHall townHall;
   }
 }

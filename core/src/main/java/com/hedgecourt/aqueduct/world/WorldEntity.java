@@ -1,7 +1,9 @@
 package com.hedgecourt.aqueduct.world;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class WorldEntity {
 
@@ -73,7 +75,19 @@ public abstract class WorldEntity {
 
   public abstract void update(float delta);
 
+  public abstract void draw(SpriteBatch batch, ShapeDrawer drawer);
+
+  // ── getters ────────────────────────────────────────────────────────────
+
   public Vector2 getPosition() {
     return position;
+  }
+
+  public float getWidth() {
+    return width;
+  }
+
+  public float getHeight() {
+    return height;
   }
 }

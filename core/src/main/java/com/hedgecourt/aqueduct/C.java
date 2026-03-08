@@ -8,8 +8,18 @@ public class C {
 
   // ── entities ──────────────────────────────────────────────────────────────
   public static final float ANIMATION_FRAME_DURATION = 0.15f;
+
   public static final float WORKER_BASE_SPEED = 90f; // pixels per second
+  public static final float WORKER_SEPARATION_RADIUS = 20f;
+  public static final float WORKER_SEPARATION_STRENGTH = 60f;
+  public static final float WORKER_CARRY_CAPACITY = 20f;
+  public static final int WORKER_NODE_MEMORY_DEPTH = 3;
+
   public static final float ENTITY_RENDER_SIZE = 24f;
+
+  public static final float INTERACTION_RANGE = 6f;
+
+  public static final float DELIVER_RATE = 10f;
 
   // ── colors ────────────────────────────────────────────────────────────────
   public static final float CLEAR_R = 0.2f;

@@ -1,0 +1,59 @@
+package com.hedgecourt.aqueduct.world.entities;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.hedgecourt.aqueduct.world.WorldEntity;
+import java.util.HashMap;
+import java.util.Map;
+import space.earlygrey.shapedrawer.ShapeDrawer;
+
+public class TownHall extends WorldEntity {
+
+  private final String id;
+  private final Map<String, Float> inventory = new HashMap<>();
+
+  public TownHall(String id, float x, float y, float width, float height) {
+    super(x, y, width, height);
+    this.id = id;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void deposit(String resourceType, float amount) {
+    inventory.merge(resourceType, amount, Float::sum);
+  }
+
+  public float getInventory(String resourceType) {
+    return inventory.getOrDefault(resourceType, 0f);
+  }
+
+  // ── update ────────────────────────────────────────────────────────────────
+
+  @Override
+  public void update(float delta) {
+    // future: consume water, power connected buildings
+  }
+
+  // ── draw ──────────────────────────────────────────────────────────────────
+
+  @Override
+  public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
+    // placeholder: brown square
+    shapeDrawer.setColor(Color.BROWN);
+    shapeDrawer.filledRectangle(position.x - width / 2f, position.y - height / 2f, width, height);
+  }
+
+  @Override
+  public String getHoverTooltip() {
+    StringBuilder sb = new StringBuilder("Town Hall");
+    for (Map.Entry<String, Float> entry : inventory.entrySet()) {
+      sb.append("\n")
+          .append(entry.getKey())
+          .append(": ")
+          .append(String.format("%.1f", entry.getValue()));
+    }
+    return sb.toString();
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "resources": [
+    {
+      "type": "water",
+      "displayName": "Water",
+      "regenRate": 2.0,
+      "maxInventory": 20.0,
+      "harvestRate": 5.0,
+      "spriteIdEmpty": 50,
+      "spriteIdFull": 60
+    }
+  ]
+}

@@ -16,8 +16,10 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
+import com.hedgecourt.aqueduct.world.ResourceConfig;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
+import com.hedgecourt.aqueduct.world.layers.EntityLayer;
 import java.util.ArrayList;
 import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -42,6 +44,8 @@ public class WorldRenderer implements Disposable {
   private CameraController cameraController;
 
   private final List<WorldLayer> layers = new ArrayList<>();
+  private EntityLayer entityLayer;
+  private ResourceConfig resourceConfig;
 
   private boolean selBoxActive = false;
   private final Vector2 selBoxStart = new Vector2();
@@ -66,6 +70,11 @@ public class WorldRenderer implements Disposable {
     TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
     mapGraph = new MapGraph(mapTilesWide, mapTilesTall, wallsLayer);
     pathfinder = new Pathfinder(mapGraph, tileWidth, tileHeight);
+
+    resourceConfig = new ResourceConfig("resources.json");
+    entityLayer = new EntityLayer(resourceConfig);
+    entityLayer.loadFromMap(map, tileHeight);
+    addLayer(entityLayer);
 
     mapRenderer = new OrthogonalTiledMapRenderer(map);
 
@@ -256,5 +265,9 @@ public class WorldRenderer implements Disposable {
     unprojectScratch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
     viewport.unproject(unprojectScratch);
     return new Vector2(unprojectScratch.x, unprojectScratch.y);
+  }
+
+  public EntityLayer getEntityLayer() {
+    return entityLayer;
   }
 }

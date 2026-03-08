@@ -15,6 +15,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -154,11 +155,16 @@ public class AqueductMain extends ApplicationAdapter {
               return true;
             }
             if (button == Input.Buttons.RIGHT) {
-              if (!selectDragging) clearSelectionBox();
+              clearSelectionBox();
               if (workerLayer.hasSelection()) {
                 Vector2 worldPos = worldRenderer.mouseInWorld();
-                workerLayer.commandSelectedMoveTo(
-                    worldPos.x, worldPos.y, worldRenderer.getPathfinder());
+                Node clickedNode = worldRenderer.getEntityLayer().getNodeAt(worldPos.x, worldPos.y);
+                if (clickedNode != null) {
+                  workerLayer.commandSelectedHarvest(
+                      clickedNode, worldRenderer.getEntityLayer(), worldRenderer.getPathfinder());
+                } else {
+                  workerLayer.commandSelectedMoveTo(worldPos, worldRenderer.getPathfinder());
+                }
               }
               return true;
             }
