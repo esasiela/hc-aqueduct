@@ -101,16 +101,12 @@ public class WorkerLayer extends WorldLayer {
         shapeDrawer.setColor(Color.WHITE);
         shapeDrawer.circle(
             worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.75f, 2f);
-      } else if (activeSelBox != null && activeSelBox.contains(worker.getPosition())) {
+      }
+      if (activeSelBox != null && activeSelBox.contains(worker.getPosition())) {
         // subtle indicator - dim circle while inside drag box
         shapeDrawer.setColor(new Color(1f, 1f, 1f, 0.4f));
         shapeDrawer.circle(
-            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.45f, 1.5f);
-        /*
-                shapeDrawer.setColor(new Color(1f, 1f, 1f, 0.4f));
-        shapeDrawer.circle(worker.getPosition().x, worker.getPosition().y,
-            C.ENTITY_RENDER_SIZE * 0.45f, 1.5f);
-                 */
+            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.60f, 1.5f);
       }
     }
   }
