@@ -306,8 +306,20 @@ public class Worker extends WorldEntity {
     return state;
   }
 
+  public WorkerPlan getPlan() {
+    return plan;
+  }
+
   public Direction getFacing() {
     return facing;
+  }
+
+  public float getCarrying() {
+    return carrying;
+  }
+
+  public float getCarryCapacity() {
+    return carryCapacity;
   }
 
   public float capacityRemaining() {
@@ -333,11 +345,15 @@ public class Worker extends WorldEntity {
       HARVEST
     }
 
-    PlanType planType;
+    PlanType planType = PlanType.IDLE;
 
     Pathfinder pathfinder;
 
     Node node;
     TownHall townHall;
+
+    public PlanType getPlanType() {
+      return planType;
+    }
   }
 }

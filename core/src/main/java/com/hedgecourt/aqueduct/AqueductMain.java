@@ -26,6 +26,8 @@ public class AqueductMain extends ApplicationAdapter {
   private ShapeDrawer shapeDrawer;
   private Texture pixelTexture;
 
+  private FontManager fontManager;
+
   private AssetManager assetManager;
   private WorkerLayer workerLayer;
 
@@ -35,6 +37,8 @@ public class AqueductMain extends ApplicationAdapter {
   private boolean selectDragging = false;
   private Vector2 selectDragStart = new Vector2();
   private Vector2 selectDragCurrent = new Vector2();
+
+  private boolean paused = false;
 
   @Override
   public void create() {
@@ -46,6 +50,9 @@ public class AqueductMain extends ApplicationAdapter {
     pixelTexture = new Texture(pixmap);
     pixmap.dispose();
     shapeDrawer = new ShapeDrawer(batch, new TextureRegion(pixelTexture));
+
+    fontManager = new FontManager();
+    fontManager.load();
 
     worldRenderer = new WorldRenderer(batch, shapeDrawer);
     uiRenderer = new UiRenderer(batch, shapeDrawer);
@@ -68,7 +75,7 @@ public class AqueductMain extends ApplicationAdapter {
     Texture workerTexture2 = assetManager.get(workerSpritePath2, Texture.class);
     TextureRegion[][] grid2 = TextureRegion.split(workerTexture2, 32, 32);
 
-    workerLayer = new WorkerLayer();
+    workerLayer = new WorkerLayer(fontManager);
 
     Worker worker1 =
         new Worker(worldRenderer.getMapWidth() / 2f, worldRenderer.getMapHeight() / 2f);
@@ -188,6 +195,15 @@ public class AqueductMain extends ApplicationAdapter {
             }
             return false;
           }
+
+          @Override
+          public boolean keyUp(int keycode) {
+            if (keycode == Input.Keys.SPACE) {
+              paused = !paused;
+              return true;
+            }
+            return false;
+          }
         });
 
     Gdx.input.setInputProcessor(multiplexer);
@@ -211,6 +227,7 @@ public class AqueductMain extends ApplicationAdapter {
     float delta = Gdx.graphics.getDeltaTime();
 
     handleInput(delta);
+
     updateWorld(delta);
     updateUi(delta);
 
@@ -250,6 +267,7 @@ public class AqueductMain extends ApplicationAdapter {
     uiRenderer.dispose();
     pixelTexture.dispose();
     assetManager.dispose();
+    fontManager.dispose();
   }
 
   @Override
@@ -261,7 +279,10 @@ public class AqueductMain extends ApplicationAdapter {
   private void handleInput(float delta) {}
 
   private void updateWorld(float delta) {
-    worldRenderer.update(delta);
+    worldRenderer.updateCamera(delta);
+    if (!paused) {
+      worldRenderer.updateLayers(delta);
+    }
   }
 
   private void updateUi(float delta) {}

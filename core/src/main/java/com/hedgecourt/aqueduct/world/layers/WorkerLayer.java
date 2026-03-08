@@ -1,11 +1,15 @@
 package com.hedgecourt.aqueduct.world.layers;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
+import com.hedgecourt.aqueduct.FontManager;
+import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldLayer;
@@ -19,8 +23,21 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class WorkerLayer extends WorldLayer {
 
+  private static final Color SELECTION_RING_COLOR = Color.WHITE;
+  private static final Color SELECTION_BOX_INDICATOR_COLOR = new Color(1f, 1f, 1f, 0.4f);
+  private static final Color BAG_BAR_CAPACITY_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
+  private static final Color BAG_BAR_CARRY_COLOR = Color.BLUE;
+
+  private final GlyphLayout glyphLayout;
+  private final BitmapFont workerPlanFont;
+
   private final List<Worker> workers = new ArrayList<>();
   private Rectangle activeSelBox = null;
+
+  public WorkerLayer(FontManager fontManager) {
+    this.glyphLayout = fontManager.getGlyphLayout();
+    this.workerPlanFont = fontManager.getFont(FontType.WORKER_PLAN_OVERLAY);
+  }
 
   public void addWorker(Worker worker) {
     workers.add(worker);
@@ -139,28 +156,46 @@ public class WorkerLayer extends WorldLayer {
        * Selection Decoration
        */
       if (worker.isSelected()) {
-        shapeDrawer.setColor(Color.WHITE);
+        shapeDrawer.setColor(SELECTION_RING_COLOR);
         shapeDrawer.circle(
-            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.75f, 2f);
+            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.6f, 2f);
       }
       /* ****
        * Selection-Box Decoration
        */
       if (activeSelBox != null && activeSelBox.contains(worker.getPosition())) {
-        // subtle indicator - dim circle while inside drag box
-        shapeDrawer.setColor(new Color(1f, 1f, 1f, 0.4f));
+        shapeDrawer.setColor(SELECTION_BOX_INDICATOR_COLOR);
         shapeDrawer.circle(
-            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.60f, 1.5f);
+            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.45f, 1.5f);
       }
       /* ****
-       * Bag Progress Bar
+       * Bag Bar
        */
-      shapeDrawer.setColor(new Color(0.5f, 0.5f, 0.5f, 1f));
+      float bagBarHeight = 4f;
+      float barBarYOffset = 4f;
       shapeDrawer.filledRectangle(
-          worker.getPosition().x,
-          worker.getPosition().y + worker.getHeight(),
+          worker.getPosition().x - worker.getWidth() / 2f,
+          worker.getPosition().y + worker.getHeight() / 2f + barBarYOffset,
           worker.getWidth(),
-          4f);
+          bagBarHeight,
+          BAG_BAR_CAPACITY_COLOR);
+      shapeDrawer.filledRectangle(
+          worker.getPosition().x - worker.getWidth() / 2f,
+          worker.getPosition().y + worker.getHeight() / 2f + barBarYOffset,
+          worker.getWidth() * (worker.getCarrying() / worker.getCarryCapacity()),
+          bagBarHeight,
+          BAG_BAR_CARRY_COLOR);
+      /* ****
+       * Plan/State Text
+       */
+      String workerPlanText =
+          worker.getPlan().getPlanType().name() + "/" + worker.getState().name();
+      glyphLayout.setText(workerPlanFont, workerPlanText);
+      workerPlanFont.draw(
+          batch,
+          workerPlanText,
+          worker.getPosition().x - glyphLayout.width / 2f,
+          worker.getPosition().y - (worker.getHeight() / 2f + 1f));
     }
   }
 

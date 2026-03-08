@@ -105,8 +105,11 @@ public class WorldRenderer implements Disposable {
     viewport.apply();
   }
 
-  public void update(float delta) {
+  public void updateCamera(float delta) {
     if (cameraController != null) cameraController.update(delta);
+  }
+
+  public void updateLayers(float delta) {
     Vector2 mouse = mouseInWorld();
     for (WorldLayer layer : layers) {
       layer.preUpdate(mouse.x, mouse.y);
