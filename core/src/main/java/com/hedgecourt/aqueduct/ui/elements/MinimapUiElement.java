@@ -22,7 +22,7 @@ public class MinimapUiElement extends UiElement {
   private static final Color COLOR_MAP = new Color(0.13f, 0.37f, 0.13f, 1f); // dark green map
   private static final Color COLOR_VIEW = new Color(1f, 1f, 1f, 0.8f); // white viewport rect
   private static final Color COLOR_WORKER = new Color(1f, 1f, 0f, 1f); // yellow unselected
-  private static final Color COLOR_SEL = new Color(1f, 1f, 1f, 1f); // white selected
+  private static final Color COLOR_SEL = Color.PURPLE; // purple selected
 
   private final WorldRenderer worldRenderer;
   private final WorkerLayer workerLayer;

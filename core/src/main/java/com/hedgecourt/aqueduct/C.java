@@ -1,7 +1,5 @@
 package com.hedgecourt.aqueduct;
 
-import com.badlogic.gdx.Gdx;
-
 public class C {
 
   // ── screen layout ─────────────────────────────────────────────────────────
@@ -24,8 +22,6 @@ public class C {
   public static final float ZOOM_SPEED = 0.1f; // how much each pinch/scroll step zooms
   public static final float SCROLL_THRESHOLD = 0.25f; // ignore tiny accidental scrolls
 
-  public static int toPhysicalPixels(float logicalPixels) {
-    return Math.round(
-        logicalPixels * Gdx.graphics.getBackBufferHeight() / Gdx.graphics.getHeight());
-  }
+  // ── misc ────────────────────────────────────────────────────────────────
+  public static final float DRAG_THRESHOLD = 6f;
 }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
@@ -41,6 +42,10 @@ public class WorldRenderer implements Disposable {
   private CameraController cameraController;
 
   private final List<WorldLayer> layers = new ArrayList<>();
+
+  private boolean selBoxActive = false;
+  private final Vector2 selBoxStart = new Vector2();
+  private final Vector2 selBoxCurrent = new Vector2();
 
   public WorldRenderer(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     this.shapeDrawer = shapeDrawer;
@@ -153,6 +158,36 @@ public class WorldRenderer implements Disposable {
     camera.position.y = worldY;
     cameraController.clampCameraPublic();
     camera.update();
+  }
+
+  public Rectangle getVisibleWorldRect() {
+    float vw = camera.viewportWidth * camera.zoom;
+    float vh = camera.viewportHeight * camera.zoom;
+    return new Rectangle(camera.position.x - vw / 2f, camera.position.y - vh / 2f, vw, vh);
+  }
+
+  public void clearSelectionBox() {
+    this.selBoxActive = false;
+  }
+
+  public void setSelectionBox(boolean active, Vector2 start, Vector2 current) {
+    this.selBoxActive = active;
+    this.selBoxStart.set(start);
+    this.selBoxCurrent.set(current);
+  }
+
+  public void drawSelectionBox(SpriteBatch batch) {
+    if (!selBoxActive) return;
+
+    batch.setProjectionMatrix(camera.combined);
+    float x = Math.min(selBoxStart.x, selBoxCurrent.x);
+    float y = Math.min(selBoxStart.y, selBoxCurrent.y);
+    float w = Math.abs(selBoxStart.x - selBoxCurrent.x);
+    float h = Math.abs(selBoxStart.y - selBoxCurrent.y);
+    shapeDrawer.setColor(new Color(0f, 1f, 0f, 0.15f));
+    shapeDrawer.filledRectangle(x, y, w, h);
+    shapeDrawer.setColor(Color.WHITE);
+    shapeDrawer.rectangle(x, y, w, h, 1.5f);
   }
 
   private void illustrateExtremeDrawing(SpriteBatch batch) {

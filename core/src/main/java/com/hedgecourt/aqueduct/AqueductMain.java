@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.entities.Worker;
@@ -28,6 +30,10 @@ public class AqueductMain extends ApplicationAdapter {
 
   private WorldRenderer worldRenderer;
   private UiRenderer uiRenderer;
+
+  private boolean selectDragging = false;
+  private Vector2 selectDragStart = new Vector2();
+  private Vector2 selectDragCurrent = new Vector2();
 
   @Override
   public void create() {
@@ -82,6 +88,22 @@ public class AqueductMain extends ApplicationAdapter {
      */
 
     InputMultiplexer multiplexer = new InputMultiplexer();
+
+    GestureDetector gestureDetector =
+        new GestureDetector(
+            new GestureDetector.GestureAdapter() {
+              @Override
+              public boolean tap(float x, float y, int count, int button) {
+                if (count == 2 && button == Input.Buttons.LEFT) {
+                  Vector2 worldPos = worldRenderer.mouseInWorld();
+                  workerLayer.handleDoubleClick(worldPos.x, worldPos.y, worldRenderer);
+                  return true;
+                }
+                return false;
+              }
+            });
+    multiplexer.addProcessor(gestureDetector);
+
     multiplexer.addProcessor(
         new InputAdapter() {
           @Override
@@ -99,22 +121,40 @@ public class AqueductMain extends ApplicationAdapter {
             if (button == Input.Buttons.LEFT) {
               Vector2 uiPos = uiRenderer.mouseInUi();
               uiRenderer.handleTouchDown(uiPos.x, uiPos.y);
+              if (!uiRenderer.isMinimapDragging()) {
+                Vector2 worldPos = worldRenderer.mouseInWorld();
+                selectDragStart.set(worldPos);
+                selectDragCurrent.set(worldPos);
+              }
             }
             return false;
           }
 
           @Override
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            Vector2 uiPos = uiRenderer.mouseInUi();
             if (button == Input.Buttons.LEFT) {
+              Vector2 uiPos = uiRenderer.mouseInUi();
+              boolean shift =
+                  Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
+                      || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+
+              if (selectDragging) {
+                // finalize selection box
+                Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
+                clearSelectionBox();
+                workerLayer.handleBoxSelect(selRect, shift);
+                return true;
+              }
+
               boolean consumedByUi = uiRenderer.handleClick(uiPos.x, uiPos.y);
               if (!consumedByUi) {
                 Vector2 worldPos = worldRenderer.mouseInWorld();
-                workerLayer.handleLeftClick(worldPos.x, worldPos.y);
+                workerLayer.handleLeftClick(worldPos.x, worldPos.y, shift);
               }
               return true;
             }
             if (button == Input.Buttons.RIGHT) {
+              if (!selectDragging) clearSelectionBox();
               if (workerLayer.hasSelection()) {
                 Vector2 worldPos = worldRenderer.mouseInWorld();
                 workerLayer.commandSelectedMoveTo(
@@ -130,12 +170,34 @@ public class AqueductMain extends ApplicationAdapter {
             Vector2 uiPos = uiRenderer.mouseInUi();
             if (uiRenderer.isMinimapDragging()) {
               uiRenderer.handleMinimapDrag(uiPos.x, uiPos.y);
+              return false;
+            }
+            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+              Vector2 worldPos = worldRenderer.mouseInWorld();
+              selectDragCurrent.set(worldPos);
+              float dist = selectDragStart.dst(selectDragCurrent);
+              if (dist > C.DRAG_THRESHOLD) {
+                selectDragging = true;
+              }
             }
             return false;
           }
         });
 
     Gdx.input.setInputProcessor(multiplexer);
+  }
+
+  private Rectangle buildSelRect(Vector2 a, Vector2 b) {
+    float x = Math.min(a.x, b.x);
+    float y = Math.min(a.y, b.y);
+    float w = Math.abs(a.x - b.x);
+    float h = Math.abs(a.y - b.y);
+    return new Rectangle(x, y, w, h);
+  }
+
+  private void clearSelectionBox() {
+    selectDragging = false;
+    worldRenderer.clearSelectionBox();
   }
 
   @Override
@@ -151,11 +213,21 @@ public class AqueductMain extends ApplicationAdapter {
     // ── world ────────────────────────────────────────────────────────────
     worldRenderer.render();
 
+    if (selectDragging) {
+      Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
+      workerLayer.setActiveSelBox(selRect);
+      worldRenderer.setSelectionBox(true, selectDragStart, selectDragCurrent);
+    } else {
+      workerLayer.setActiveSelBox(null);
+      worldRenderer.clearSelectionBox();
+    }
+
     worldRenderer.applyViewport();
     batch.begin();
     worldRenderer.drawUnderlay(batch);
     worldRenderer.drawEntities(batch);
     worldRenderer.drawOverlay(batch);
+    worldRenderer.drawSelectionBox(batch);
     batch.end();
 
     // ── ui ───────────────────────────────────────────────────────────────

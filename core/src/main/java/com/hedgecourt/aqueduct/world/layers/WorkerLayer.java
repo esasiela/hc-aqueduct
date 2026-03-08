@@ -3,8 +3,10 @@ package com.hedgecourt.aqueduct.world.layers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
+import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.Worker;
@@ -16,6 +18,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 public class WorkerLayer extends WorldLayer {
 
   private final List<Worker> workers = new ArrayList<>();
+  private Rectangle activeSelBox = null;
 
   public void addWorker(Worker worker) {
     workers.add(worker);
@@ -39,7 +42,7 @@ public class WorkerLayer extends WorldLayer {
     }
   }
 
-  public boolean handleLeftClick(float worldX, float worldY) {
+  public boolean handleLeftClick(float worldX, float worldY, boolean shift) {
     Worker clicked = null;
     for (Worker worker : workers) {
       if (worker.containsPoint(worldX, worldY)) {
@@ -47,15 +50,34 @@ public class WorkerLayer extends WorldLayer {
         break;
       }
     }
-    // deselect all first
-    for (Worker worker : workers) {
-      worker.deselect();
+
+    if (shift) {
+      if (clicked != null) {
+        // toggle clicked worker
+        if (clicked.isSelected()) clicked.deselect();
+        else clicked.select();
+        return true;
+      }
+      // shift+click background - do nothing
+      return false;
     }
+
+    // regular click - deselect all, select clicked
+    deselectAll();
     if (clicked != null) {
       clicked.select();
-      return true; // click was consumed by a worker
+      return true;
     }
-    return false; // click hit background
+    return false;
+  }
+
+  public void handleBoxSelect(Rectangle selRect, boolean shift) {
+    if (!shift) deselectAll();
+    for (Worker worker : workers) {
+      if (selRect.contains(worker.getPosition())) {
+        worker.select();
+      }
+    }
   }
 
   public boolean hasSelection() {
@@ -76,11 +98,19 @@ public class WorkerLayer extends WorldLayer {
   public void drawUnderlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     for (Worker worker : workers) {
       if (worker.isSelected()) {
-        float x = worker.getPosition().x;
-        float y = worker.getPosition().y;
-        float radius = C.ENTITY_RENDER_SIZE * 0.75f;
         shapeDrawer.setColor(Color.WHITE);
-        shapeDrawer.circle(x, y, radius, 2f);
+        shapeDrawer.circle(
+            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.75f, 2f);
+      } else if (activeSelBox != null && activeSelBox.contains(worker.getPosition())) {
+        // subtle indicator - dim circle while inside drag box
+        shapeDrawer.setColor(new Color(1f, 1f, 1f, 0.4f));
+        shapeDrawer.circle(
+            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.45f, 1.5f);
+        /*
+                shapeDrawer.setColor(new Color(1f, 1f, 1f, 0.4f));
+        shapeDrawer.circle(worker.getPosition().x, worker.getPosition().y,
+            C.ENTITY_RENDER_SIZE * 0.45f, 1.5f);
+                 */
       }
     }
   }
@@ -129,5 +159,43 @@ public class WorkerLayer extends WorldLayer {
         shapeDrawer.line(dest.x + s, dest.y - s, dest.x - s, dest.y + s, 2f);
       }
     }
+  }
+
+  public void handleDoubleClick(float worldX, float worldY, WorldRenderer worldRenderer) {
+    // find clicked worker's type, select all visible of same type
+    Worker clicked = null;
+    for (Worker worker : workers) {
+      if (worker.containsPoint(worldX, worldY)) {
+        clicked = worker;
+        break;
+      }
+    }
+    if (clicked == null) {
+      // double-click on background, deselect all
+      deselectAll();
+      return;
+    }
+
+    // select all visible workers of same type
+    // for now all workers are the same type, filter by class
+    Class<?> type = clicked.getClass();
+    Rectangle viewport = worldRenderer.getVisibleWorldRect();
+    for (Worker worker : workers) {
+      if (worker.getClass() == type && viewport.contains(worker.getPosition())) {
+        worker.select();
+      } else {
+        worker.deselect();
+      }
+    }
+  }
+
+  public void deselectAll() {
+    for (Worker worker : workers) {
+      worker.deselect();
+    }
+  }
+
+  public void setActiveSelBox(Rectangle rect) {
+    this.activeSelBox = rect;
   }
 }
