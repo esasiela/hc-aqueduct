@@ -1,7 +1,7 @@
 package com.hedgecourt.aqueduct.world.entities;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hedgecourt.aqueduct.world.ResourceDef;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -12,11 +12,24 @@ public class Node extends WorldEntity {
   private final ResourceDef def;
   private float inventory;
 
-  public Node(String id, float x, float y, float width, float height, ResourceDef def) {
+  private TextureRegion spriteFull;
+  private TextureRegion spriteEmpty;
+
+  public Node(
+      String id,
+      float x,
+      float y,
+      float width,
+      float height,
+      ResourceDef def,
+      TextureRegion spriteFull,
+      TextureRegion spriteEmpty) {
     super(x, y, width, height);
     this.id = id;
     this.def = def;
     this.inventory = def.maxInventory;
+    this.spriteFull = spriteFull;
+    this.spriteEmpty = spriteEmpty;
   }
 
   // ── inventory ─────────────────────────────────────────────────────────────
@@ -69,9 +82,12 @@ public class Node extends WorldEntity {
 
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    // placeholder: full=blue, empty=grey
-    shapeDrawer.setColor(isEmpty() ? Color.GRAY : Color.BLUE);
-    shapeDrawer.filledRectangle(position.x - width / 2f, position.y - height / 2f, width, height);
+    batch.draw(
+        inventory > 0 ? spriteFull : spriteEmpty,
+        position.x - width / 2f,
+        position.y - height / 2f,
+        width,
+        height);
   }
 
   @Override

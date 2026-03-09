@@ -21,10 +21,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class WorkerLayer extends WorldLayer {
 
-  private static final Color SELECTION_RING_COLOR = Color.WHITE;
   private static final Color SELECTION_BOX_INDICATOR_COLOR = new Color(1f, 1f, 1f, 0.4f);
-  private static final Color BAG_BAR_CAPACITY_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
-  private static final Color BAG_BAR_CARRY_COLOR = Color.BLUE;
 
   private final GlyphLayout glyphLayout;
   private final BitmapFont workerPlanFont;
@@ -133,9 +130,9 @@ public class WorkerLayer extends WorldLayer {
        * Selection Decoration
        */
       if (worker.isSelected()) {
-        shapeDrawer.setColor(SELECTION_RING_COLOR);
+        shapeDrawer.setColor(C.SELECTION_RING_COLOR);
         shapeDrawer.circle(
-            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.6f, 2f);
+            worker.getPosition().x, worker.getPosition().y, worker.getWidth() * 0.6f, 2f);
       }
       /* ****
        * Selection-Box Decoration
@@ -143,7 +140,7 @@ public class WorkerLayer extends WorldLayer {
       if (activeSelBox != null && activeSelBox.contains(worker.getPosition())) {
         shapeDrawer.setColor(SELECTION_BOX_INDICATOR_COLOR);
         shapeDrawer.circle(
-            worker.getPosition().x, worker.getPosition().y, C.ENTITY_RENDER_SIZE * 0.45f, 1.5f);
+            worker.getPosition().x, worker.getPosition().y, worker.getWidth() * 0.45f, 1.5f);
       }
       /* ****
        * Bag Bar
@@ -155,13 +152,13 @@ public class WorkerLayer extends WorldLayer {
           worker.getPosition().y + worker.getHeight() / 2f + barBarYOffset,
           worker.getWidth(),
           bagBarHeight,
-          BAG_BAR_CAPACITY_COLOR);
+          C.BAG_BAR_CAPACITY_COLOR);
       shapeDrawer.filledRectangle(
           worker.getPosition().x - worker.getWidth() / 2f,
           worker.getPosition().y + worker.getHeight() / 2f + barBarYOffset,
           worker.getWidth() * (worker.getCarrying() / worker.getCarryCapacity()),
           bagBarHeight,
-          BAG_BAR_CARRY_COLOR);
+          C.BAG_BAR_CARRY_COLOR);
       /* ****
        * Plan/State Text
        */

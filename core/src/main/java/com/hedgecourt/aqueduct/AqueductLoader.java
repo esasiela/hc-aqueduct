@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
+import com.hedgecourt.aqueduct.world.ResourceDef;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
@@ -98,8 +99,17 @@ public class AqueductLoader {
           throw new RuntimeException(
               "EntityLayer: node object missing name (resourceType) " + "at (" + x + "," + y + ")");
         }
+        ResourceDef resourceDef = world.getResourceConfig().get(resourceType);
         world.add(
-            new Node(id, centreX, centreY, w, h, world.getResourceConfig().get(resourceType)));
+            new Node(
+                id,
+                centreX,
+                centreY,
+                w,
+                h,
+                resourceDef,
+                getPipoyaBaseChip(pipoyaBaseChipTexture, resourceDef.spriteIdFull),
+                getPipoyaBaseChip(pipoyaBaseChipTexture, resourceDef.spriteIdEmpty)));
 
       } else if ("townhall".equals(objClass)) {
         world.add(

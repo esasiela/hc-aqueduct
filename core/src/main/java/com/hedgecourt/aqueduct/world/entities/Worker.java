@@ -205,7 +205,10 @@ public class Worker extends WorldEntity {
   private void updateHarvesting(float delta) {
     Node targetNode = plan.node;
 
-    // TODO harvest range check
+    if (distanceTo(targetNode) > C.HARVEST_RANGE) {
+      moveAdjacentTo(targetNode);
+      return;
+    }
 
     if (targetNode.isEmpty()) {
       // TODO if worker has capacity, look for nearby suitable nodes
@@ -223,13 +226,17 @@ public class Worker extends WorldEntity {
     if (capacityRemaining() <= 0) {
       // clamp bag contents to capacity
       carrying = carryCapacity;
-      moveTo(plan.townHall);
+      moveAdjacentTo(plan.townHall);
     }
   }
 
   private void updateDelivering(float delta) {
-    // TODO delivery range check
     TownHall townHall = plan.townHall;
+
+    if (distanceTo(townHall) > C.DELIVER_RANGE) {
+      moveAdjacentTo(townHall);
+      return;
+    }
 
     // TODO check townhall has capacity to receive delivery
     if (carrying > 0f && carryingType != null) {
@@ -245,7 +252,7 @@ public class Worker extends WorldEntity {
       // clamp bag contents to 0
       carrying = 0;
       carryingType = null;
-      moveTo(plan.node);
+      moveAdjacentTo(plan.node);
     }
   }
 

@@ -14,8 +14,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
-import com.hedgecourt.aqueduct.world.layers.EntityLayer;
+import com.hedgecourt.aqueduct.world.layers.NodeLayer;
 import com.hedgecourt.aqueduct.world.layers.TileHighlightWorldLayer;
+import com.hedgecourt.aqueduct.world.layers.TownHallLayer;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,8 @@ public class WorldRenderer implements Disposable {
 
     workerLayer = new WorkerLayer(world, fontManager);
     addLayer(workerLayer);
-    addLayer(new EntityLayer(world));
+    addLayer(new TownHallLayer(world));
+    addLayer(new NodeLayer(world));
     addLayer(new CrosshairWorldLayer());
     addLayer(new TileHighlightWorldLayer(world));
   }
