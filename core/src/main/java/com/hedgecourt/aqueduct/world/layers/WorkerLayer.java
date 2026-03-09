@@ -43,7 +43,7 @@ public class WorkerLayer extends WorldLayer {
     for (Worker worker : world.getWorkers()) {
       if (worker.isSelected()) {
         TownHall nearest = world.getNearestTownHall(worker);
-        worker.commandHarvest(node, nearest, world.getPathfinder());
+        worker.commandHarvest(node, nearest);
       }
     }
   }
@@ -51,14 +51,8 @@ public class WorkerLayer extends WorldLayer {
   public void commandSelectedMoveTo(Vector2 target) {
     for (Worker worker : world.getWorkers()) {
       if (worker.isSelected()) {
-        worker.commandMoveTo(target, world.getPathfinder());
+        worker.commandMoveTo(target);
       }
-    }
-  }
-
-  public void commandAllMoveTo(Vector2 target) {
-    for (Worker worker : world.getWorkers()) {
-      worker.commandMoveTo(target, world.getPathfinder());
     }
   }
 
@@ -185,7 +179,7 @@ public class WorkerLayer extends WorldLayer {
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     for (Worker worker : world.getWorkers()) {
-      TextureRegion frame = worker.getCurrentFrame();
+      TextureRegion frame = worker.getCurrentAnimationFrame();
       if (frame == null) continue;
       float renderSize = C.ENTITY_RENDER_SIZE;
       batch.draw(

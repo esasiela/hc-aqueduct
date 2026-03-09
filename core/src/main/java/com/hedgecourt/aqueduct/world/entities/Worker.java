@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
-import com.hedgecourt.aqueduct.world.Pathfinder;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
 import java.util.EnumMap;
@@ -57,10 +57,13 @@ public class Worker extends WorldEntity {
 
   private final LinkedList<String> nodeMemory = new LinkedList<>();
 
+  private final AqueductWorld world;
+
   // ── constructor ───────────────────────────────────────────────────────────
 
-  public Worker(float x, float y) {
+  public Worker(AqueductWorld world, float x, float y) {
     super(x, y, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
+    this.world = world;
     this.speed = C.WORKER_BASE_SPEED;
 
     this.plan = new WorkerPlan();
@@ -78,26 +81,26 @@ public class Worker extends WorldEntity {
 
   // ── commands ──────────────────────────────────────────────────────────────
 
-  public void commandMoveTo(Vector2 target, Pathfinder pathfinder) {
+  public void commandMoveTo(Vector2 target) {
     clearPlan();
     plan.planType = PlanType.MOVE;
-    // TODO why is pathfinder passed in on each command instead of inherent in the worker
-    plan.pathfinder = pathfinder;
 
     moveTo(target);
   }
 
-  public void commandHarvest(Node node, TownHall townHall, Pathfinder pathfinder) {
+  public void commandHarvest(Node node, TownHall townHall) {
     clearPlan();
+
+    if (!moveAdjacentTo(node)) {
+      enterState(WorkerState.IDLE);
+      return;
+    }
+
     plan.planType = PlanType.HARVEST;
     plan.node = node;
     plan.townHall = townHall;
-    // TODO why is pathfinder passed in on each command instead of inherent in the worker
-    plan.pathfinder = pathfinder;
 
     // TODO if you are carrying something different than this node, jettison bag contents :-(
-
-    moveTo(plan.node);
   }
 
   // ── state machine ─────────────────────────────────────────────────────────
@@ -192,6 +195,8 @@ public class Worker extends WorldEntity {
       } else {
         enterState(WorkerState.DELIVERING);
       }
+    } else if (plan.planType == PlanType.MOVE) {
+      clearPlan(true);
     } else {
       enterState(WorkerState.IDLE);
     }
@@ -246,17 +251,29 @@ public class Worker extends WorldEntity {
 
   // ── helpers ────────────────────────────────────────────────────────────────
 
-  private void moveTo(Vector2 dest) {
+  private boolean moveTo(Vector2 dest) {
     waypoints.clear();
-    List<Vector2> path = plan.pathfinder.findPath(position.x, position.y, dest.x, dest.y);
-    if (!path.isEmpty()) {
-      waypoints.addAll(path);
-      enterState(WorkerState.MOVING);
-    }
+    List<Vector2> path = world.getPathfinder().findPath(position.x, position.y, dest.x, dest.y);
+
+    if (path.isEmpty()) return false;
+
+    waypoints.addAll(path);
+    enterState(WorkerState.MOVING);
+    return true;
   }
 
-  private void moveTo(WorldEntity dest) {
-    moveTo(dest.getPosition());
+  private boolean moveTo(WorldEntity dest) {
+    return moveTo(dest.getPosition());
+  }
+
+  private boolean moveAdjacentTo(WorldEntity dest) {
+    // ensure there is a walkable path to this node
+    Vector2 approach = world.getPathfinder().nearestWalkableApproach(dest, this);
+    if (approach == null) {
+      return false;
+    }
+    // essentially guaranteed to return true, because of the approach check above
+    return moveTo(approach);
   }
 
   private void rememberNode(String nodeId) {
@@ -291,7 +308,7 @@ public class Worker extends WorldEntity {
     // Worker drawing is handled by WorkerLayer
   }
 
-  public TextureRegion getCurrentFrame() {
+  public TextureRegion getCurrentAnimationFrame() {
     if (animations == null) return null;
     Animation<TextureRegion> anim = animations.get(facing);
     if (state == WorkerState.IDLE) {
@@ -346,8 +363,6 @@ public class Worker extends WorldEntity {
     }
 
     PlanType planType = PlanType.IDLE;
-
-    Pathfinder pathfinder;
 
     Node node;
     TownHall townHall;

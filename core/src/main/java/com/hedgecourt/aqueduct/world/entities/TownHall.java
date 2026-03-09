@@ -1,7 +1,7 @@
 package com.hedgecourt.aqueduct.world.entities;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +11,12 @@ public class TownHall extends WorldEntity {
 
   private final String id;
   private final Map<String, Float> inventory = new HashMap<>();
+  private TextureRegion sprite;
 
-  public TownHall(String id, float x, float y, float width, float height) {
+  public TownHall(String id, float x, float y, float width, float height, TextureRegion sprite) {
     super(x, y, width, height);
     this.id = id;
+    this.sprite = sprite;
   }
 
   public String getId() {
@@ -40,9 +42,7 @@ public class TownHall extends WorldEntity {
 
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    // placeholder: brown square
-    shapeDrawer.setColor(Color.BROWN);
-    shapeDrawer.filledRectangle(position.x - width / 2f, position.y - height / 2f, width, height);
+    batch.draw(sprite, position.x - width / 2f, position.y - height / 2f, width, height);
   }
 
   @Override

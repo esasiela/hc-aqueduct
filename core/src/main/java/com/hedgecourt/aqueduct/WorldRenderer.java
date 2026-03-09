@@ -15,6 +15,7 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.EntityLayer;
+import com.hedgecourt.aqueduct.world.layers.TileHighlightWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,7 @@ public class WorldRenderer implements Disposable {
     addLayer(workerLayer);
     addLayer(new EntityLayer(world));
     addLayer(new CrosshairWorldLayer());
+    addLayer(new TileHighlightWorldLayer(world));
   }
 
   /*

@@ -43,15 +43,43 @@ public class AqueductWorld implements Disposable {
   public void add(WorldEntity entity) {
     worldEntities.add(entity);
     if (entity instanceof Worker worker) workers.add(worker);
-    if (entity instanceof Node node) nodes.add(node);
-    if (entity instanceof TownHall townHall) townHalls.add(townHall);
+
+    if (entity instanceof Node node) {
+      nodes.add(node);
+      updateWalkabilityForEntity(node, false);
+    }
+    if (entity instanceof TownHall townHall) {
+      townHalls.add(townHall);
+      updateWalkabilityForEntity(townHall, false);
+    }
   }
 
   public void remove(WorldEntity entity) {
     worldEntities.remove(entity);
     if (entity instanceof Worker worker) workers.remove(worker);
-    if (entity instanceof Node node) nodes.remove(node);
-    if (entity instanceof TownHall townHall) townHalls.remove(townHall);
+
+    if (entity instanceof Node node) {
+      nodes.remove(node);
+      updateWalkabilityForEntity(node, true);
+    }
+
+    if (entity instanceof TownHall townHall) {
+      townHalls.remove(townHall);
+      updateWalkabilityForEntity(townHall, true);
+    }
+  }
+
+  private void updateWalkabilityForEntity(WorldEntity entity, boolean isWalkable) {
+    int tileX = (int) (entity.getPosition().x - entity.getWidth() / 2f) / tileWidth;
+    int tileY = (int) (entity.getPosition().y - entity.getHeight() / 2f) / tileHeight;
+    int tilesWide = (int) (entity.getWidth() / tileWidth);
+    int tilesTall = (int) (entity.getHeight() / tileHeight);
+
+    for (int x = tileX; x < tileX + tilesWide; x++) {
+      for (int y = tileY; y < tileY + tilesTall; y++) {
+        mapGraph.setWalkable(x, y, isWalkable);
+      }
+    }
   }
 
   public TownHall getNearestTownHall(WorldEntity entity) {
@@ -112,6 +140,14 @@ public class AqueductWorld implements Disposable {
 
   public List<TownHall> getTownHalls() {
     return townHalls;
+  }
+
+  public int getTileWidth() {
+    return tileWidth;
+  }
+
+  public int getTileHeight() {
+    return tileHeight;
   }
 
   public float getMapWidth() {

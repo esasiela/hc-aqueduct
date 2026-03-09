@@ -44,10 +44,12 @@ public class AqueductLoader {
 
     TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
     MapGraph mapGraph = new MapGraph(mapTilesWide, mapTilesTall, wallsLayer);
-    Pathfinder pathfinder = new Pathfinder(mapGraph, mapTilesWide, mapTilesTall);
+    Pathfinder pathfinder = new Pathfinder(mapGraph, tileWidth, tileHeight);
 
     world.initializeMap(
         map, mapGraph, pathfinder, tileWidth, tileHeight, mapTilesWide, mapTilesTall);
+
+    Texture pipoyaBaseChipTexture = new Texture("maps/[Base]BaseChip_pipo.png");
 
     /* ****
      * Workers
@@ -64,11 +66,11 @@ public class AqueductLoader {
     Texture workerTexture2 = assetManager.get(workerSpritePath2, Texture.class);
     TextureRegion[][] grid2 = TextureRegion.split(workerTexture2, 32, 32);
 
-    Worker worker1 = new Worker(world.getMapWidth() / 6f, world.getMapHeight() / 3f);
+    Worker worker1 = new Worker(world, world.getMapWidth() / 6f, world.getMapHeight() / 3f);
     worker1.buildSprites(grid1);
     world.add(worker1);
 
-    Worker worker2 = new Worker(world.getMapWidth() / 6f + 64f, world.getMapHeight() / 3f);
+    Worker worker2 = new Worker(world, world.getMapWidth() / 6f + 64f, world.getMapHeight() / 3f);
     worker2.buildSprites(grid2);
     world.add(worker2);
 
@@ -100,11 +102,19 @@ public class AqueductLoader {
             new Node(id, centreX, centreY, w, h, world.getResourceConfig().get(resourceType)));
 
       } else if ("townhall".equals(objClass)) {
-        world.add(new TownHall(id, centreX, centreY, w, h));
+        world.add(
+            new TownHall(
+                id, centreX, centreY, w, h, getPipoyaBaseChip(pipoyaBaseChipTexture, 664)));
       } else {
         throw new InvalidMapException(
             "unknown entity class: '" + objClass + "' at (" + x + "," + y + ")");
       }
     }
+  }
+
+  private TextureRegion getPipoyaBaseChip(Texture texture, int spriteId) {
+    // packed png 8 cols x 133 rows = 1064 total sprites, index starts at 0
+    TextureRegion[][] baseTiles = TextureRegion.split(texture, 32, 32);
+    return baseTiles[spriteId / 8][spriteId % 8];
   }
 }
