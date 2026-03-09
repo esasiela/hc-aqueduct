@@ -50,14 +50,14 @@ public class AqueductLoader {
     world.initializeMap(
         map, mapGraph, pathfinder, tileWidth, tileHeight, mapTilesWide, mapTilesTall);
 
-    Texture pipoyaBaseChipTexture = new Texture("maps/[Base]BaseChip_pipo.png");
-
     /* ****
      * Workers
      */
+    String pipoyaBaseChipPath = "maps/[Base]BaseChip_pipo.png";
     String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
     String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
     String townhallSpritePath = "maps/TREE_HOUSE4.png";
+    assetManager.load(pipoyaBaseChipPath, Texture.class);
     assetManager.load(workerSpritePath1, Texture.class);
     assetManager.load(workerSpritePath2, Texture.class);
     assetManager.load(townhallSpritePath, Texture.class);
@@ -110,8 +110,11 @@ public class AqueductLoader {
                 w,
                 h,
                 resourceDef,
-                getPipoyaBaseChip(pipoyaBaseChipTexture, resourceDef.spriteIdFull),
-                getPipoyaBaseChip(pipoyaBaseChipTexture, resourceDef.spriteIdEmpty)));
+                getPipoyaBaseChip(
+                    assetManager.get(pipoyaBaseChipPath, Texture.class), resourceDef.spriteIdFull),
+                getPipoyaBaseChip(
+                    assetManager.get(pipoyaBaseChipPath, Texture.class),
+                    resourceDef.spriteIdEmpty)));
 
       } else if ("townhall".equals(objClass)) {
         world.add(
