@@ -1,5 +1,6 @@
 package com.hedgecourt.aqueduct.world.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -250,6 +251,7 @@ public class Worker extends WorldEntity {
 
     if (carrying <= 0) {
       // clamp bag contents to 0
+      Gdx.app.log("DELIVER", "done delivering, distance to townHall: " + distanceTo(townHall));
       carrying = 0;
       carryingType = null;
       moveAdjacentTo(plan.node);

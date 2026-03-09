@@ -24,7 +24,7 @@ public class C {
   public static final float DELIVER_RATE = 10f;
 
   public static final float HARVEST_RANGE = 48f; // roughly 1 diagonal tile away + 3f extra
-  public static final float DELIVER_RANGE = 48f; // roughly 1 diagonal tile away + 3f extra
+  public static final float DELIVER_RANGE = 80f; // roughly 1 diagonal tile away + 3f extra
 
   // ── colors ────────────────────────────────────────────────────────────────
   public static final float CLEAR_R = 0.2f;
