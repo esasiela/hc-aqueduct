@@ -10,7 +10,7 @@ public class ResourceConfig {
 
   private final Map<String, ResourceDef> defs = new HashMap<>();
 
-  public ResourceConfig(String jsonPath) {
+  public void load(String jsonPath) {
     JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
     JsonValue resources = root.get("resources");
     if (resources == null) {
@@ -23,6 +23,10 @@ public class ResourceConfig {
     if (defs.isEmpty()) {
       throw new RuntimeException("ResourceConfig: no resources defined in " + jsonPath);
     }
+  }
+
+  public void clear() {
+    defs.clear();
   }
 
   private ResourceDef parse(JsonValue e, String jsonPath) {

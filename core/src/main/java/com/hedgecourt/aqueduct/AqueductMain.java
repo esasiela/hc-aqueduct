@@ -15,23 +15,27 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
-import com.hedgecourt.aqueduct.world.entities.Worker;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class AqueductMain extends ApplicationAdapter {
+
+  private AqueductWorld world;
+  private AqueductLoader loader;
 
   private SpriteBatch batch;
   private ShapeDrawer shapeDrawer;
   private Texture pixelTexture;
 
   private FontManager fontManager;
-
   private AssetManager assetManager;
-  private WorkerLayer workerLayer;
 
   private WorldRenderer worldRenderer;
+  private WorkerLayer workerLayer;
+
   private UiRenderer uiRenderer;
 
   private boolean selectDragging = false;
@@ -42,6 +46,11 @@ public class AqueductMain extends ApplicationAdapter {
 
   @Override
   public void create() {
+    world = new AqueductWorld();
+    assetManager = new AssetManager();
+    loader = new AqueductLoader(world, assetManager);
+    loader.load("resources.json", "maps/test2.tmx");
+
     batch = new SpriteBatch();
 
     Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -54,42 +63,11 @@ public class AqueductMain extends ApplicationAdapter {
     fontManager = new FontManager();
     fontManager.load();
 
-    worldRenderer = new WorldRenderer(batch, shapeDrawer);
-    uiRenderer = new UiRenderer(batch, shapeDrawer);
+    worldRenderer = new WorldRenderer(batch, shapeDrawer, fontManager, world);
+    // TODO figure out how to get selection box logic out of workerLayer
+    workerLayer = worldRenderer.getWorkerLayer();
 
-    worldRenderer.loadMap("maps/test2.tmx");
-
-    /* ****
-     * Asset Manager
-     */
-    String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
-    String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
-    assetManager = new AssetManager();
-    assetManager.load(workerSpritePath1, Texture.class);
-    assetManager.load(workerSpritePath2, Texture.class);
-    assetManager.finishLoading();
-
-    Texture workerTexture1 = assetManager.get(workerSpritePath1, Texture.class);
-    TextureRegion[][] grid1 = TextureRegion.split(workerTexture1, 32, 32);
-
-    Texture workerTexture2 = assetManager.get(workerSpritePath2, Texture.class);
-    TextureRegion[][] grid2 = TextureRegion.split(workerTexture2, 32, 32);
-
-    workerLayer = new WorkerLayer(fontManager);
-
-    Worker worker1 =
-        new Worker(worldRenderer.getMapWidth() / 2f, worldRenderer.getMapHeight() / 2f);
-    worker1.buildSprites(grid1);
-    workerLayer.addWorker(worker1);
-
-    Worker worker2 =
-        new Worker(worldRenderer.getMapWidth() / 2f + 64f, worldRenderer.getMapHeight() / 2f);
-    worker2.buildSprites(grid2);
-    workerLayer.addWorker(worker2);
-
-    worldRenderer.addLayer(workerLayer);
-
-    uiRenderer.setupMinimap(worldRenderer, workerLayer);
+    uiRenderer = new UiRenderer(world, batch, shapeDrawer, worldRenderer);
 
     /* ****
      * Input Multiplexer
@@ -165,12 +143,11 @@ public class AqueductMain extends ApplicationAdapter {
               clearSelectionBox();
               if (workerLayer.hasSelection()) {
                 Vector2 worldPos = worldRenderer.mouseInWorld();
-                Node clickedNode = worldRenderer.getEntityLayer().getNodeAt(worldPos.x, worldPos.y);
+                Node clickedNode = world.getNodeAt(worldPos.x, worldPos.y);
                 if (clickedNode != null) {
-                  workerLayer.commandSelectedHarvest(
-                      clickedNode, worldRenderer.getEntityLayer(), worldRenderer.getPathfinder());
+                  workerLayer.commandSelectedHarvest(clickedNode);
                 } else {
-                  workerLayer.commandSelectedMoveTo(worldPos, worldRenderer.getPathfinder());
+                  workerLayer.commandSelectedMoveTo(worldPos);
                 }
               }
               return true;
@@ -245,6 +222,27 @@ public class AqueductMain extends ApplicationAdapter {
       worldRenderer.clearSelectionBox();
     }
 
+    drawWorld();
+    drawUi();
+  }
+
+  private void handleInput(float delta) {}
+
+  private void updateWorld(float delta) {
+    for (WorldEntity e : world.getWorldEntities()) {
+      e.update(delta);
+    }
+    workerLayer.applySeparation(delta);
+
+    worldRenderer.updateCamera(delta);
+    if (!paused) {
+      worldRenderer.preDraw(delta);
+    }
+  }
+
+  private void updateUi(float delta) {}
+
+  private void drawWorld() {
     worldRenderer.applyViewport();
     batch.begin();
     worldRenderer.drawUnderlay(batch);
@@ -252,8 +250,9 @@ public class AqueductMain extends ApplicationAdapter {
     worldRenderer.drawOverlay(batch);
     worldRenderer.drawSelectionBox(batch);
     batch.end();
+  }
 
-    // ── ui ───────────────────────────────────────────────────────────────
+  private void drawUi() {
     uiRenderer.applyViewport();
     batch.begin();
     uiRenderer.draw(batch);
@@ -275,15 +274,4 @@ public class AqueductMain extends ApplicationAdapter {
     worldRenderer.resize(width, height);
     uiRenderer.resize(width, height);
   }
-
-  private void handleInput(float delta) {}
-
-  private void updateWorld(float delta) {
-    worldRenderer.updateCamera(delta);
-    if (!paused) {
-      worldRenderer.updateLayers(delta);
-    }
-  }
-
-  private void updateUi(float delta) {}
 }

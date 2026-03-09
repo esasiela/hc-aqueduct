@@ -12,9 +12,6 @@ public class CrosshairWorldLayer extends WorldLayer {
   private static final Color COLOR = Color.YELLOW;
 
   @Override
-  public void update(float delta) {}
-
-  @Override
   public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     shapeDrawer.line(mouseX - SIZE, mouseY, mouseX + SIZE, mouseY, COLOR, THICKNESS);
     shapeDrawer.line(mouseX, mouseY - SIZE, mouseX, mouseY + SIZE, COLOR, THICKNESS);

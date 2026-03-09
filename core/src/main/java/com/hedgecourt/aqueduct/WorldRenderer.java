@@ -5,87 +5,107 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.hedgecourt.aqueduct.world.MapGraph;
-import com.hedgecourt.aqueduct.world.Pathfinder;
-import com.hedgecourt.aqueduct.world.ResourceConfig;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.EntityLayer;
+import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class WorldRenderer implements Disposable {
 
+  private final AqueductWorld world;
+  private final FontManager fontManager;
+
   private final OrthographicCamera camera;
   private final ScreenViewport viewport;
   private final ShapeDrawer shapeDrawer;
   private final Vector3 unprojectScratch = new Vector3();
 
-  private TiledMap map;
-  private OrthogonalTiledMapRenderer mapRenderer;
-  private int tileWidth;
-  private int tileHeight;
-  private int mapTilesWide;
-  private int mapTilesTall;
+  // private TiledMap map;
+  private final OrthogonalTiledMapRenderer mapRenderer;
+  // private int tileWidth;
+  // private int tileHeight;
+  // private int mapTilesWide;
+  // private int mapTilesTall;
 
-  private MapGraph mapGraph;
-  private Pathfinder pathfinder;
+  // private MapGraph mapGraph;
+  // private Pathfinder pathfinder;
 
-  private CameraController cameraController;
+  private final CameraController cameraController;
 
   private final List<WorldLayer> layers = new ArrayList<>();
-  private EntityLayer entityLayer;
-  private ResourceConfig resourceConfig;
 
   private boolean selBoxActive = false;
   private final Vector2 selBoxStart = new Vector2();
   private final Vector2 selBoxCurrent = new Vector2();
 
-  public WorldRenderer(SpriteBatch batch, ShapeDrawer shapeDrawer) {
+  private final WorkerLayer workerLayer;
+
+  public WorldRenderer(
+      SpriteBatch batch, ShapeDrawer shapeDrawer, FontManager fontManager, AqueductWorld world) {
     this.shapeDrawer = shapeDrawer;
+    this.fontManager = fontManager;
+    this.world = world;
+
     camera = new OrthographicCamera();
     viewport = new ScreenViewport(camera);
-    updateScreenBounds();
+    cameraController = new CameraController(camera, viewport);
 
+    mapRenderer = new OrthogonalTiledMapRenderer(world.getMap());
+    updateScreenBounds();
+    initCamera();
+
+    workerLayer = new WorkerLayer(world, fontManager);
+    addLayer(workerLayer);
+    addLayer(new EntityLayer(world));
     addLayer(new CrosshairWorldLayer());
   }
 
-  public void loadMap(String path) {
-    map = new TmxMapLoader().load(path);
-    tileWidth = map.getProperties().get("tilewidth", Integer.class);
-    tileHeight = map.getProperties().get("tileheight", Integer.class);
-    mapTilesWide = map.getProperties().get("width", Integer.class);
-    mapTilesTall = map.getProperties().get("height", Integer.class);
+  /*
+    public void loadMap(String path) {
+      map = new TmxMapLoader().load(path);
+      tileWidth = map.getProperties().get("tilewidth", Integer.class);
+      tileHeight = map.getProperties().get("tileheight", Integer.class);
+      mapTilesWide = map.getProperties().get("width", Integer.class);
+      mapTilesTall = map.getProperties().get("height", Integer.class);
 
-    TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
-    mapGraph = new MapGraph(mapTilesWide, mapTilesTall, wallsLayer);
-    pathfinder = new Pathfinder(mapGraph, tileWidth, tileHeight);
+      TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
+      mapGraph = new MapGraph(mapTilesWide, mapTilesTall, wallsLayer);
+      pathfinder = new Pathfinder(mapGraph, tileWidth, tileHeight);
 
-    resourceConfig = new ResourceConfig("resources.json");
-    entityLayer = new EntityLayer(resourceConfig);
-    entityLayer.loadFromMap(map, tileHeight);
-    addLayer(entityLayer);
+      resourceConfig = new ResourceConfig("resources.json");
+      entityLayer = new EntityLayer(resourceConfig);
+      entityLayer.loadFromMap(map, tileHeight);
+      addLayer(entityLayer);
 
-    mapRenderer = new OrthogonalTiledMapRenderer(map);
+      mapRenderer = new OrthogonalTiledMapRenderer(map);
 
-    cameraController = new CameraController(camera, viewport);
-    cameraController.init(mapTilesWide * tileWidth, mapTilesTall * tileHeight);
+      cameraController = new CameraController(camera, viewport);
+      cameraController.init(mapTilesWide * tileWidth, mapTilesTall * tileHeight);
+    }
+  */
+
+  public void resize(int screenWidth, int screenHeight) {
+    updateScreenBounds();
   }
 
-  public void resize(int width, int height) {
+  public void initCamera() {
+    cameraController.init((int) world.getMapWidth(), (int) world.getMapHeight());
+  }
+
+  public void resizeZZZ(int width, int height) {
     updateScreenBounds();
     if (cameraController != null) {
-      cameraController.init(mapTilesWide * tileWidth, mapTilesTall * tileHeight);
+      cameraController.init(width, height);
     }
   }
 
@@ -109,11 +129,10 @@ public class WorldRenderer implements Disposable {
     if (cameraController != null) cameraController.update(delta);
   }
 
-  public void updateLayers(float delta) {
+  public void preDraw(float delta) {
     Vector2 mouse = mouseInWorld();
     for (WorldLayer layer : layers) {
-      layer.preUpdate(mouse.x, mouse.y);
-      layer.update(delta);
+      layer.preDraw(mouse.x, mouse.y);
     }
   }
 
@@ -207,8 +226,8 @@ public class WorldRenderer implements Disposable {
     float s = 50f;
 
     // ── green: map corners ───────────────────────────────────────────────
-    float mapW = getMapWidth();
-    float mapH = getMapHeight();
+    float mapW = world.getMapWidth();
+    float mapH = world.getMapHeight();
     shapeDrawer.filledRectangle(0, 0, s, s, Color.GREEN);
     shapeDrawer.filledRectangle(mapW - s, 0, s, s, Color.GREEN);
     shapeDrawer.filledRectangle(0, mapH - s, s, s, Color.GREEN);
@@ -232,45 +251,18 @@ public class WorldRenderer implements Disposable {
     shapeDrawer.line(mouse.x, mouse.y - 20, mouse.x, mouse.y + 20, Color.YELLOW, 2f);
   }
 
-  public MapGraph getMapGraph() {
-    return mapGraph;
-  }
-
-  public Pathfinder getPathfinder() {
-    return pathfinder;
+  public WorkerLayer getWorkerLayer() {
+    return workerLayer;
   }
 
   @Override
   public void dispose() {
-    if (map != null) map.dispose();
     if (mapRenderer != null) mapRenderer.dispose();
-  }
-
-  // ── coordinate space ──────────────────────────────────────────────────────
-
-  public float getWorldWidth() {
-    return viewport.getScreenWidth();
-  }
-
-  public float getWorldHeight() {
-    return viewport.getScreenHeight();
-  }
-
-  public float getMapWidth() {
-    return mapTilesWide * tileWidth;
-  }
-
-  public float getMapHeight() {
-    return mapTilesTall * tileHeight;
   }
 
   public Vector2 mouseInWorld() {
     unprojectScratch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
     viewport.unproject(unprojectScratch);
     return new Vector2(unprojectScratch.x, unprojectScratch.y);
-  }
-
-  public EntityLayer getEntityLayer() {
-    return entityLayer;
   }
 }

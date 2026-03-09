@@ -11,13 +11,11 @@ import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.WorldRenderer;
-import com.hedgecourt.aqueduct.world.Pathfinder;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -31,49 +29,42 @@ public class WorkerLayer extends WorldLayer {
   private final GlyphLayout glyphLayout;
   private final BitmapFont workerPlanFont;
 
-  private final List<Worker> workers = new ArrayList<>();
   private Rectangle activeSelBox = null;
 
-  public WorkerLayer(FontManager fontManager) {
+  private final AqueductWorld world;
+
+  public WorkerLayer(AqueductWorld world, FontManager fontManager) {
+    this.world = world;
     this.glyphLayout = fontManager.getGlyphLayout();
     this.workerPlanFont = fontManager.getFont(FontType.WORKER_PLAN_OVERLAY);
   }
 
-  public void addWorker(Worker worker) {
-    workers.add(worker);
-  }
-
-  public List<Worker> getWorkers() {
-    return workers;
-  }
-
-  public void commandSelectedHarvest(Node node, EntityLayer entityLayer, Pathfinder pathfinder) {
-    for (Worker worker : workers) {
+  public void commandSelectedHarvest(Node node) {
+    for (Worker worker : world.getWorkers()) {
       if (worker.isSelected()) {
-        TownHall nearest =
-            entityLayer.getNearestTownHall(worker.getPosition().x, worker.getPosition().y);
-        worker.commandHarvest(node, nearest, pathfinder);
+        TownHall nearest = world.getNearestTownHall(worker);
+        worker.commandHarvest(node, nearest, world.getPathfinder());
       }
     }
   }
 
-  public void commandSelectedMoveTo(Vector2 target, Pathfinder pathfinder) {
-    for (Worker worker : workers) {
+  public void commandSelectedMoveTo(Vector2 target) {
+    for (Worker worker : world.getWorkers()) {
       if (worker.isSelected()) {
-        worker.commandMoveTo(target, pathfinder);
+        worker.commandMoveTo(target, world.getPathfinder());
       }
     }
   }
 
-  public void commandAllMoveTo(Vector2 target, Pathfinder pathfinder) {
-    for (Worker worker : workers) {
-      worker.commandMoveTo(target, pathfinder);
+  public void commandAllMoveTo(Vector2 target) {
+    for (Worker worker : world.getWorkers()) {
+      worker.commandMoveTo(target, world.getPathfinder());
     }
   }
 
   public boolean handleLeftClick(float worldX, float worldY, boolean shift) {
     Worker clicked = null;
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       if (worker.containsPoint(worldX, worldY)) {
         clicked = worker;
         break;
@@ -102,7 +93,7 @@ public class WorkerLayer extends WorldLayer {
 
   public void handleBoxSelect(Rectangle selRect, boolean shift) {
     if (!shift) deselectAll();
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       if (selRect.contains(worker.getPosition())) {
         worker.select();
       }
@@ -110,25 +101,17 @@ public class WorkerLayer extends WorldLayer {
   }
 
   public boolean hasSelection() {
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       if (worker.isSelected()) return true;
     }
     return false;
   }
 
-  @Override
-  public void update(float delta) {
-    for (Worker worker : workers) {
-      worker.update(delta);
-    }
-    applySeparation(delta);
-  }
-
-  private void applySeparation(float delta) {
-    for (int i = 0; i < workers.size(); i++) {
-      for (int j = i + 1; j < workers.size(); j++) {
-        Worker a = workers.get(i);
-        Worker b = workers.get(j);
+  public void applySeparation(float delta) {
+    for (int i = 0; i < world.getWorkers().size(); i++) {
+      for (int j = i + 1; j < world.getWorkers().size(); j++) {
+        Worker a = world.getWorkers().get(i);
+        Worker b = world.getWorkers().get(j);
 
         float dx = a.getPosition().x - b.getPosition().x;
         float dy = a.getPosition().y - b.getPosition().y;
@@ -151,7 +134,7 @@ public class WorkerLayer extends WorldLayer {
 
   @Override
   public void drawUnderlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       /* ****
        * Selection Decoration
        */
@@ -201,7 +184,7 @@ public class WorkerLayer extends WorldLayer {
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       TextureRegion frame = worker.getCurrentFrame();
       if (frame == null) continue;
       float renderSize = C.ENTITY_RENDER_SIZE;
@@ -216,7 +199,7 @@ public class WorkerLayer extends WorldLayer {
 
   @Override
   public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       if (!worker.isSelected()) continue;
       if (worker.getState() != Worker.WorkerState.MOVING) continue;
 
@@ -248,7 +231,7 @@ public class WorkerLayer extends WorldLayer {
   public void handleDoubleClick(float worldX, float worldY, WorldRenderer worldRenderer) {
     // find clicked worker's type, select all visible of same type
     Worker clicked = null;
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       if (worker.containsPoint(worldX, worldY)) {
         clicked = worker;
         break;
@@ -264,7 +247,7 @@ public class WorkerLayer extends WorldLayer {
     // for now all workers are the same type, filter by class
     Class<?> type = clicked.getClass();
     Rectangle viewport = worldRenderer.getVisibleWorldRect();
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       if (worker.getClass() == type && viewport.contains(worker.getPosition())) {
         worker.select();
       } else {
@@ -274,7 +257,7 @@ public class WorkerLayer extends WorldLayer {
   }
 
   public void deselectAll() {
-    for (Worker worker : workers) {
+    for (Worker worker : world.getWorkers()) {
       worker.deselect();
     }
   }

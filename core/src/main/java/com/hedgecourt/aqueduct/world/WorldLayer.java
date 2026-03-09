@@ -8,14 +8,11 @@ public abstract class WorldLayer {
   protected float mouseX;
   protected float mouseY;
 
-  // ── called by WorldRenderer before update loop ────────────────────────────
-  public void preUpdate(float mouseX, float mouseY) {
+  // ── called by WorldRenderer before draw loop ────────────────────────────
+  public void preDraw(float mouseX, float mouseY) {
     this.mouseX = mouseX;
     this.mouseY = mouseY;
   }
-
-  // ── frame hooks ───────────────────────────────────────────────────────────
-  public abstract void update(float delta);
 
   // ── draw phases ───────────────────────────────────────────────────────────
   public void drawUnderlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {}

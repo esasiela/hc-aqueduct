@@ -1,0 +1,141 @@
+package com.hedgecourt.aqueduct.world;
+
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.utils.Disposable;
+import com.hedgecourt.aqueduct.world.entities.Node;
+import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Worker;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AqueductWorld implements Disposable {
+  private final List<WorldEntity> worldEntities = new ArrayList<>();
+  private final List<Worker> workers = new ArrayList<>();
+  private final List<Node> nodes = new ArrayList<>();
+  private final List<TownHall> townHalls = new ArrayList<>();
+
+  private final ResourceConfig resourceConfig = new ResourceConfig();
+
+  private TiledMap map;
+  private MapGraph mapGraph;
+  private Pathfinder pathfinder;
+
+  private int tileWidth;
+  private int tileHeight;
+  private int mapTilesWide;
+  private int mapTilesTall;
+
+  public void update(float delta) {
+    for (WorldEntity entity : worldEntities) {
+      entity.update(delta);
+    }
+  }
+
+  public void clear() {
+    workers.clear();
+    nodes.clear();
+    townHalls.clear();
+    worldEntities.clear();
+
+    resourceConfig.clear();
+  }
+
+  public void add(WorldEntity entity) {
+    worldEntities.add(entity);
+    if (entity instanceof Worker worker) workers.add(worker);
+    if (entity instanceof Node node) nodes.add(node);
+    if (entity instanceof TownHall townHall) townHalls.add(townHall);
+  }
+
+  public void remove(WorldEntity entity) {
+    worldEntities.remove(entity);
+    if (entity instanceof Worker worker) workers.remove(worker);
+    if (entity instanceof Node node) nodes.remove(node);
+    if (entity instanceof TownHall townHall) townHalls.remove(townHall);
+  }
+
+  public TownHall getNearestTownHall(WorldEntity entity) {
+    // TODO shouldnt workers just figure out where they want to go on their own?
+    TownHall nearest = null;
+    float bestDist = Float.MAX_VALUE;
+    for (TownHall townHall : townHalls) {
+      float dist = townHall.distanceTo(entity);
+      if (dist < bestDist) {
+        bestDist = dist;
+        nearest = townHall;
+      }
+    }
+    return nearest;
+  }
+
+  public Node getNodeAt(float x, float y) {
+    for (Node node : nodes) {
+      if (node.containsPoint(x, y)) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  public ResourceConfig getResourceConfig() {
+    return resourceConfig;
+  }
+
+  public void initializeMap(
+      TiledMap map,
+      MapGraph mapGraph,
+      Pathfinder pathfinder,
+      int tileWidth,
+      int tileHeight,
+      int mapTilesWide,
+      int mapTilesTall) {
+    this.map = map;
+    this.mapGraph = mapGraph;
+    this.pathfinder = pathfinder;
+    this.tileWidth = tileWidth;
+    this.tileHeight = tileHeight;
+    this.mapTilesWide = mapTilesWide;
+    this.mapTilesTall = mapTilesTall;
+  }
+
+  public List<WorldEntity> getWorldEntities() {
+    return worldEntities;
+  }
+
+  public List<Worker> getWorkers() {
+    return workers;
+  }
+
+  public List<Node> getNodes() {
+    return nodes;
+  }
+
+  public List<TownHall> getTownHalls() {
+    return townHalls;
+  }
+
+  public float getMapWidth() {
+    return mapTilesWide * tileWidth;
+  }
+
+  public float getMapHeight() {
+    return mapTilesTall * tileHeight;
+  }
+
+  public TiledMap getMap() {
+    return map;
+  }
+
+  public MapGraph getMapGraph() {
+    return mapGraph;
+  }
+
+  public Pathfinder getPathfinder() {
+    return pathfinder;
+  }
+
+  @Override
+  public void dispose() {
+    if (map != null) map.dispose();
+  }
+}

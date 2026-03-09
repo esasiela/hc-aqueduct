@@ -9,8 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.ui.UiElement;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.entities.Worker;
-import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -25,22 +25,22 @@ public class MinimapUiElement extends UiElement {
   private static final Color COLOR_SEL = Color.PURPLE; // purple selected
 
   private final WorldRenderer worldRenderer;
-  private final WorkerLayer workerLayer;
+  private final AqueductWorld world;
 
   // map rect within minimap (accounts for letterboxing)
-  private Rectangle mapRect = new Rectangle();
+  private final Rectangle mapRect = new Rectangle();
   private boolean dragging = false;
 
-  public MinimapUiElement(WorldRenderer worldRenderer, WorkerLayer workerLayer) {
+  public MinimapUiElement(AqueductWorld world, WorldRenderer worldRenderer) {
     super(PAD, (C.UI_BOTTOM_HEIGHT - SIZE) / 2f, SIZE, SIZE);
+    this.world = world;
     this.worldRenderer = worldRenderer;
-    this.workerLayer = workerLayer;
     updateMapRect();
   }
 
   private void updateMapRect() {
-    float mapW = worldRenderer.getMapWidth();
-    float mapH = worldRenderer.getMapHeight();
+    float mapW = world.getMapWidth();
+    float mapH = world.getMapHeight();
     float scaleX = SIZE / mapW;
     float scaleY = SIZE / mapH;
     float scale = Math.min(scaleX, scaleY);
@@ -56,15 +56,15 @@ public class MinimapUiElement extends UiElement {
   // ── coordinate conversion ─────────────────────────────────────────────────
 
   private Vector2 worldToMinimap(float worldX, float worldY) {
-    float mapW = worldRenderer.getMapWidth();
-    float mapH = worldRenderer.getMapHeight();
+    float mapW = world.getMapWidth();
+    float mapH = world.getMapHeight();
     return new Vector2(
         mapRect.x + (worldX / mapW) * mapRect.width, mapRect.y + (worldY / mapH) * mapRect.height);
   }
 
   private Vector2 minimapToWorld(float minimapX, float minimapY) {
-    float mapW = worldRenderer.getMapWidth();
-    float mapH = worldRenderer.getMapHeight();
+    float mapW = world.getMapWidth();
+    float mapH = world.getMapHeight();
     float relX = (minimapX - mapRect.x) / mapRect.width;
     float relY = (minimapY - mapRect.y) / mapRect.height;
     return new Vector2(relX * mapW, relY * mapH);
@@ -139,7 +139,7 @@ public class MinimapUiElement extends UiElement {
     drawViewportRect(shapeDrawer);
 
     // ── worker dots ───────────────────────────────────────────────────────
-    List<Worker> workers = workerLayer.getWorkers();
+    List<Worker> workers = world.getWorkers();
     for (Worker worker : workers) {
       Vector2 dot = worldToMinimap(worker.getPosition().x, worker.getPosition().y);
       shapeDrawer.setColor(worker.isSelected() ? COLOR_SEL : COLOR_WORKER);
@@ -152,8 +152,8 @@ public class MinimapUiElement extends UiElement {
   }
 
   private void drawViewportRect(ShapeDrawer shapeDrawer) {
-    float mapW = worldRenderer.getMapWidth();
-    float mapH = worldRenderer.getMapHeight();
+    float mapW = world.getMapWidth();
+    float mapH = world.getMapHeight();
 
     float camX = worldRenderer.getCameraPosition().x;
     float camY = worldRenderer.getCameraPosition().y;

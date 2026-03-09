@@ -11,12 +11,14 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.ui.UiElement;
 import com.hedgecourt.aqueduct.ui.elements.CrosshairUiElement;
 import com.hedgecourt.aqueduct.ui.elements.MinimapUiElement;
-import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import java.util.ArrayList;
 import java.util.List;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UiRenderer implements Disposable {
+
+  private final AqueductWorld world;
 
   private final OrthographicCamera camera;
   private final ScreenViewport viewport;
@@ -28,18 +30,21 @@ public class UiRenderer implements Disposable {
 
   private MinimapUiElement minimap;
 
-  public UiRenderer(SpriteBatch batch, ShapeDrawer shapeDrawer) {
+  public UiRenderer(
+      AqueductWorld world,
+      SpriteBatch batch,
+      ShapeDrawer shapeDrawer,
+      WorldRenderer worldRenderer) {
+    this.world = world;
     this.shapeDrawer = shapeDrawer;
     camera = new OrthographicCamera();
     viewport = new ScreenViewport(camera);
     updateScreenBounds();
 
-    addElement(new CrosshairUiElement());
-  }
-
-  public void setupMinimap(WorldRenderer worldRenderer, WorkerLayer workerLayer) {
-    minimap = new MinimapUiElement(worldRenderer, workerLayer);
+    minimap = new MinimapUiElement(world, worldRenderer);
     addElement(minimap);
+
+    addElement(new CrosshairUiElement());
   }
 
   public boolean isMinimapDragging() {

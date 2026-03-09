@@ -2,7 +2,6 @@ package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.hedgecourt.aqueduct.world.ResourceConfig;
 import com.hedgecourt.aqueduct.world.ResourceDef;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -13,17 +12,10 @@ public class Node extends WorldEntity {
   private final ResourceDef def;
   private float inventory;
 
-  public Node(
-      String id,
-      String resourceType,
-      float x,
-      float y,
-      float width,
-      float height,
-      ResourceConfig resourceConfig) {
+  public Node(String id, float x, float y, float width, float height, ResourceDef def) {
     super(x, y, width, height);
     this.id = id;
-    this.def = resourceConfig.get(resourceType);
+    this.def = def;
     this.inventory = def.maxInventory;
   }
 
