@@ -57,8 +57,10 @@ public class AqueductLoader {
      */
     String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
     String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
+    String townhallSpritePath = "maps/TREE_HOUSE4.png";
     assetManager.load(workerSpritePath1, Texture.class);
     assetManager.load(workerSpritePath2, Texture.class);
+    assetManager.load(townhallSpritePath, Texture.class);
     assetManager.finishLoading();
 
     Texture workerTexture1 = assetManager.get(workerSpritePath1, Texture.class);
@@ -90,8 +92,8 @@ public class AqueductLoader {
       String id = objClass + "_" + rawId;
 
       // Tiled Y is top-left, convert to center position with Y-up
-      float centreX = x + w / 2f;
-      float centreY = y + h / 2f;
+      float centerX = x + w / 2f;
+      float centerY = y + h / 2f;
 
       if ("node".equals(objClass)) {
         String resourceType = obj.getName();
@@ -103,8 +105,8 @@ public class AqueductLoader {
         world.add(
             new Node(
                 id,
-                centreX,
-                centreY,
+                centerX,
+                centerY,
                 w,
                 h,
                 resourceDef,
@@ -113,8 +115,19 @@ public class AqueductLoader {
 
       } else if ("townhall".equals(objClass)) {
         world.add(
+            /*
+             new TownHall(
+                 id, centreX, centreY, w, h, getPipoyaBaseChip(pipoyaBaseChipTexture, 664)));
+
+            */
             new TownHall(
-                id, centreX, centreY, w, h, getPipoyaBaseChip(pipoyaBaseChipTexture, 664)));
+                id,
+                centerX,
+                centerY,
+                w,
+                h,
+                new TextureRegion(assetManager.get(townhallSpritePath, Texture.class))));
+
       } else {
         throw new InvalidMapException(
             "unknown entity class: '" + objClass + "' at (" + x + "," + y + ")");

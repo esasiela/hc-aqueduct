@@ -8,6 +8,10 @@
         "."
     ],
     "fileStates": {
+        "TREE_HOUSE4.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "[Base]BaseChip_pipo.tsx": {
             "scaleInDock": 1
         },
@@ -20,6 +24,7 @@
             }
         }
     },
+    "last.imagePath": "/Users/sasiela/hc-dev/aqueduct/assets/maps",
     "map.height": 60,
     "map.lastUsedFormat": "tmx",
     "map.width": 80,
@@ -28,6 +33,13 @@
     ],
     "project": "aqueduct-dev.tiled-project",
     "recentFiles": [
+        "TREE_HOUSE4.tsx",
         "test.tmx"
-    ]
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 161,
+        "width": 206
+    },
+    "tileset.type": 0
 }
