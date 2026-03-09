@@ -45,6 +45,14 @@ public class WorkerLayer extends WorldLayer {
     }
   }
 
+  public void commandSelectedDeliver(TownHall townHall) {
+    for (Worker worker : world.getWorkers()) {
+      if (worker.isSelected()) {
+        worker.commandDeliver(townHall);
+      }
+    }
+  }
+
   public void commandSelectedMoveTo(Vector2 target) {
     for (Worker worker : world.getWorkers()) {
       if (worker.isSelected()) {

@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
+import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -143,9 +144,12 @@ public class AqueductMain extends ApplicationAdapter {
               clearSelectionBox();
               if (workerLayer.hasSelection()) {
                 Vector2 worldPos = worldRenderer.mouseInWorld();
-                Node clickedNode = world.getNodeAt(worldPos.x, worldPos.y);
-                if (clickedNode != null) {
-                  workerLayer.commandSelectedHarvest(clickedNode);
+                WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
+                if (clickedEntity != null) {
+                  if (clickedEntity instanceof Node node) workerLayer.commandSelectedHarvest(node);
+                  else if (clickedEntity instanceof TownHall townHall)
+                    workerLayer.commandSelectedDeliver(townHall);
+
                 } else {
                   workerLayer.commandSelectedMoveTo(worldPos);
                 }

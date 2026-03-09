@@ -96,11 +96,9 @@ public class AqueductWorld implements Disposable {
     return nearest;
   }
 
-  public Node getNodeAt(float x, float y) {
-    for (Node node : nodes) {
-      if (node.containsPoint(x, y)) {
-        return node;
-      }
+  public WorldEntity getEntityAt(float x, float y) {
+    for (WorldEntity entity : worldEntities) {
+      if (entity.containsPoint(x, y)) return entity;
     }
     return null;
   }

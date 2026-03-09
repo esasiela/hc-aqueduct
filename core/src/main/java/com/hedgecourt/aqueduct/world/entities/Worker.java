@@ -89,6 +89,25 @@ public class Worker extends WorldEntity {
     moveTo(target);
   }
 
+  public void commandMoveAdjacentTo(WorldEntity entity) {
+    clearPlan();
+    plan.planType = PlanType.MOVE;
+
+    moveAdjacentTo(entity);
+  }
+
+  public void commandDeliver(TownHall townHall) {
+    clearPlan();
+
+    if (!moveAdjacentTo(townHall)) {
+      enterState(WorkerState.IDLE);
+      return;
+    }
+
+    plan.planType = PlanType.DELIVER;
+    plan.townHall = townHall;
+  }
+
   public void commandHarvest(Node node, TownHall townHall) {
     clearPlan();
 
@@ -133,6 +152,26 @@ public class Worker extends WorldEntity {
       case DELIVERING:
         animTime = 0f;
         break;
+    }
+  }
+
+  private void onArrival() {
+    if (plan.planType == PlanType.HARVEST) {
+      // harvesting loop - arrived at node or town hall?
+      float distToNode = distanceTo(plan.node);
+      float distToHall = distanceTo(plan.townHall);
+
+      if (distToNode <= distToHall) enterState(WorkerState.HARVESTING);
+      else enterState(WorkerState.DELIVERING);
+
+    } else if (plan.planType == PlanType.DELIVER) {
+      // single-shot delivery and go idle
+      enterState(WorkerState.DELIVERING);
+
+    } else if (plan.planType == PlanType.MOVE) {
+      clearPlan(true);
+    } else {
+      enterState(WorkerState.IDLE);
     }
   }
 
@@ -182,25 +221,6 @@ public class Worker extends WorldEntity {
     if (step > distance) step = distance;
     position.mulAdd(dir, step);
     animTime += delta;
-  }
-
-  private void onArrival() {
-    if (plan.planType == PlanType.HARVEST) {
-      // harvesting loop - arrived at node or town hall?
-      float distToNode = distanceTo(plan.node);
-      float distToHall = distanceTo(plan.townHall);
-
-      // TODO check if with HARVEST_RANGE or DELIVER_RANGE
-      if (distToNode <= distToHall) {
-        enterState(WorkerState.HARVESTING);
-      } else {
-        enterState(WorkerState.DELIVERING);
-      }
-    } else if (plan.planType == PlanType.MOVE) {
-      clearPlan(true);
-    } else {
-      enterState(WorkerState.IDLE);
-    }
   }
 
   private void updateHarvesting(float delta) {
@@ -254,7 +274,12 @@ public class Worker extends WorldEntity {
       Gdx.app.log("DELIVER", "done delivering, distance to townHall: " + distanceTo(townHall));
       carrying = 0;
       carryingType = null;
-      moveAdjacentTo(plan.node);
+
+      if (plan.planType == PlanType.HARVEST) {
+        moveAdjacentTo(plan.node);
+        return;
+      }
+      clearPlan(true);
     }
   }
 
@@ -368,7 +393,8 @@ public class Worker extends WorldEntity {
     public enum PlanType {
       IDLE,
       MOVE,
-      HARVEST
+      HARVEST,
+      DELIVER
     }
 
     PlanType planType = PlanType.IDLE;
