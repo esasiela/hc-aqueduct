@@ -105,6 +105,13 @@ public class AqueductWorld implements Disposable {
     return null;
   }
 
+  public ConstructionEntityHelper getConstructionPendingAt(float x, float y) {
+    for (ConstructionEntityHelper constructionPending : constructionPendingList) {
+      if (constructionPending.getEntity().containsPoint(x, y)) return constructionPending;
+    }
+    return null;
+  }
+
   public ResourceConfig getResourceConfig() {
     return resourceConfig;
   }

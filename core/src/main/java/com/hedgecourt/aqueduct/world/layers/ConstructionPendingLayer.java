@@ -46,13 +46,13 @@ public class ConstructionPendingLayer extends WorldLayer {
           y,
           width,
           height,
-          helper.getConstructionPct() > 0 ? HAS_PROGRESS_FILL_COLOR : NOT_STARTED_FILL_COLOR);
+          helper.isStarted() ? HAS_PROGRESS_FILL_COLOR : NOT_STARTED_FILL_COLOR);
       shapeDrawer.rectangle(
           x,
           y,
           width,
           height,
-          helper.getConstructionPct() > 0 ? HAS_PROGRESS_LINE_COLOR : NOT_STARTED_LINE_COLOR);
+          helper.isStarted() ? HAS_PROGRESS_LINE_COLOR : NOT_STARTED_LINE_COLOR);
     }
   }
 }

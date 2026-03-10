@@ -190,10 +190,10 @@ public class AqueductMain extends ApplicationAdapter {
               /* ****
                * World touch up (RIGHT)
                */
+              Vector2 worldPos = worldRenderer.mouseInWorld();
               switch (worldInputMode) {
                 case NORMAL:
                   if (workerLayer.hasSelection()) {
-                    Vector2 worldPos = worldRenderer.mouseInWorld();
                     WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
                     if (clickedEntity instanceof Node node) {
                       workerLayer.commandSelectedHarvest(node);
@@ -202,6 +202,12 @@ public class AqueductMain extends ApplicationAdapter {
                     } else {
                       workerLayer.commandSelectedMoveTo(worldPos);
                     }
+                  } else {
+                    // no workers selected
+                    ConstructionEntityHelper helper =
+                        world.getConstructionPendingAt(worldPos.x, worldPos.y);
+                    if (helper != null && !helper.isStarted())
+                      world.removeConstructionPending(helper);
                   }
                   return true;
                 case SELECT_BOX:

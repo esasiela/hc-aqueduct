@@ -25,6 +25,10 @@ public class ConstructionEntityHelper {
     return constructionUnitsCompleted >= constructionUnitsRequired;
   }
 
+  public boolean isStarted() {
+    return constructionUnitsCompleted > 0f;
+  }
+
   public WorldEntity getEntity() {
     return entity;
   }
