@@ -1,5 +1,7 @@
 package com.hedgecourt.aqueduct.world;
 
+import com.hedgecourt.aqueduct.world.entities.Pipe;
+
 public class ConstructionEntityHelper {
   private final WorldEntity entity;
   private boolean validLocation = false;
@@ -9,6 +11,14 @@ public class ConstructionEntityHelper {
   public ConstructionEntityHelper(WorldEntity entity, float constructionUnitsRequired) {
     this.entity = entity;
     this.constructionUnitsRequired = constructionUnitsRequired;
+  }
+
+  public ConstructionEntityHelper freshCopy() {
+    // TODO replace with BuildingDef.createEntity() when BuildingDef exists
+    return new ConstructionEntityHelper(
+        new Pipe(
+            entity.getPosition().x, entity.getPosition().y, entity.getWidth(), entity.getHeight()),
+        constructionUnitsRequired);
   }
 
   public boolean isComplete() {

@@ -15,6 +15,7 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
+import com.hedgecourt.aqueduct.world.layers.ConstructionPendingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.NodeLayer;
@@ -70,6 +71,7 @@ public class WorldRenderer implements Disposable {
     addLayer(new NodeLayer(world));
     addLayer(new CrosshairWorldLayer());
     addLayer(new TileHighlightWorldLayer(world));
+    addLayer(new ConstructionPendingLayer(world::getConstructionPendingList));
     addLayer(new ConstructionPlacementCursorLayer(constructionPlacementHelperSupplier));
   }
 

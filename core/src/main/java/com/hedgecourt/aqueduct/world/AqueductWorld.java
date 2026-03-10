@@ -14,6 +14,8 @@ public class AqueductWorld implements Disposable {
   private final List<Node> nodes = new ArrayList<>();
   private final List<TownHall> townHalls = new ArrayList<>();
 
+  private final List<ConstructionEntityHelper> constructionPendingList = new ArrayList<>();
+
   private final ResourceConfig resourceConfig = new ResourceConfig();
 
   private TiledMap map;
@@ -138,6 +140,18 @@ public class AqueductWorld implements Disposable {
 
   public List<TownHall> getTownHalls() {
     return townHalls;
+  }
+
+  public void addConstructionPending(ConstructionEntityHelper helper) {
+    constructionPendingList.add(helper);
+  }
+
+  public void removeConstructionPending(ConstructionEntityHelper helper) {
+    constructionPendingList.remove(helper);
+  }
+
+  public List<ConstructionEntityHelper> getConstructionPendingList() {
+    return constructionPendingList;
   }
 
   public int getTileWidth() {

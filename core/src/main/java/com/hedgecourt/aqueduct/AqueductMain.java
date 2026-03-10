@@ -166,15 +166,22 @@ public class AqueductMain extends ApplicationAdapter {
                * World touch up (LEFT)
                */
               switch (worldInputMode) {
+                case NORMAL:
+                  Vector2 worldPos = worldRenderer.mouseInWorld();
+                  workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
+                  return true;
                 case SELECT_BOX:
                   Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
                   clearSelectionBox();
                   worldInputMode = WorldInputMode.NORMAL;
                   workerLayer.handleBoxSelect(selRect, shiftIsPressed);
                   return true;
-                case NORMAL:
-                  Vector2 worldPos = worldRenderer.mouseInWorld();
-                  workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
+                case CONSTRUCTION_PLACEMENT:
+                  snapConstructionCursorToMouseTile();
+                  if (constructionPlacementHelper.isValidLocation()) {
+                    world.addConstructionPending(constructionPlacementHelper);
+                    constructionPlacementHelper = constructionPlacementHelper.freshCopy();
+                  }
                   return true;
               }
             }
@@ -196,36 +203,16 @@ public class AqueductMain extends ApplicationAdapter {
                       workerLayer.commandSelectedMoveTo(worldPos);
                     }
                   }
-                  break;
+                  return true;
                 case SELECT_BOX:
                   clearSelectionBox();
                   worldInputMode = WorldInputMode.NORMAL;
-                  break;
+                  return true;
                 case CONSTRUCTION_PLACEMENT:
                   clearConstructionPlacement();
                   worldInputMode = WorldInputMode.NORMAL;
-                  break;
+                  return true;
               }
-              /*
-              if (worldInputMode == WorldInputMode.SELECT_BOX) {
-                clearSelectionBox();
-                worldInputMode = WorldInputMode.NORMAL;
-                return true;
-              }
-              if (workerLayer.hasSelection()) {
-                Vector2 worldPos = worldRenderer.mouseInWorld();
-                WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
-                if (clickedEntity instanceof Node node) {
-                  workerLayer.commandSelectedHarvest(node);
-                } else if (clickedEntity instanceof TownHall townHall) {
-                  workerLayer.commandSelectedDeliver(townHall);
-                } else {
-                  workerLayer.commandSelectedMoveTo(worldPos);
-                }
-              }
-
-               */
-              return true;
             }
             return false;
           }
@@ -352,22 +339,33 @@ public class AqueductMain extends ApplicationAdapter {
     }
 
     if (worldInputMode == WorldInputMode.CONSTRUCTION_PLACEMENT) {
-      Vector2 mouseWorldPos = worldRenderer.mouseInWorld();
-      int tileW = world.getTileWidth();
-      int tileH = world.getTileHeight();
-
-      int tileX = (int) (mouseWorldPos.x / tileW);
-      int tileY = (int) (mouseWorldPos.y / tileH);
-
-      constructionPlacementHelper
-          .getEntity()
-          .setPosition(tileX * tileW + tileW / 2f, tileY * tileH + tileH / 2f);
-
-      constructionPlacementHelper.setValidLocation(
-          world
-              .getPathfinder()
-              .validateConstructionPlacementLocation(constructionPlacementHelper.getEntity()));
+      snapConstructionCursorToMouseTile();
     }
+  }
+
+  private void snapConstructionCursorToMouseTile() {
+    Vector2 mouseWorldPos = worldRenderer.mouseInWorld();
+    int tileW = world.getTileWidth();
+    int tileH = world.getTileHeight();
+
+    int tileX = (int) (mouseWorldPos.x / tileW);
+    int tileY = (int) (mouseWorldPos.y / tileH);
+
+    WorldEntity entity = constructionPlacementHelper.getEntity();
+    entity.setPosition(tileX * tileW + tileW / 2f, tileY * tileH + tileH / 2f);
+
+    // to be valid, must pass pathfinder walkability check AND no existing constructionPending
+    boolean isWalkable = world.getPathfinder().validateConstructionPlacementLocation(entity);
+
+    boolean isClearOfConstruction = true;
+    for (ConstructionEntityHelper helper : world.getConstructionPendingList()) {
+      if (helper.getEntity().getBounds().overlaps(entity.getBounds())) {
+        // TODO fancy [][] of tiles to know what tile is not clear of construction
+        isClearOfConstruction = false;
+        break;
+      }
+    }
+    constructionPlacementHelper.setValidLocation(isWalkable && isClearOfConstruction);
   }
 
   private void drawWorld() {
