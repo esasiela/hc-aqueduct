@@ -70,7 +70,16 @@ public class AqueductMain extends ApplicationAdapter {
     // TODO figure out how to get selection box logic out of workerLayer
     workerLayer = worldRenderer.getWorkerLayer();
 
-    uiRenderer = new UiRenderer(world, batch, shapeDrawer, fontManager, worldRenderer);
+    uiRenderer =
+        new UiRenderer(
+            world,
+            batch,
+            shapeDrawer,
+            fontManager,
+            worldRenderer,
+            buildingType -> {
+              Gdx.app.log("CONSTRUCTION", "clicked: " + buildingType);
+            });
 
     /* ****
      * Input Multiplexer
