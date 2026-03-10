@@ -68,7 +68,7 @@ public class AqueductMain extends ApplicationAdapter {
     // TODO figure out how to get selection box logic out of workerLayer
     workerLayer = worldRenderer.getWorkerLayer();
 
-    uiRenderer = new UiRenderer(world, batch, shapeDrawer, worldRenderer);
+    uiRenderer = new UiRenderer(world, batch, shapeDrawer, fontManager, worldRenderer);
 
     /* ****
      * Input Multiplexer

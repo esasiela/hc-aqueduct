@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.ui.UiElement;
+import com.hedgecourt.aqueduct.ui.elements.BuildButtonUiElement;
 import com.hedgecourt.aqueduct.ui.elements.CrosshairUiElement;
 import com.hedgecourt.aqueduct.ui.elements.MinimapUiElement;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
@@ -18,7 +19,11 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class UiRenderer implements Disposable {
 
+  public static final float UI_PADDING = 10f;
+
   private final AqueductWorld world;
+
+  private final FontManager fontManager;
 
   private final OrthographicCamera camera;
   private final ScreenViewport viewport;
@@ -34,9 +39,11 @@ public class UiRenderer implements Disposable {
       AqueductWorld world,
       SpriteBatch batch,
       ShapeDrawer shapeDrawer,
+      FontManager fontManager,
       WorldRenderer worldRenderer) {
     this.world = world;
     this.shapeDrawer = shapeDrawer;
+    this.fontManager = fontManager;
     camera = new OrthographicCamera();
     viewport = new ScreenViewport(camera);
     updateScreenBounds();
@@ -45,6 +52,44 @@ public class UiRenderer implements Disposable {
     addElement(minimap);
 
     addElement(new CrosshairUiElement());
+
+    float buildButtonWidth = 100f;
+    float buildButtonHeight = (getUiHeight() - 2f * UI_PADDING) / 2f;
+    addElement(
+        new BuildButtonUiElement(
+            fontManager,
+            getUiWidth() - UI_PADDING - buildButtonWidth,
+            UI_PADDING,
+            buildButtonWidth,
+            buildButtonHeight,
+            "Pipe"));
+
+    addElement(
+        new BuildButtonUiElement(
+            fontManager,
+            getUiWidth() - UI_PADDING - buildButtonWidth,
+            UI_PADDING + buildButtonHeight,
+            buildButtonWidth,
+            buildButtonHeight,
+            "Aqueduct"));
+
+    addElement(
+        new BuildButtonUiElement(
+            fontManager,
+            getUiWidth() - UI_PADDING - buildButtonWidth * 2f,
+            UI_PADDING,
+            buildButtonWidth,
+            buildButtonHeight,
+            "Town Hall"));
+
+    addElement(
+        new BuildButtonUiElement(
+            fontManager,
+            getUiWidth() - UI_PADDING - buildButtonWidth * 2f,
+            UI_PADDING + buildButtonHeight,
+            buildButtonWidth,
+            buildButtonHeight,
+            "Pump"));
   }
 
   public boolean isMinimapDragging() {

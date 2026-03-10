@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.NodeLayer;
@@ -135,6 +136,17 @@ public class WorldRenderer implements Disposable {
 
   public void preDraw(float delta) {
     Vector2 mouse = mouseInWorld();
+
+    boolean foundHovered = false;
+    for (WorldEntity entity : world.getWorldEntities()) {
+      if (!foundHovered && entity.containsPoint(mouse.x, mouse.y)) {
+        entity.setHovered(true);
+        foundHovered = true;
+      } else {
+        entity.setHovered(false);
+      }
+    }
+
     for (WorldLayer layer : layers) {
       layer.preDraw(mouse.x, mouse.y);
     }

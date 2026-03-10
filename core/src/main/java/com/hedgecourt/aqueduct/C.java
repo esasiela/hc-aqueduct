@@ -31,6 +31,7 @@ public class C {
   public static final float CLEAR_G = 0.2f;
   public static final float CLEAR_B = 0.2f;
 
+  public static final Color BUILDING_SELECTION_RECT_COLOR = new Color(0f, 1f, 0f, 1.0f);
   public static final Color SELECTION_RING_COLOR = Color.WHITE;
   public static final Color BAG_BAR_CAPACITY_COLOR = new Color(0.5f, 0.5f, 0.5f, 1.0f);
   public static final Color BAG_BAR_CARRY_COLOR = Color.BLUE;

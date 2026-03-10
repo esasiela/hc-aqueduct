@@ -18,7 +18,8 @@ public class FontManager implements Disposable {
   public enum FontType {
     DEFAULT,
     DEBUG,
-    WORKER_PLAN_OVERLAY
+    WORKER_PLAN_OVERLAY,
+    BUILD_BUTTON_UI
   }
 
   public void load() {
@@ -31,6 +32,7 @@ public class FontManager implements Disposable {
     generateMonoFont(FontType.DEFAULT, 10);
     generateMonoFont(FontType.DEBUG, 12);
     generateMonoFont(FontType.WORKER_PLAN_OVERLAY, 12);
+    generateMonoFont(FontType.BUILD_BUTTON_UI, 12);
 
     generator.dispose();
   }

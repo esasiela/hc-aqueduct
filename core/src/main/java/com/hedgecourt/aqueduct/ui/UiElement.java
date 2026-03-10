@@ -36,7 +36,7 @@ public abstract class UiElement {
   public void onMouseExit() {}
 
   // ── frame hooks ───────────────────────────────────────────────────────────
-  public abstract void update(float delta);
+  public void update(float delta) {}
 
   public abstract void draw(SpriteBatch batch, ShapeDrawer shapeDrawer);
 }
