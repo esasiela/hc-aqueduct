@@ -39,9 +39,11 @@ public class AqueductMain extends ApplicationAdapter {
 
   private UiRenderer uiRenderer;
 
-  private boolean selectDragging = false;
-  private Vector2 selectDragStart = new Vector2();
-  private Vector2 selectDragCurrent = new Vector2();
+  private WorldInputMode worldInputMode = WorldInputMode.NORMAL;
+
+  // private boolean selectDragging = false;
+  private final Vector2 selectDragStart = new Vector2();
+  private final Vector2 selectDragCurrent = new Vector2();
 
   private boolean paused = false;
 
@@ -106,12 +108,24 @@ public class AqueductMain extends ApplicationAdapter {
           @Override
           public boolean touchDown(int screenX, int screenY, int pointer, int button) {
             if (button == Input.Buttons.LEFT) {
+              /* ****
+               * Ui touch down (LEFT)
+               */
               Vector2 uiPos = uiRenderer.mouseInUi();
               uiRenderer.handleTouchDown(uiPos.x, uiPos.y);
-              if (!uiRenderer.isMinimapDragging()) {
-                Vector2 worldPos = worldRenderer.mouseInWorld();
-                selectDragStart.set(worldPos);
-                selectDragCurrent.set(worldPos);
+              /* ****
+               * World touch down (LEFT)
+               */
+              switch (worldInputMode) {
+                case NORMAL:
+                  if (!uiRenderer.isMinimapDragging()) {
+                    Vector2 worldPos = worldRenderer.mouseInWorld();
+                    selectDragStart.set(worldPos);
+                    selectDragCurrent.set(worldPos);
+                  }
+                  break;
+                case SELECT_BOX:
+                  break;
               }
             }
             return false;
@@ -120,36 +134,51 @@ public class AqueductMain extends ApplicationAdapter {
           @Override
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
             if (button == Input.Buttons.LEFT) {
+              /* ****
+               * Ui touch up (LEFT)
+               */
               Vector2 uiPos = uiRenderer.mouseInUi();
-              boolean shift =
+              boolean shiftIsPressed =
                   Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
                       || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+              /* ****
+               * World touch up (LEFT)
+               */
+              switch (worldInputMode) {
+                case SELECT_BOX:
+                  Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
+                  clearSelectionBox();
+                  worldInputMode = WorldInputMode.NORMAL;
+                  workerLayer.handleBoxSelect(selRect, shiftIsPressed);
+                  return true;
 
-              if (selectDragging) {
-                // finalize selection box
-                Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
+                case NORMAL:
+                  // TODO this bothers me, having the World section call the Ui click handler
+                  boolean consumedByUi = uiRenderer.handleClick(uiPos.x, uiPos.y);
+                  if (!consumedByUi) {
+                    Vector2 worldPos = worldRenderer.mouseInWorld();
+                    workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
+                  }
+                  return true;
+              }
+            }
+
+            if (button == Input.Buttons.RIGHT) {
+              /* ****
+               * World touch up (RIGHT)
+               */
+              if (worldInputMode == WorldInputMode.SELECT_BOX) {
                 clearSelectionBox();
-                workerLayer.handleBoxSelect(selRect, shift);
+                worldInputMode = WorldInputMode.NORMAL;
                 return true;
               }
-
-              boolean consumedByUi = uiRenderer.handleClick(uiPos.x, uiPos.y);
-              if (!consumedByUi) {
-                Vector2 worldPos = worldRenderer.mouseInWorld();
-                workerLayer.handleLeftClick(worldPos.x, worldPos.y, shift);
-              }
-              return true;
-            }
-            if (button == Input.Buttons.RIGHT) {
-              clearSelectionBox();
               if (workerLayer.hasSelection()) {
                 Vector2 worldPos = worldRenderer.mouseInWorld();
                 WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
-                if (clickedEntity != null) {
-                  if (clickedEntity instanceof Node node) workerLayer.commandSelectedHarvest(node);
-                  else if (clickedEntity instanceof TownHall townHall)
-                    workerLayer.commandSelectedDeliver(townHall);
-
+                if (clickedEntity instanceof Node node) {
+                  workerLayer.commandSelectedHarvest(node);
+                } else if (clickedEntity instanceof TownHall townHall) {
+                  workerLayer.commandSelectedDeliver(townHall);
                 } else {
                   workerLayer.commandSelectedMoveTo(worldPos);
                 }
@@ -161,18 +190,34 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean touchDragged(int screenX, int screenY, int pointer) {
+            /* ****
+             * Ui mouse drag
+             */
             Vector2 uiPos = uiRenderer.mouseInUi();
             if (uiRenderer.isMinimapDragging()) {
               uiRenderer.handleMinimapDrag(uiPos.x, uiPos.y);
               return false;
             }
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-              Vector2 worldPos = worldRenderer.mouseInWorld();
-              selectDragCurrent.set(worldPos);
-              float dist = selectDragStart.dst(selectDragCurrent);
-              if (dist > C.DRAG_THRESHOLD) {
-                selectDragging = true;
-              }
+            /* ****
+             * World mouse drag
+             */
+            switch (worldInputMode) {
+              case NORMAL:
+                if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                  Vector2 worldPos = worldRenderer.mouseInWorld();
+                  selectDragCurrent.set(worldPos);
+                  float dist = selectDragStart.dst(selectDragCurrent);
+                  if (dist > C.DRAG_THRESHOLD) {
+                    worldInputMode = WorldInputMode.SELECT_BOX;
+                  }
+                }
+                break;
+              case SELECT_BOX:
+                if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+                  Vector2 worldPos = worldRenderer.mouseInWorld();
+                  selectDragCurrent.set(worldPos);
+                }
+                break;
             }
             return false;
           }
@@ -199,7 +244,6 @@ public class AqueductMain extends ApplicationAdapter {
   }
 
   private void clearSelectionBox() {
-    selectDragging = false;
     worldRenderer.clearSelectionBox();
   }
 
@@ -217,7 +261,7 @@ public class AqueductMain extends ApplicationAdapter {
     // ── world ────────────────────────────────────────────────────────────
     worldRenderer.render();
 
-    if (selectDragging) {
+    if (worldInputMode == WorldInputMode.SELECT_BOX) {
       Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
       workerLayer.setActiveSelBox(selRect);
       worldRenderer.setSelectionBox(true, selectDragStart, selectDragCurrent);
@@ -277,5 +321,10 @@ public class AqueductMain extends ApplicationAdapter {
   public void resize(int width, int height) {
     worldRenderer.resize(width, height);
     uiRenderer.resize(width, height);
+  }
+
+  private enum WorldInputMode {
+    NORMAL,
+    SELECT_BOX
   }
 }
