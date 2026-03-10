@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
+import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.NodeLayer;
 import com.hedgecourt.aqueduct.world.layers.TileHighlightWorldLayer;
@@ -21,6 +22,7 @@ import com.hedgecourt.aqueduct.world.layers.TownHallLayer;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class WorldRenderer implements Disposable {
@@ -54,7 +56,11 @@ public class WorldRenderer implements Disposable {
   private final WorkerLayer workerLayer;
 
   public WorldRenderer(
-      SpriteBatch batch, ShapeDrawer shapeDrawer, FontManager fontManager, AqueductWorld world) {
+      SpriteBatch batch,
+      ShapeDrawer shapeDrawer,
+      FontManager fontManager,
+      AqueductWorld world,
+      Supplier<WorldEntity> constructionPlacementEntitySupplier) {
     this.shapeDrawer = shapeDrawer;
     this.fontManager = fontManager;
     this.world = world;
@@ -73,31 +79,8 @@ public class WorldRenderer implements Disposable {
     addLayer(new NodeLayer(world));
     addLayer(new CrosshairWorldLayer());
     addLayer(new TileHighlightWorldLayer(world));
+    addLayer(new ConstructionPlacementCursorLayer(constructionPlacementEntitySupplier));
   }
-
-  /*
-    public void loadMap(String path) {
-      map = new TmxMapLoader().load(path);
-      tileWidth = map.getProperties().get("tilewidth", Integer.class);
-      tileHeight = map.getProperties().get("tileheight", Integer.class);
-      mapTilesWide = map.getProperties().get("width", Integer.class);
-      mapTilesTall = map.getProperties().get("height", Integer.class);
-
-      TiledMapTileLayer wallsLayer = (TiledMapTileLayer) map.getLayers().get("walls");
-      mapGraph = new MapGraph(mapTilesWide, mapTilesTall, wallsLayer);
-      pathfinder = new Pathfinder(mapGraph, tileWidth, tileHeight);
-
-      resourceConfig = new ResourceConfig("resources.json");
-      entityLayer = new EntityLayer(resourceConfig);
-      entityLayer.loadFromMap(map, tileHeight);
-      addLayer(entityLayer);
-
-      mapRenderer = new OrthogonalTiledMapRenderer(map);
-
-      cameraController = new CameraController(camera, viewport);
-      cameraController.init(mapTilesWide * tileWidth, mapTilesTall * tileHeight);
-    }
-  */
 
   public void resize(int screenWidth, int screenHeight) {
     updateScreenBounds();
@@ -105,13 +88,6 @@ public class WorldRenderer implements Disposable {
 
   public void initCamera() {
     cameraController.init((int) world.getMapWidth(), (int) world.getMapHeight());
-  }
-
-  public void resizeZZZ(int width, int height) {
-    updateScreenBounds();
-    if (cameraController != null) {
-      cameraController.init(width, height);
-    }
   }
 
   private void updateScreenBounds() {

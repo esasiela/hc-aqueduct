@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
+import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -40,6 +41,8 @@ public class AqueductMain extends ApplicationAdapter {
   private UiRenderer uiRenderer;
 
   private WorldInputMode worldInputMode = WorldInputMode.NORMAL;
+
+  private WorldEntity constructionPlacementEntity;
 
   // private boolean selectDragging = false;
   private final Vector2 selectDragStart = new Vector2();
@@ -66,7 +69,9 @@ public class AqueductMain extends ApplicationAdapter {
     fontManager = new FontManager();
     fontManager.load();
 
-    worldRenderer = new WorldRenderer(batch, shapeDrawer, fontManager, world);
+    worldRenderer =
+        new WorldRenderer(
+            batch, shapeDrawer, fontManager, world, () -> constructionPlacementEntity);
     // TODO figure out how to get selection box logic out of workerLayer
     workerLayer = worldRenderer.getWorkerLayer();
 
@@ -78,7 +83,10 @@ public class AqueductMain extends ApplicationAdapter {
             fontManager,
             worldRenderer,
             buildingType -> {
-              Gdx.app.log("CONSTRUCTION", "clicked: " + buildingType);
+              if ("pipe".equalsIgnoreCase(buildingType)) {
+                constructionPlacementEntity = new Pipe(0, 0, 32, 32);
+                worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
+              }
             });
 
     /* ****
@@ -331,6 +339,7 @@ public class AqueductMain extends ApplicationAdapter {
 
   private enum WorldInputMode {
     NORMAL,
-    SELECT_BOX
+    SELECT_BOX,
+    CONSTRUCTION_PLACEMENT
   }
 }
