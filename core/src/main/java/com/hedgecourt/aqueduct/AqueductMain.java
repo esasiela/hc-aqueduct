@@ -133,14 +133,16 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            boolean shiftIsPressed =
+                Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
+                    || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+
             if (button == Input.Buttons.LEFT) {
               /* ****
                * Ui touch up (LEFT)
                */
               Vector2 uiPos = uiRenderer.mouseInUi();
-              boolean shiftIsPressed =
-                  Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
-                      || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
+              if (uiRenderer.handleClick(uiPos.x, uiPos.y)) return true;
               /* ****
                * World touch up (LEFT)
                */
@@ -151,14 +153,9 @@ public class AqueductMain extends ApplicationAdapter {
                   worldInputMode = WorldInputMode.NORMAL;
                   workerLayer.handleBoxSelect(selRect, shiftIsPressed);
                   return true;
-
                 case NORMAL:
-                  // TODO this bothers me, having the World section call the Ui click handler
-                  boolean consumedByUi = uiRenderer.handleClick(uiPos.x, uiPos.y);
-                  if (!consumedByUi) {
-                    Vector2 worldPos = worldRenderer.mouseInWorld();
-                    workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
-                  }
+                  Vector2 worldPos = worldRenderer.mouseInWorld();
+                  workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
                   return true;
               }
             }
