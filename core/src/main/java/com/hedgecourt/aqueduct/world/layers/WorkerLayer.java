@@ -12,6 +12,7 @@ import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
@@ -50,6 +51,12 @@ public class WorkerLayer extends WorldLayer {
       if (worker.isSelected()) {
         worker.commandDeliver(townHall);
       }
+    }
+  }
+
+  public void commandSelectedConstruct(ConstructionEntityHelper helper) {
+    for (Worker worker : world.getEntities(Worker.class)) {
+      if (worker.isSelected()) worker.commandConstruct(helper);
     }
   }
 

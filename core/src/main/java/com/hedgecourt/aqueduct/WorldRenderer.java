@@ -19,6 +19,7 @@ import com.hedgecourt.aqueduct.world.layers.ConstructionPendingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.NodeLayer;
+import com.hedgecourt.aqueduct.world.layers.PipeLayer;
 import com.hedgecourt.aqueduct.world.layers.TileHighlightWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.TownHallLayer;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
@@ -66,12 +67,18 @@ public class WorldRenderer implements Disposable {
     initCamera();
 
     workerLayer = new WorkerLayer(world, fontManager);
-    addLayer(workerLayer);
-    addLayer(new TownHallLayer(world));
-    addLayer(new NodeLayer(world));
-    addLayer(new CrosshairWorldLayer());
-    addLayer(new TileHighlightWorldLayer(world));
     addLayer(new ConstructionPendingLayer(world::getConstructionPendingList));
+    addLayer(new TileHighlightWorldLayer(world));
+
+    addLayer(new TownHallLayer(world));
+    addLayer(new PipeLayer(world));
+    addLayer(new NodeLayer(world));
+
+    addLayer(workerLayer);
+
+    addLayer(new CrosshairWorldLayer());
+
+    // Make sure this one goes last, cursor on top
     addLayer(new ConstructionPlacementCursorLayer(constructionPlacementHelperSupplier));
   }
 
@@ -107,7 +114,7 @@ public class WorldRenderer implements Disposable {
     Vector2 mouse = mouseInWorld();
 
     boolean foundHovered = false;
-    for (WorldEntity entity : world.getWorldEntities()) {
+    for (WorldEntity entity : world.getEntities()) {
       if (!foundHovered && entity.containsPoint(mouse.x, mouse.y)) {
         entity.setHovered(true);
         foundHovered = true;

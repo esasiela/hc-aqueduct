@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
 import java.util.EnumMap;
@@ -33,7 +34,8 @@ public class Worker extends WorldEntity {
     IDLE,
     MOVING,
     HARVESTING,
-    DELIVERING
+    DELIVERING,
+    CONSTRUCTING
   }
 
   // ── animation ─────────────────────────────────────────────────────────────
@@ -123,6 +125,18 @@ public class Worker extends WorldEntity {
     // TODO if you are carrying something different than this node, jettison bag contents :-(
   }
 
+  public void commandConstruct(ConstructionEntityHelper helper) {
+    clearPlan();
+
+    if (!moveAdjacentTo(helper.getEntity())) {
+      enterState(WorkerState.IDLE);
+      return;
+    }
+
+    plan.planType = PlanType.CONSTRUCT;
+    plan.underConstruction = helper;
+  }
+
   // ── state machine ─────────────────────────────────────────────────────────
 
   private void clearPlan() {
@@ -140,7 +154,7 @@ public class Worker extends WorldEntity {
   private void enterState(WorkerState newState) {
     this.state = newState;
     switch (newState) {
-      case IDLE:
+      case IDLE, DELIVERING, CONSTRUCTING:
         animTime = 0f;
         break;
       case MOVING:
@@ -148,9 +162,6 @@ public class Worker extends WorldEntity {
       case HARVESTING:
         animTime = 0f;
         rememberNode(plan.node.getId());
-        break;
-      case DELIVERING:
-        animTime = 0f;
         break;
     }
   }
@@ -167,6 +178,9 @@ public class Worker extends WorldEntity {
     } else if (plan.planType == PlanType.DELIVER) {
       // single-shot delivery and go idle
       enterState(WorkerState.DELIVERING);
+
+    } else if (plan.planType == PlanType.CONSTRUCT) {
+      enterState(WorkerState.CONSTRUCTING);
 
     } else if (plan.planType == PlanType.MOVE) {
       clearPlan(true);
@@ -187,6 +201,9 @@ public class Worker extends WorldEntity {
         break;
       case DELIVERING:
         updateDelivering(delta);
+        break;
+      case CONSTRUCTING:
+        updateConstructing(delta);
         break;
     }
   }
@@ -281,6 +298,21 @@ public class Worker extends WorldEntity {
       }
       clearPlan(true);
     }
+  }
+
+  private void updateConstructing(float delta) {
+    ConstructionEntityHelper helper = plan.underConstruction;
+    WorldEntity entity = helper.getEntity();
+
+    if (distanceTo(entity) > C.CONSTRUCTION_RANGE) {
+      moveAdjacentTo(entity);
+      return;
+    }
+
+    // TODO worker.constructionRate
+    helper.addConstructionUnits(C.CONSTRUCTION_RATE * delta);
+
+    if (helper.isComplete()) clearPlan(true);
   }
 
   // ── helpers ────────────────────────────────────────────────────────────────
@@ -394,13 +426,15 @@ public class Worker extends WorldEntity {
       IDLE,
       MOVE,
       HARVEST,
-      DELIVER
+      DELIVER,
+      CONSTRUCT
     }
 
     PlanType planType = PlanType.IDLE;
 
     Node node;
     TownHall townHall;
+    ConstructionEntityHelper underConstruction;
 
     public PlanType getPlanType() {
       return planType;

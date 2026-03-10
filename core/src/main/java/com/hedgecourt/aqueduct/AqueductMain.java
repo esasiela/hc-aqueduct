@@ -22,6 +22,7 @@ import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
+import java.util.ArrayList;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class AqueductMain extends ApplicationAdapter {
@@ -86,7 +87,7 @@ public class AqueductMain extends ApplicationAdapter {
             buildingType -> {
               if ("pipe".equalsIgnoreCase(buildingType)) {
                 constructionPlacementHelper =
-                    new ConstructionEntityHelper(new Pipe(0, 0, 32, 32), 100f);
+                    new ConstructionEntityHelper(world, new Pipe(0, 0, 32, 32), 100f);
                 worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
               }
             });
@@ -195,13 +196,27 @@ public class AqueductMain extends ApplicationAdapter {
                 case NORMAL:
                   if (workerLayer.hasSelection()) {
                     WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
-                    if (clickedEntity instanceof Node node) {
-                      workerLayer.commandSelectedHarvest(node);
-                    } else if (clickedEntity instanceof TownHall townHall) {
-                      workerLayer.commandSelectedDeliver(townHall);
-                    } else {
-                      workerLayer.commandSelectedMoveTo(worldPos);
+                    switch (clickedEntity) {
+                      case Node node -> {
+                        workerLayer.commandSelectedHarvest(node);
+                        return true;
+                      }
+                      case TownHall townHall -> {
+                        workerLayer.commandSelectedDeliver(townHall);
+                        return true;
+                      }
+                      case null, default -> {}
                     }
+
+                    ConstructionEntityHelper clickedHelper =
+                        world.getConstructionPendingAt(worldPos.x, worldPos.y);
+                    if (clickedHelper != null) {
+                      workerLayer.commandSelectedConstruct(clickedHelper);
+                      return true;
+                    }
+
+                    workerLayer.commandSelectedMoveTo(worldPos);
+
                   } else {
                     // no workers selected
                     ConstructionEntityHelper helper =
@@ -321,7 +336,7 @@ public class AqueductMain extends ApplicationAdapter {
 
   private void updateWorld(float delta) {
     if (!paused) {
-      for (WorldEntity e : world.getWorldEntities()) {
+      for (WorldEntity e : new ArrayList<>(world.getEntities())) {
         e.update(delta);
       }
       workerLayer.applySeparation(delta);

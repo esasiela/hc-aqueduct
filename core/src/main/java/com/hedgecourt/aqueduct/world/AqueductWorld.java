@@ -3,6 +3,7 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Disposable;
 import com.hedgecourt.aqueduct.world.entities.Node;
+import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
@@ -54,6 +55,9 @@ public class AqueductWorld implements Disposable {
       townHalls.add(townHall);
       updateWalkabilityForEntity(townHall, false);
     }
+    if (entity instanceof Pipe pipe) {
+      updateWalkabilityForEntity(pipe, false);
+    }
   }
 
   public void remove(WorldEntity entity) {
@@ -69,9 +73,13 @@ public class AqueductWorld implements Disposable {
       townHalls.remove(townHall);
       updateWalkabilityForEntity(townHall, true);
     }
+
+    if (entity instanceof Pipe pipe) {
+      updateWalkabilityForEntity(pipe, true);
+    }
   }
 
-  private void updateWalkabilityForEntity(WorldEntity entity, boolean isWalkable) {
+  public void updateWalkabilityForEntity(WorldEntity entity, boolean isWalkable) {
     int tileX = (int) (entity.getPosition().x - entity.getWidth() / 2f) / tileWidth;
     int tileY = (int) (entity.getPosition().y - entity.getHeight() / 2f) / tileHeight;
     int tilesWide = (int) (entity.getWidth() / tileWidth);
@@ -133,7 +141,17 @@ public class AqueductWorld implements Disposable {
     this.mapTilesTall = mapTilesTall;
   }
 
-  public List<WorldEntity> getWorldEntities() {
+  public <T extends WorldEntity> List<T> getEntities(Class<T> type) {
+    List<T> result = new ArrayList<>();
+    for (WorldEntity entity : worldEntities) {
+      if (type.isInstance(entity)) {
+        result.add(type.cast(entity));
+      }
+    }
+    return result;
+  }
+
+  public List<WorldEntity> getEntities() {
     return worldEntities;
   }
 
