@@ -5,22 +5,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class Pipe extends BuildingEntity {
-
-  public Pipe(
-      AqueductWorld world,
-      float x,
-      float y,
-      float width,
-      float height,
-      float constructionUnitsRequired) {
+public class Sprinkler extends BuildingEntity {
+  public Sprinkler(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
-    this.constructionUnitsRequired = constructionUnitsRequired;
   }
 
   @Override
   public BuildingEntity freshCopy() {
-    return new Pipe(world, 0, 0, width, height, constructionUnitsRequired);
+    return new Sprinkler(world, 0, 0, width, height);
   }
 
   @Override
@@ -28,6 +20,6 @@ public class Pipe extends BuildingEntity {
 
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer drawer) {
-    drawer.filledCircle(position.x, position.y, (width - 5f) / 2f, Color.ORANGE);
+    drawer.filledCircle(position.x, position.y, (width - 5f) / 2f, Color.CYAN);
   }
 }

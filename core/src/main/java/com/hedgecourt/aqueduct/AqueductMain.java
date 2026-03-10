@@ -16,8 +16,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
+import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
@@ -44,7 +44,7 @@ public class AqueductMain extends ApplicationAdapter {
 
   private WorldInputMode worldInputMode = WorldInputMode.NORMAL;
 
-  private ConstructionEntityHelper constructionPlacementHelper;
+  private BuildingEntity constructionPlacementEntity;
 
   // private boolean selectDragging = false;
   private final Vector2 selectDragStart = new Vector2();
@@ -73,7 +73,7 @@ public class AqueductMain extends ApplicationAdapter {
 
     worldRenderer =
         new WorldRenderer(
-            batch, shapeDrawer, fontManager, world, () -> constructionPlacementHelper);
+            batch, shapeDrawer, fontManager, world, () -> constructionPlacementEntity);
     // TODO figure out how to get selection box logic out of workerLayer
     workerLayer = worldRenderer.getWorkerLayer();
 
@@ -86,8 +86,7 @@ public class AqueductMain extends ApplicationAdapter {
             worldRenderer,
             buildingType -> {
               if ("pipe".equalsIgnoreCase(buildingType)) {
-                constructionPlacementHelper =
-                    new ConstructionEntityHelper(world, new Pipe(0, 0, 32, 32), 100f);
+                constructionPlacementEntity = new Pipe(world, 0, 0, 32, 32, 100f);
                 worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
               }
             });
@@ -153,6 +152,8 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            Gdx.app.log("INPUT", "touchUp button=" + button + " mode=" + worldInputMode);
+
             boolean shiftIsPressed =
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
                     || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
@@ -179,9 +180,9 @@ public class AqueductMain extends ApplicationAdapter {
                   return true;
                 case CONSTRUCTION_PLACEMENT:
                   snapConstructionCursorToMouseTile();
-                  if (constructionPlacementHelper.isValidLocation()) {
-                    world.addConstructionPending(constructionPlacementHelper);
-                    constructionPlacementHelper = constructionPlacementHelper.freshCopy();
+                  if (constructionPlacementEntity.isConstructionLocationValid()) {
+                    world.add(constructionPlacementEntity);
+                    constructionPlacementEntity = constructionPlacementEntity.freshCopy();
                   }
                   return true;
               }
@@ -208,10 +209,10 @@ public class AqueductMain extends ApplicationAdapter {
                       case null, default -> {}
                     }
 
-                    ConstructionEntityHelper clickedHelper =
+                    BuildingEntity clickedBuilding =
                         world.getConstructionPendingAt(worldPos.x, worldPos.y);
-                    if (clickedHelper != null) {
-                      workerLayer.commandSelectedConstruct(clickedHelper);
+                    if (clickedBuilding != null) {
+                      workerLayer.commandSelectedConstruct(clickedBuilding);
                       return true;
                     }
 
@@ -219,10 +220,10 @@ public class AqueductMain extends ApplicationAdapter {
 
                   } else {
                     // no workers selected
-                    ConstructionEntityHelper helper =
+                    BuildingEntity pendingBuilding =
                         world.getConstructionPendingAt(worldPos.x, worldPos.y);
-                    if (helper != null && !helper.isStarted())
-                      world.removeConstructionPending(helper);
+                    if (pendingBuilding != null && !pendingBuilding.isConstructionStarted())
+                      world.remove(pendingBuilding);
                   }
                   return true;
                 case SELECT_BOX:
@@ -310,7 +311,7 @@ public class AqueductMain extends ApplicationAdapter {
   }
 
   private void clearConstructionPlacement() {
-    constructionPlacementHelper = null;
+    constructionPlacementEntity = null;
   }
 
   @Override
@@ -365,6 +366,8 @@ public class AqueductMain extends ApplicationAdapter {
   }
 
   private void snapConstructionCursorToMouseTile() {
+    if (constructionPlacementEntity == null) return;
+
     Vector2 mouseWorldPos = worldRenderer.mouseInWorld();
     int tileW = world.getTileWidth();
     int tileH = world.getTileHeight();
@@ -372,21 +375,21 @@ public class AqueductMain extends ApplicationAdapter {
     int tileX = (int) (mouseWorldPos.x / tileW);
     int tileY = (int) (mouseWorldPos.y / tileH);
 
-    WorldEntity entity = constructionPlacementHelper.getEntity();
-    entity.setPosition(tileX * tileW + tileW / 2f, tileY * tileH + tileH / 2f);
+    constructionPlacementEntity.setPosition(tileX * tileW + tileW / 2f, tileY * tileH + tileH / 2f);
 
     // to be valid, must pass pathfinder walkability check AND no existing constructionPending
-    boolean isWalkable = world.getPathfinder().validateConstructionPlacementLocation(entity);
+    boolean isWalkable =
+        world.getPathfinder().validateConstructionPlacementLocation(constructionPlacementEntity);
 
     boolean isClearOfConstruction = true;
-    for (ConstructionEntityHelper helper : world.getConstructionPendingList()) {
-      if (helper.getEntity().getBounds().overlaps(entity.getBounds())) {
+    for (BuildingEntity pendingBuilding : world.getConstructionPendingList()) {
+      if (pendingBuilding.getBounds().overlaps(constructionPlacementEntity.getBounds())) {
         // TODO fancy [][] of tiles to know what tile is not clear of construction
         isClearOfConstruction = false;
         break;
       }
     }
-    constructionPlacementHelper.setValidLocation(isWalkable && isClearOfConstruction);
+    constructionPlacementEntity.setConstructionLocationValid(isWalkable && isClearOfConstruction);
   }
 
   private void drawWorld() {

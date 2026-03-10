@@ -12,9 +12,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
+import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPendingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
@@ -54,7 +54,7 @@ public class WorldRenderer implements Disposable {
       ShapeDrawer shapeDrawer,
       FontManager fontManager,
       AqueductWorld world,
-      Supplier<ConstructionEntityHelper> constructionPlacementHelperSupplier) {
+      Supplier<BuildingEntity> constructionPlacementEntitySupplier) {
     this.shapeDrawer = shapeDrawer;
     this.world = world;
 
@@ -67,7 +67,7 @@ public class WorldRenderer implements Disposable {
     initCamera();
 
     workerLayer = new WorkerLayer(world, fontManager);
-    addLayer(new ConstructionPendingLayer(world::getConstructionPendingList));
+    addLayer(new ConstructionPendingLayer(world::getUnconstructedBuildings));
     addLayer(new TileHighlightWorldLayer(world));
 
     addLayer(new TownHallLayer(world));
@@ -79,7 +79,7 @@ public class WorldRenderer implements Disposable {
     addLayer(new CrosshairWorldLayer());
 
     // Make sure this one goes last, cursor on top
-    addLayer(new ConstructionPlacementCursorLayer(constructionPlacementHelperSupplier));
+    addLayer(new ConstructionPlacementCursorLayer(constructionPlacementEntitySupplier));
   }
 
   public void resize(int screenWidth, int screenHeight) {

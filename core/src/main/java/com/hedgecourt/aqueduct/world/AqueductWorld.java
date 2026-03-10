@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct.world;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Disposable;
+import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
@@ -14,8 +15,6 @@ public class AqueductWorld implements Disposable {
   private final List<Worker> workers = new ArrayList<>();
   private final List<Node> nodes = new ArrayList<>();
   private final List<TownHall> townHalls = new ArrayList<>();
-
-  private final List<ConstructionEntityHelper> constructionPendingList = new ArrayList<>();
 
   private final ResourceConfig resourceConfig = new ResourceConfig();
 
@@ -113,13 +112,6 @@ public class AqueductWorld implements Disposable {
     return null;
   }
 
-  public ConstructionEntityHelper getConstructionPendingAt(float x, float y) {
-    for (ConstructionEntityHelper constructionPending : constructionPendingList) {
-      if (constructionPending.getEntity().containsPoint(x, y)) return constructionPending;
-    }
-    return null;
-  }
-
   public ResourceConfig getResourceConfig() {
     return resourceConfig;
   }
@@ -167,16 +159,30 @@ public class AqueductWorld implements Disposable {
     return townHalls;
   }
 
-  public void addConstructionPending(ConstructionEntityHelper helper) {
-    constructionPendingList.add(helper);
+  public List<BuildingEntity> getUnconstructedBuildings() {
+    List<BuildingEntity> result = new ArrayList<>();
+
+    for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+      if (!building.isConstructionComplete()) result.add(building);
+    }
+
+    return result;
   }
 
-  public void removeConstructionPending(ConstructionEntityHelper helper) {
-    constructionPendingList.remove(helper);
+  public List<BuildingEntity> getConstructionPendingList() {
+    List<BuildingEntity> result = new ArrayList<>();
+
+    for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+      if (!building.isConstructionStarted()) result.add(building);
+    }
+    return result;
   }
 
-  public List<ConstructionEntityHelper> getConstructionPendingList() {
-    return constructionPendingList;
+  public BuildingEntity getConstructionPendingAt(float x, float y) {
+    for (BuildingEntity building : getConstructionPendingList()) {
+      if (building.containsPoint(x, y)) return building;
+    }
+    return null;
   }
 
   public int getTileWidth() {

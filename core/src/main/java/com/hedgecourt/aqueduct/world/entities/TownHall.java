@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +14,15 @@ public class TownHall extends WorldEntity {
   private final Map<String, Float> inventory = new HashMap<>();
   private TextureRegion sprite;
 
-  public TownHall(String id, float x, float y, float width, float height, TextureRegion sprite) {
-    super(x, y, width, height);
+  public TownHall(
+      AqueductWorld world,
+      String id,
+      float x,
+      float y,
+      float width,
+      float height,
+      TextureRegion sprite) {
+    super(world, x, y, width, height);
     this.id = id;
     this.sprite = sprite;
   }

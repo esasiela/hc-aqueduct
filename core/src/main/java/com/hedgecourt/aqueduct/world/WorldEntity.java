@@ -7,13 +7,16 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class WorldEntity {
 
+  protected AqueductWorld world;
+
   protected Vector2 position;
   protected float width;
   protected float height;
   protected boolean selected;
   protected boolean hovered;
 
-  public WorldEntity(float x, float y, float width, float height) {
+  public WorldEntity(AqueductWorld world, float x, float y, float width, float height) {
+    this.world = world;
     this.position = new Vector2(x, y);
     this.width = width;
     this.height = height;
@@ -91,7 +94,7 @@ public abstract class WorldEntity {
     return height;
   }
 
-  // ── getters ────────────────────────────────────────────────────────────
+  // ── setters ────────────────────────────────────────────────────────────
 
   public void setPosition(float x, float y) {
     position.set(x, y);

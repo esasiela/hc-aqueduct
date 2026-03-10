@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.ResourceDef;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -16,6 +17,7 @@ public class Node extends WorldEntity {
   private TextureRegion spriteEmpty;
 
   public Node(
+      AqueductWorld world,
       String id,
       float x,
       float y,
@@ -24,7 +26,7 @@ public class Node extends WorldEntity {
       ResourceDef def,
       TextureRegion spriteFull,
       TextureRegion spriteEmpty) {
-    super(x, y, width, height);
+    super(world, x, y, width, height);
     this.id = id;
     this.def = def;
     this.inventory = def.maxInventory;

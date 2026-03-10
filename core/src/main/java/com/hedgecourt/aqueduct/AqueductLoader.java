@@ -104,6 +104,7 @@ public class AqueductLoader {
         ResourceDef resourceDef = world.getResourceConfig().get(resourceType);
         world.add(
             new Node(
+                world,
                 id,
                 centerX,
                 centerY,
@@ -124,6 +125,7 @@ public class AqueductLoader {
 
             */
             new TownHall(
+                world,
                 id,
                 centerX,
                 centerY,

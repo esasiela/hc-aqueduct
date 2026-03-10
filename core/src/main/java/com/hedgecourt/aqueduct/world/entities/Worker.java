@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
 import java.util.EnumMap;
@@ -51,7 +50,7 @@ public class Worker extends WorldEntity {
 
   private final Queue<Vector2> waypoints = new LinkedList<>();
 
-  private float speed;
+  private float moveSpeed;
   private Direction facing = Direction.SOUTH;
 
   private float carrying = 0f;
@@ -60,14 +59,12 @@ public class Worker extends WorldEntity {
 
   private final LinkedList<String> nodeMemory = new LinkedList<>();
 
-  private final AqueductWorld world;
-
   // ── constructor ───────────────────────────────────────────────────────────
 
   public Worker(AqueductWorld world, float x, float y) {
-    super(x, y, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
-    this.world = world;
-    this.speed = C.WORKER_BASE_SPEED;
+    // TODO worker size needs to be defined elsewhere than hardcoded C
+    super(world, x, y, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
+    this.moveSpeed = C.WORKER_BASE_SPEED;
 
     this.plan = new WorkerPlan();
   }
@@ -125,16 +122,16 @@ public class Worker extends WorldEntity {
     // TODO if you are carrying something different than this node, jettison bag contents :-(
   }
 
-  public void commandConstruct(ConstructionEntityHelper helper) {
+  public void commandConstruct(BuildingEntity building) {
     clearPlan();
 
-    if (!moveAdjacentTo(helper.getEntity())) {
+    if (!moveAdjacentTo(building)) {
       enterState(WorkerState.IDLE);
       return;
     }
 
     plan.planType = PlanType.CONSTRUCT;
-    plan.underConstruction = helper;
+    plan.underConstruction = building;
   }
 
   // ── state machine ─────────────────────────────────────────────────────────
@@ -234,7 +231,7 @@ public class Worker extends WorldEntity {
       facing = dir.y > 0 ? Direction.NORTH : Direction.SOUTH;
     }
 
-    float step = speed * delta;
+    float step = moveSpeed * delta;
     if (step > distance) step = distance;
     position.mulAdd(dir, step);
     animTime += delta;
@@ -301,18 +298,17 @@ public class Worker extends WorldEntity {
   }
 
   private void updateConstructing(float delta) {
-    ConstructionEntityHelper helper = plan.underConstruction;
-    WorldEntity entity = helper.getEntity();
+    BuildingEntity building = plan.underConstruction;
 
-    if (distanceTo(entity) > C.CONSTRUCTION_RANGE) {
-      moveAdjacentTo(entity);
+    if (distanceTo(building) > C.CONSTRUCTION_RANGE) {
+      moveAdjacentTo(building);
       return;
     }
 
     // TODO worker.constructionRate
-    helper.addConstructionUnits(C.CONSTRUCTION_RATE * delta);
+    building.addConstructionUnits(C.CONSTRUCTION_RATE * delta);
 
-    if (helper.isComplete()) clearPlan(true);
+    if (building.isConstructionComplete()) clearPlan(true);
   }
 
   // ── helpers ────────────────────────────────────────────────────────────────
@@ -409,12 +405,12 @@ public class Worker extends WorldEntity {
     return carryCapacity - carrying;
   }
 
-  public float getSpeed() {
-    return speed;
+  public float getMoveSpeed() {
+    return moveSpeed;
   }
 
-  public void setSpeed(float speed) {
-    this.speed = speed;
+  public void setMoveSpeed(float moveSpeed) {
+    this.moveSpeed = moveSpeed;
   }
 
   public Queue<Vector2> getWaypoints() {
@@ -434,7 +430,7 @@ public class Worker extends WorldEntity {
 
     Node node;
     TownHall townHall;
-    ConstructionEntityHelper underConstruction;
+    BuildingEntity underConstruction;
 
     public PlanType getPlanType() {
       return planType;

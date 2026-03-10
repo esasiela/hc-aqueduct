@@ -2,8 +2,8 @@ package com.hedgecourt.aqueduct.world.layers;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldLayer;
+import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import java.util.function.Supplier;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -15,32 +15,36 @@ public class ConstructionPlacementCursorLayer extends WorldLayer {
   private static final Color INVALID_LOCATION_FILL_COLOR = new Color(1f, 0f, 0f, 0.3f);
   private static final Color INVALID_LOCATION_LINE_COLOR = new Color(1f, 0f, 0f, 1f);
 
-  private final Supplier<ConstructionEntityHelper> helperSupplier;
+  private final Supplier<BuildingEntity> buildingSupplier;
 
-  public ConstructionPlacementCursorLayer(Supplier<ConstructionEntityHelper> helperSupplier) {
-    this.helperSupplier = helperSupplier;
+  public ConstructionPlacementCursorLayer(Supplier<BuildingEntity> buildingSupplier) {
+    this.buildingSupplier = buildingSupplier;
   }
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    ConstructionEntityHelper helper = helperSupplier.get();
-    if (helper == null || helper.getEntity() == null) return;
+    BuildingEntity building = this.buildingSupplier.get();
+    if (building == null) return;
 
-    helper.getEntity().draw(batch, shapeDrawer);
+    building.draw(batch, shapeDrawer);
   }
 
   @Override
   public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    ConstructionEntityHelper helper = helperSupplier.get();
-    if (helper == null || helper.getEntity() == null) return;
+    BuildingEntity building = buildingSupplier.get();
+    if (building == null) return;
 
     shapeDrawer.filledRectangle(
-        helper.getEntity().getBounds(),
-        helper.isValidLocation() ? VALID_LOCATION_FILL_COLOR : INVALID_LOCATION_FILL_COLOR);
+        building.getBounds(),
+        building.isConstructionLocationValid()
+            ? VALID_LOCATION_FILL_COLOR
+            : INVALID_LOCATION_FILL_COLOR);
 
     shapeDrawer.rectangle(
-        helper.getEntity().getBounds(),
-        helper.isValidLocation() ? VALID_LOCATION_LINE_COLOR : INVALID_LOCATION_LINE_COLOR,
+        building.getBounds(),
+        building.isConstructionLocationValid()
+            ? VALID_LOCATION_LINE_COLOR
+            : INVALID_LOCATION_LINE_COLOR,
         1f);
   }
 }
