@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
@@ -42,7 +43,7 @@ public class AqueductMain extends ApplicationAdapter {
 
   private WorldInputMode worldInputMode = WorldInputMode.NORMAL;
 
-  private WorldEntity constructionPlacementEntity;
+  private ConstructionEntityHelper constructionPlacementHelper;
 
   // private boolean selectDragging = false;
   private final Vector2 selectDragStart = new Vector2();
@@ -71,7 +72,7 @@ public class AqueductMain extends ApplicationAdapter {
 
     worldRenderer =
         new WorldRenderer(
-            batch, shapeDrawer, fontManager, world, () -> constructionPlacementEntity);
+            batch, shapeDrawer, fontManager, world, () -> constructionPlacementHelper);
     // TODO figure out how to get selection box logic out of workerLayer
     workerLayer = worldRenderer.getWorkerLayer();
 
@@ -84,7 +85,8 @@ public class AqueductMain extends ApplicationAdapter {
             worldRenderer,
             buildingType -> {
               if ("pipe".equalsIgnoreCase(buildingType)) {
-                constructionPlacementEntity = new Pipe(0, 0, 32, 32);
+                constructionPlacementHelper =
+                    new ConstructionEntityHelper(new Pipe(0, 0, 32, 32), 100f);
                 worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
               }
             });
@@ -181,6 +183,30 @@ public class AqueductMain extends ApplicationAdapter {
               /* ****
                * World touch up (RIGHT)
                */
+              switch (worldInputMode) {
+                case NORMAL:
+                  if (workerLayer.hasSelection()) {
+                    Vector2 worldPos = worldRenderer.mouseInWorld();
+                    WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
+                    if (clickedEntity instanceof Node node) {
+                      workerLayer.commandSelectedHarvest(node);
+                    } else if (clickedEntity instanceof TownHall townHall) {
+                      workerLayer.commandSelectedDeliver(townHall);
+                    } else {
+                      workerLayer.commandSelectedMoveTo(worldPos);
+                    }
+                  }
+                  break;
+                case SELECT_BOX:
+                  clearSelectionBox();
+                  worldInputMode = WorldInputMode.NORMAL;
+                  break;
+                case CONSTRUCTION_PLACEMENT:
+                  clearConstructionPlacement();
+                  worldInputMode = WorldInputMode.NORMAL;
+                  break;
+              }
+              /*
               if (worldInputMode == WorldInputMode.SELECT_BOX) {
                 clearSelectionBox();
                 worldInputMode = WorldInputMode.NORMAL;
@@ -197,6 +223,8 @@ public class AqueductMain extends ApplicationAdapter {
                   workerLayer.commandSelectedMoveTo(worldPos);
                 }
               }
+
+               */
               return true;
             }
             return false;
@@ -242,6 +270,18 @@ public class AqueductMain extends ApplicationAdapter {
               paused = !paused;
               return true;
             }
+
+            switch (worldInputMode) {
+              case NORMAL:
+                break;
+              case SELECT_BOX:
+                break;
+              case CONSTRUCTION_PLACEMENT:
+                if (keycode == Input.Keys.ESCAPE) {
+                  clearConstructionPlacement();
+                  worldInputMode = WorldInputMode.NORMAL;
+                }
+            }
             return false;
           }
         });
@@ -261,6 +301,10 @@ public class AqueductMain extends ApplicationAdapter {
     worldRenderer.clearSelectionBox();
   }
 
+  private void clearConstructionPlacement() {
+    constructionPlacementHelper = null;
+  }
+
   @Override
   public void render() {
     float delta = Gdx.graphics.getDeltaTime();
@@ -272,9 +316,32 @@ public class AqueductMain extends ApplicationAdapter {
 
     ScreenUtils.clear(C.CLEAR_R, C.CLEAR_G, C.CLEAR_B, 1f);
 
-    // ── world ────────────────────────────────────────────────────────────
     worldRenderer.render();
 
+    updateWorldInput(delta);
+
+    drawWorld();
+    drawUi();
+  }
+
+  private void handleInput(float delta) {}
+
+  private void updateWorld(float delta) {
+    if (!paused) {
+      for (WorldEntity e : world.getWorldEntities()) {
+        e.update(delta);
+      }
+      workerLayer.applySeparation(delta);
+    }
+
+    worldRenderer.updateCamera(delta);
+
+    worldRenderer.preDraw(delta);
+  }
+
+  private void updateUi(float delta) {}
+
+  private void updateWorldInput(float delta) {
     if (worldInputMode == WorldInputMode.SELECT_BOX) {
       Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
       workerLayer.setActiveSelBox(selRect);
@@ -284,25 +351,24 @@ public class AqueductMain extends ApplicationAdapter {
       worldRenderer.clearSelectionBox();
     }
 
-    drawWorld();
-    drawUi();
-  }
+    if (worldInputMode == WorldInputMode.CONSTRUCTION_PLACEMENT) {
+      Vector2 mouseWorldPos = worldRenderer.mouseInWorld();
+      int tileW = world.getTileWidth();
+      int tileH = world.getTileHeight();
 
-  private void handleInput(float delta) {}
+      int tileX = (int) (mouseWorldPos.x / tileW);
+      int tileY = (int) (mouseWorldPos.y / tileH);
 
-  private void updateWorld(float delta) {
-    for (WorldEntity e : world.getWorldEntities()) {
-      e.update(delta);
+      constructionPlacementHelper
+          .getEntity()
+          .setPosition(tileX * tileW + tileW / 2f, tileY * tileH + tileH / 2f);
+
+      constructionPlacementHelper.setValidLocation(
+          world
+              .getPathfinder()
+              .validateConstructionPlacementLocation(constructionPlacementHelper.getEntity()));
     }
-    workerLayer.applySeparation(delta);
-
-    worldRenderer.updateCamera(delta);
-    if (!paused) {
-      worldRenderer.preDraw(delta);
-    }
   }
-
-  private void updateUi(float delta) {}
 
   private void drawWorld() {
     worldRenderer.applyViewport();

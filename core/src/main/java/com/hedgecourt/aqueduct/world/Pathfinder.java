@@ -89,6 +89,35 @@ public class Pathfinder {
     return best; // null if completely surrounded by unwalkable tiles
   }
 
+  public boolean validateConstructionPlacementLocation(WorldEntity entity) {
+    int tileW = tileWidth;
+    int tileH = tileHeight;
+
+    // entity tile footprint
+    int left = (int) ((entity.getPosition().x - entity.getWidth() / 2f) / tileW);
+    int bottom = (int) ((entity.getPosition().y - entity.getHeight() / 2f) / tileH);
+    int right = (int) ((entity.getPosition().x + entity.getWidth() / 2f - 1) / tileW);
+    int top = (int) ((entity.getPosition().y + entity.getHeight() / 2f - 1) / tileH);
+
+    int tilesWide = right - left + 1;
+    int tilesTall = top - bottom + 1;
+
+    // tile-level validity grid
+    boolean[][] tileValidity = new boolean[tilesWide][tilesTall];
+    boolean allValid = true;
+
+    for (int tx = left; tx <= right; tx++) {
+      for (int ty = bottom; ty <= top; ty++) {
+        boolean valid = graph.isWalkable(tx, ty);
+        tileValidity[tx - left][ty - bottom] = valid;
+        if (!valid) allValid = false;
+      }
+    }
+
+    // TODO: store tileValidity somewhere accessible for per-tile rendering
+    return allValid;
+  }
+
   private MapNode worldToNode(float worldX, float worldY) {
     int tileX = (int) (worldX / tileWidth);
     int tileY = (int) (worldY / tileHeight);

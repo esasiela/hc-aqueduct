@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.ConstructionEntityHelper;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
@@ -28,22 +29,13 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 public class WorldRenderer implements Disposable {
 
   private final AqueductWorld world;
-  private final FontManager fontManager;
 
   private final OrthographicCamera camera;
   private final ScreenViewport viewport;
   private final ShapeDrawer shapeDrawer;
   private final Vector3 unprojectScratch = new Vector3();
 
-  // private TiledMap map;
   private final OrthogonalTiledMapRenderer mapRenderer;
-  // private int tileWidth;
-  // private int tileHeight;
-  // private int mapTilesWide;
-  // private int mapTilesTall;
-
-  // private MapGraph mapGraph;
-  // private Pathfinder pathfinder;
 
   private final CameraController cameraController;
 
@@ -60,9 +52,8 @@ public class WorldRenderer implements Disposable {
       ShapeDrawer shapeDrawer,
       FontManager fontManager,
       AqueductWorld world,
-      Supplier<WorldEntity> constructionPlacementEntitySupplier) {
+      Supplier<ConstructionEntityHelper> constructionPlacementHelperSupplier) {
     this.shapeDrawer = shapeDrawer;
-    this.fontManager = fontManager;
     this.world = world;
 
     camera = new OrthographicCamera();
@@ -79,7 +70,7 @@ public class WorldRenderer implements Disposable {
     addLayer(new NodeLayer(world));
     addLayer(new CrosshairWorldLayer());
     addLayer(new TileHighlightWorldLayer(world));
-    addLayer(new ConstructionPlacementCursorLayer(constructionPlacementEntitySupplier));
+    addLayer(new ConstructionPlacementCursorLayer(constructionPlacementHelperSupplier));
   }
 
   public void resize(int screenWidth, int screenHeight) {

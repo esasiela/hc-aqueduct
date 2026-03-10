@@ -90,4 +90,10 @@ public abstract class WorldEntity {
   public float getHeight() {
     return height;
   }
+
+  // ── getters ────────────────────────────────────────────────────────────
+
+  public void setPosition(float x, float y) {
+    position.set(x, y);
+  }
 }
