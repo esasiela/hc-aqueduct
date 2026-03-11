@@ -22,7 +22,7 @@ public class C {
   public static final float DELIVER_RATE = 10f;
   public static final float CONSTRUCTION_RATE = 10f;
 
-  public static final float WORKER_INTERACTION_RANGE = 24f;
+  public static final float WORKER_INTERACTION_RANGE = 44f;
 
   // ── colors ────────────────────────────────────────────────────────────────
   public static final float CLEAR_R = 0.2f;

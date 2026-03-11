@@ -273,6 +273,8 @@ public class Worker extends WorldEntity {
       return;
     }
 
+    if (!townHall.isConstructionComplete()) return;
+
     // TODO check townhall has capacity to receive delivery
     if (carrying > 0f && carryingType != null) {
       // TODO make DELIVER_RATE townHall-specific

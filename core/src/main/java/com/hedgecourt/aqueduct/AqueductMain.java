@@ -192,35 +192,37 @@ public class AqueductMain extends ApplicationAdapter {
                 case NORMAL:
                   if (workerLayer.hasSelection()) {
                     WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
-                    switch (clickedEntity) {
-                      case Node node -> {
-                        workerLayer.commandSelectedHarvest(node);
-                        return true;
-                      }
-                      case TownHall townHall -> {
-                        workerLayer.commandSelectedDeliver(townHall);
-                        return true;
-                      }
-                      case null, default -> {}
-                    }
 
-                    BuildingEntity clickedBuilding =
-                        world.getIncompleteBuildingAt(worldPos.x, worldPos.y);
-                    if (clickedBuilding != null) {
-                      workerLayer.commandSelectedConstruct(clickedBuilding);
+                    if (clickedEntity == null) {
+                      workerLayer.commandSelectedMoveTo(worldPos);
                       return true;
                     }
 
-                    workerLayer.commandSelectedMoveTo(worldPos);
+                    if (clickedEntity instanceof Node node) {
+                      workerLayer.commandSelectedHarvest(node);
+                      return true;
+                    }
 
+                    BuildingEntity clickedIncompleteBuilding =
+                        world.getIncompleteBuildingAt(worldPos.x, worldPos.y);
+                    if (clickedIncompleteBuilding != null) {
+                      workerLayer.commandSelectedConstruct(clickedIncompleteBuilding);
+                      return true;
+                    }
+
+                    if (clickedEntity instanceof TownHall townHall) {
+                      workerLayer.commandSelectedDeliver(townHall);
+                      return true;
+                    }
                   } else {
                     // no workers selected
                     BuildingEntity pendingBuilding =
                         world.getConstructionPendingAt(worldPos.x, worldPos.y);
-                    if (pendingBuilding != null && !pendingBuilding.isConstructionStarted())
+                    if (pendingBuilding != null && !pendingBuilding.isConstructionStarted()) {
                       world.remove(pendingBuilding);
+                      return true;
+                    }
                   }
-                  return true;
                 case SELECT_BOX:
                   clearSelectionBox();
                   worldInputMode = WorldInputMode.NORMAL;

@@ -98,6 +98,8 @@ public class AqueductWorld implements Disposable {
     TownHall nearest = null;
     float bestDist = Float.MAX_VALUE;
     for (TownHall townHall : townHalls) {
+      if (!townHall.isConstructionComplete()) continue;
+
       float dist = townHall.distanceTo(entity);
       if (dist < bestDist) {
         bestDist = dist;

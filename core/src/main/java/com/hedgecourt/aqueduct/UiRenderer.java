@@ -74,7 +74,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            world.getBuildingFactory().get("aqueduct"),
+            world.getBuildingFactory().get("townhall"),
             onConstructionButtonClicked));
 
     addElement(
