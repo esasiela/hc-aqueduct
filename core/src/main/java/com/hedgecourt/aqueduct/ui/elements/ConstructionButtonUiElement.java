@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.ui.UiElement;
+import com.hedgecourt.aqueduct.world.BuildingDefinition;
 import java.util.function.Consumer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -15,9 +16,9 @@ public class ConstructionButtonUiElement extends UiElement {
   private final GlyphLayout glyphLayout;
   private final BitmapFont buildButtonFont;
 
-  // TODO replace this with some kind of BuildingDef
-  private String buildingType;
-  private Consumer<String> onClick;
+  private final String buildingType;
+  private final String displayName;
+  private final Consumer<String> onClick;
 
   public ConstructionButtonUiElement(
       FontManager fontManager,
@@ -25,11 +26,12 @@ public class ConstructionButtonUiElement extends UiElement {
       float y,
       float width,
       float height,
-      String buildingType,
+      BuildingDefinition buildingDefinition,
       Consumer<String> onClick) {
     super(x, y, width, height);
 
-    this.buildingType = buildingType;
+    this.buildingType = buildingDefinition.buildingType;
+    this.displayName = buildingDefinition.displayName;
     this.onClick = onClick;
 
     this.glyphLayout = fontManager.getGlyphLayout();
@@ -40,7 +42,7 @@ public class ConstructionButtonUiElement extends UiElement {
   public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     shapeDrawer.rectangle(bounds, Color.PURPLE, containsMouse() ? 4f : 1f);
 
-    String buttonText = this.buildingType;
+    String buttonText = this.displayName;
     glyphLayout.setText(buildButtonFont, buttonText);
     buildButtonFont.draw(
         batch,

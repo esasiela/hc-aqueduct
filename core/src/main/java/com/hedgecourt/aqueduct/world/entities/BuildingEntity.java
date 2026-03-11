@@ -82,4 +82,12 @@ public abstract class BuildingEntity extends WorldEntity {
   public void setConstructionUnitsRequired(float constructionUnitsRequired) {
     this.constructionUnitsRequired = constructionUnitsRequired;
   }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
 }

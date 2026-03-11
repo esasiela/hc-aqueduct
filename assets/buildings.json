@@ -1,0 +1,32 @@
+{
+  "buildings": [
+    {
+      "type": "pipe",
+      "displayName": "Pipe",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "constructionUnitsRequired": 100
+    },
+    {
+      "type": "sprinkler",
+      "displayName": "Sprinkler",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "constructionUnitsRequired": 200
+    },
+    {
+      "type": "pump",
+      "displayName": "Pump",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "constructionUnitsRequired": 200
+    },
+    {
+      "type": "aqueduct",
+      "displayName": "Aqueduct",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "constructionUnitsRequired": 200
+    }
+  ]
+}

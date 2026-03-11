@@ -64,7 +64,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING,
             buildButtonWidth,
             buildButtonHeight,
-            "pipe",
+            world.getBuildingFactory().get("pipe"),
             onConstructionButtonClicked));
 
     addElement(
@@ -74,7 +74,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            "aqueduct",
+            world.getBuildingFactory().get("aqueduct"),
             onConstructionButtonClicked));
 
     addElement(
@@ -84,7 +84,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING,
             buildButtonWidth,
             buildButtonHeight,
-            "sprinkler",
+            world.getBuildingFactory().get("sprinkler"),
             onConstructionButtonClicked));
 
     addElement(
@@ -94,7 +94,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            "pump",
+            world.getBuildingFactory().get("pump"),
             onConstructionButtonClicked));
   }
 

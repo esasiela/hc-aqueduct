@@ -26,7 +26,7 @@ public class AqueductLoader {
     this.assetManager = assetManager;
   }
 
-  public void load(String resourcesJsonFilename, String mapFilename)
+  public void load(String resourcesJsonFilename, String buildingsJsonFilename, String mapFilename)
       throws InvalidMapException, InvalidResourceConfigException {
     world.clear();
 
@@ -39,6 +39,7 @@ public class AqueductLoader {
      * Building Factory
      */
     BuildingFactory buildingFactory = new BuildingFactory(world);
+    buildingFactory.load(buildingsJsonFilename);
     world.setBuildingFactory(buildingFactory);
 
     /* ****
