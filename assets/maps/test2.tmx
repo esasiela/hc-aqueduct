@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="80" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="6">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="80" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="7">
  <tileset firstgid="1" source="[Base]BaseChip_pipo.tsx"/>
+ <tileset firstgid="1065" source="TREE_HOUSE4.tsx"/>
  <layer id="1" name="ground" width="80" height="60">
   <data encoding="csv">
 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
@@ -196,8 +197,7 @@
  <objectgroup id="4" name="entities">
   <object id="1" name="water" type="node" gid="61" x="576" y="1312" width="32" height="32"/>
   <object id="3" name="water" type="node" gid="61" x="576" y="1664" width="32" height="32"/>
-  <object id="2" name="th1" type="townhall" gid="665" x="928" y="1184" width="32" height="32"/>
-  <object id="4" name="th1" type="townhall" gid="665" x="928" y="1184" width="32" height="32"/>
-  <object id="5" name="th2" type="townhall" gid="665" x="928" y="1760" width="64" height="64"/>
+  <object id="2" name="th1" type="townhall" gid="665" x="928" y="1248" width="96" height="96"/>
+  <object id="5" name="th2" type="townhall" gid="665" x="928" y="1760" width="96" height="96"/>
  </objectgroup>
 </map>

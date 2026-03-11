@@ -1,6 +1,17 @@
 {
   "buildings": [
     {
+      "type": "townhall",
+      "displayName": "Town Hall",
+      "widthTiles": 3,
+      "heightTiles": 3,
+      "constructionUnitsRequired": 2000,
+      "spriteInfo": {
+        "type": "PNG",
+        "path": "maps/TREE_HOUSE4.png"
+      }
+    },
+    {
       "type": "pipe",
       "displayName": "Pipe",
       "widthTiles": 2,

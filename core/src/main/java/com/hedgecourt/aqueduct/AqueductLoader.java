@@ -13,8 +13,8 @@ import com.hedgecourt.aqueduct.world.BuildingFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.ResourceDef;
+import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
-import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 
 public class AqueductLoader {
@@ -136,20 +136,10 @@ public class AqueductLoader {
                     resourceDef.spriteIdEmpty)));
 
       } else if ("townhall".equals(objClass)) {
-        world.add(
-            /*
-             new TownHall(
-                 id, centreX, centreY, w, h, getPipoyaBaseChip(pipoyaBaseChipTexture, 664)));
 
-            */
-            new TownHall(
-                world,
-                id,
-                centerX,
-                centerY,
-                w,
-                h,
-                new TextureRegion(assetManager.get(townhallSpritePath, Texture.class))));
+        BuildingEntity building = world.getBuildingFactory().create("townhall", centerX, centerY);
+        building.setConstructionUnitsCompleted(building.getConstructionUnitsRequired());
+        world.add(building);
 
       } else {
         throw new InvalidMapException(

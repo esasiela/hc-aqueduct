@@ -21,7 +21,6 @@ import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.NodeLayer;
 import com.hedgecourt.aqueduct.world.layers.TileHighlightWorldLayer;
-import com.hedgecourt.aqueduct.world.layers.TownHallLayer;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +69,6 @@ public class WorldRenderer implements Disposable {
     addLayer(new ConstructionPendingLayer(world::getIncompleteBuildings));
     addLayer(new TileHighlightWorldLayer(world));
 
-    addLayer(new TownHallLayer(world));
     addLayer(new BuildingLayer(world));
     addLayer(new NodeLayer(world));
 

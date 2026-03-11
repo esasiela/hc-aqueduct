@@ -11,6 +11,7 @@ import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;
+import com.hedgecourt.aqueduct.world.entities.TownHall;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ public class BuildingFactory {
 
     BuildingEntity building =
         switch (type) {
+          case "townhall" -> new TownHall(world, x, y, w, h);
           case "pipe" -> new Pipe(world, x, y, w, h);
           case "sprinkler" -> new Sprinkler(world, x, y, w, h);
           default -> throw new InvalidBuildingConfigException("Unknown type: " + type);
