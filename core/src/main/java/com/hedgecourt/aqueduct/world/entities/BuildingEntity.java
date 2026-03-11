@@ -32,7 +32,10 @@ public abstract class BuildingEntity extends WorldEntity {
   }
 
   @Override
-  public void update(float delta) {}
+  public void update(float delta) {
+    // gotta pay the piper
+    waterInventory = Math.max(waterInventory - waterCost * delta, 0f);
+  }
 
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer drawer) {
@@ -43,6 +46,10 @@ public abstract class BuildingEntity extends WorldEntity {
 
   public BuildingEntity freshCopy() {
     return world.getBuildingFactory().create(buildingType, 0f, 0f);
+  }
+
+  public boolean isActive() {
+    return isConstructionComplete() && isWaterConnected() && waterInventory > 0;
   }
 
   // ── construction ───────────────────────────────────────────────────────────
