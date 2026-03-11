@@ -309,7 +309,16 @@ public class Worker extends WorldEntity {
     // TODO worker.constructionRate
     building.addConstructionUnits(C.CONSTRUCTION_RATE * delta);
 
-    if (building.isConstructionComplete()) clearPlan(true);
+    if (building.isConstructionComplete()) {
+      // look for nearby work
+      for (BuildingEntity nextBuilding : world.getIncompleteBuildings()) {
+        if (distanceTo(nextBuilding) <= 150f) {
+          commandConstruct(nextBuilding);
+          return;
+        }
+      }
+      clearPlan(true);
+    }
   }
 
   // ── helpers ────────────────────────────────────────────────────────────────

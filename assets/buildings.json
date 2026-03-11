@@ -7,7 +7,7 @@
       "heightTiles": 3,
       "constructionUnitsRequired": 2000,
       "waterCapacity": 200,
-      "waterCost": 0.1,
+      "waterCost": 1,
       "waterOutputRate": 5,
       "spriteInfo": {
         "type": "PNG",
@@ -35,7 +35,7 @@
       "heightTiles": 2,
       "constructionUnitsRequired": 200,
       "waterCapacity": 100,
-      "waterCost": 0.1,
+      "waterCost": 1,
       "waterOutputRate": 0,
       "spriteInfo": {
         "type": "PIPOYA_BASE",
