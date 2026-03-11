@@ -7,20 +7,8 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Pipe extends BuildingEntity {
 
-  public Pipe(
-      AqueductWorld world,
-      float x,
-      float y,
-      float width,
-      float height,
-      float constructionUnitsRequired) {
+  public Pipe(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
-    this.constructionUnitsRequired = constructionUnitsRequired;
-  }
-
-  @Override
-  public BuildingEntity freshCopy() {
-    return new Pipe(world, 0, 0, width, height, constructionUnitsRequired);
   }
 
   @Override

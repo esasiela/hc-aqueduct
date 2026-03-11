@@ -11,11 +11,6 @@ public class Sprinkler extends BuildingEntity {
   }
 
   @Override
-  public BuildingEntity freshCopy() {
-    return new Sprinkler(world, 0, 0, width, height);
-  }
-
-  @Override
   public void update(float delta) {}
 
   @Override

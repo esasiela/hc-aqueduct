@@ -15,11 +15,11 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.layers.BuildingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPendingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
 import com.hedgecourt.aqueduct.world.layers.CrosshairWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.NodeLayer;
-import com.hedgecourt.aqueduct.world.layers.PipeLayer;
 import com.hedgecourt.aqueduct.world.layers.TileHighlightWorldLayer;
 import com.hedgecourt.aqueduct.world.layers.TownHallLayer;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
@@ -67,11 +67,11 @@ public class WorldRenderer implements Disposable {
     initCamera();
 
     workerLayer = new WorkerLayer(world, fontManager);
-    addLayer(new ConstructionPendingLayer(world::getUnconstructedBuildings));
+    addLayer(new ConstructionPendingLayer(world::getIncompleteBuildings));
     addLayer(new TileHighlightWorldLayer(world));
 
     addLayer(new TownHallLayer(world));
-    addLayer(new PipeLayer(world));
+    addLayer(new BuildingLayer(world));
     addLayer(new NodeLayer(world));
 
     addLayer(workerLayer);

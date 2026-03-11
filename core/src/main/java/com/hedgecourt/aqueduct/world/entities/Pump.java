@@ -11,11 +11,6 @@ public class Pump extends BuildingEntity {
   }
 
   @Override
-  public BuildingEntity freshCopy() {
-    return new Pump(world, 0, 0, width, height);
-  }
-
-  @Override
   public void update(float delta) {}
 
   @Override

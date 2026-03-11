@@ -64,7 +64,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING,
             buildButtonWidth,
             buildButtonHeight,
-            "Pipe",
+            "pipe",
             onConstructionButtonClicked));
 
     addElement(
@@ -74,7 +74,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            "Aqueduct",
+            "aqueduct",
             onConstructionButtonClicked));
 
     addElement(
@@ -84,7 +84,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING,
             buildButtonWidth,
             buildButtonHeight,
-            "Town Hall",
+            "sprinkler",
             onConstructionButtonClicked));
 
     addElement(
@@ -94,7 +94,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            "Pump",
+            "pump",
             onConstructionButtonClicked));
   }
 

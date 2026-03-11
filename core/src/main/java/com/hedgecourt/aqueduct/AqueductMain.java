@@ -19,7 +19,6 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
-import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
@@ -85,10 +84,8 @@ public class AqueductMain extends ApplicationAdapter {
             fontManager,
             worldRenderer,
             buildingType -> {
-              if ("pipe".equalsIgnoreCase(buildingType)) {
-                constructionPlacementEntity = new Pipe(world, 0, 0, 32, 32, 100f);
-                worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
-              }
+              constructionPlacementEntity = world.getBuildingFactory().create(buildingType, 0, 0);
+              worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
             });
 
     /* ****
@@ -152,8 +149,6 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            Gdx.app.log("INPUT", "touchUp button=" + button + " mode=" + worldInputMode);
-
             boolean shiftIsPressed =
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
                     || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
@@ -210,7 +205,7 @@ public class AqueductMain extends ApplicationAdapter {
                     }
 
                     BuildingEntity clickedBuilding =
-                        world.getConstructionPendingAt(worldPos.x, worldPos.y);
+                        world.getIncompleteBuildingAt(worldPos.x, worldPos.y);
                     if (clickedBuilding != null) {
                       workerLayer.commandSelectedConstruct(clickedBuilding);
                       return true;

@@ -18,6 +18,8 @@ public class AqueductWorld implements Disposable {
 
   private final ResourceConfig resourceConfig = new ResourceConfig();
 
+  private BuildingFactory buildingFactory;
+
   private TiledMap map;
   private MapGraph mapGraph;
   private Pathfinder pathfinder;
@@ -159,13 +161,12 @@ public class AqueductWorld implements Disposable {
     return townHalls;
   }
 
-  public List<BuildingEntity> getUnconstructedBuildings() {
+  public List<BuildingEntity> getIncompleteBuildings() {
     List<BuildingEntity> result = new ArrayList<>();
 
     for (BuildingEntity building : getEntities(BuildingEntity.class)) {
       if (!building.isConstructionComplete()) result.add(building);
     }
-
     return result;
   }
 
@@ -176,6 +177,13 @@ public class AqueductWorld implements Disposable {
       if (!building.isConstructionStarted()) result.add(building);
     }
     return result;
+  }
+
+  public BuildingEntity getIncompleteBuildingAt(float x, float y) {
+    for (BuildingEntity building : getIncompleteBuildings()) {
+      if (building.containsPoint(x, y)) return building;
+    }
+    return null;
   }
 
   public BuildingEntity getConstructionPendingAt(float x, float y) {
@@ -211,6 +219,14 @@ public class AqueductWorld implements Disposable {
 
   public Pathfinder getPathfinder() {
     return pathfinder;
+  }
+
+  public BuildingFactory getBuildingFactory() {
+    return buildingFactory;
+  }
+
+  public void setBuildingFactory(BuildingFactory buildingFactory) {
+    this.buildingFactory = buildingFactory;
   }
 
   @Override

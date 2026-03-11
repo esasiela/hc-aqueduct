@@ -23,13 +23,6 @@ public class ConstructionPendingLayer extends WorldLayer {
   }
 
   @Override
-  public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (BuildingEntity building : buildingSupplier.get()) {
-      building.draw(batch, shapeDrawer);
-    }
-  }
-
-  @Override
   public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     for (BuildingEntity building : buildingSupplier.get()) {
 

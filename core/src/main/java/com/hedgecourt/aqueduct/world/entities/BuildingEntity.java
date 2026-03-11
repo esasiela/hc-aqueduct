@@ -5,6 +5,7 @@ import com.hedgecourt.aqueduct.world.WorldEntity;
 
 public abstract class BuildingEntity extends WorldEntity {
 
+  protected String buildingType;
   protected String displayName;
 
   protected float constructionUnitsRequired;
@@ -23,7 +24,9 @@ public abstract class BuildingEntity extends WorldEntity {
     super(world, x, y, width, height);
   }
 
-  public abstract BuildingEntity freshCopy();
+  public BuildingEntity freshCopy() {
+    return world.getBuildingFactory().create(buildingType, 0f, 0f);
+  }
 
   // ── construction ───────────────────────────────────────────────────────────
 
@@ -62,5 +65,21 @@ public abstract class BuildingEntity extends WorldEntity {
 
   public void setConstructionLocationValid(boolean constructionLocationValid) {
     this.constructionLocationValid = constructionLocationValid;
+  }
+
+  public String getBuildingType() {
+    return buildingType;
+  }
+
+  public void setBuildingType(String buildingType) {
+    this.buildingType = buildingType;
+  }
+
+  public float getConstructionUnitsRequired() {
+    return constructionUnitsRequired;
+  }
+
+  public void setConstructionUnitsRequired(float constructionUnitsRequired) {
+    this.constructionUnitsRequired = constructionUnitsRequired;
   }
 }

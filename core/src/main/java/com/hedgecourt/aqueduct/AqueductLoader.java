@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.BuildingFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.ResourceDef;
@@ -33,6 +34,12 @@ public class AqueductLoader {
      * Resource Config
      */
     world.getResourceConfig().load(resourcesJsonFilename);
+
+    /* ****
+     * Building Factory
+     */
+    BuildingFactory buildingFactory = new BuildingFactory(world);
+    world.setBuildingFactory(buildingFactory);
 
     /* ****
      * Open Tiled Map
