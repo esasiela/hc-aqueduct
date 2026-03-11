@@ -1,9 +1,9 @@
 package com.hedgecourt.aqueduct.world.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
@@ -240,7 +240,7 @@ public class Worker extends WorldEntity {
   private void updateHarvesting(float delta) {
     Node targetNode = plan.node;
 
-    if (distanceTo(targetNode) > C.HARVEST_RANGE) {
+    if (!isWithinInteractionRange(targetNode)) {
       moveAdjacentTo(targetNode);
       return;
     }
@@ -268,7 +268,7 @@ public class Worker extends WorldEntity {
   private void updateDelivering(float delta) {
     TownHall townHall = plan.townHall;
 
-    if (distanceTo(townHall) > C.DELIVER_RANGE) {
+    if (!isWithinInteractionRange(townHall)) {
       moveAdjacentTo(townHall);
       return;
     }
@@ -285,7 +285,6 @@ public class Worker extends WorldEntity {
 
     if (carrying <= 0) {
       // clamp bag contents to 0
-      Gdx.app.log("DELIVER", "done delivering, distance to townHall: " + distanceTo(townHall));
       carrying = 0;
       carryingType = null;
 
@@ -300,7 +299,7 @@ public class Worker extends WorldEntity {
   private void updateConstructing(float delta) {
     BuildingEntity building = plan.underConstruction;
 
-    if (distanceTo(building) > C.CONSTRUCTION_RANGE) {
+    if (!isWithinInteractionRange(building)) {
       moveAdjacentTo(building);
       return;
     }
@@ -312,6 +311,15 @@ public class Worker extends WorldEntity {
   }
 
   // ── helpers ────────────────────────────────────────────────────────────────
+
+  public boolean isWithinInteractionRange(WorldEntity target) {
+    Rectangle bounds = target.getBounds();
+    // find closest point on bounds rectangle to this entity's position
+    float closestX = Math.max(bounds.x, Math.min(position.x, bounds.x + bounds.width));
+    float closestY = Math.max(bounds.y, Math.min(position.y, bounds.y + bounds.height));
+    float dist = Vector2.dst(position.x, position.y, closestX, closestY);
+    return dist <= C.WORKER_INTERACTION_RANGE;
+  }
 
   private boolean moveTo(Vector2 dest) {
     waypoints.clear();
@@ -344,12 +352,6 @@ public class Worker extends WorldEntity {
     while (nodeMemory.size() > C.WORKER_NODE_MEMORY_DEPTH) {
       nodeMemory.removeLast();
     }
-  }
-
-  private Vector2 approachPoint(WorldEntity target) {
-    Vector2 dir = new Vector2(target.getPosition()).sub(position).nor();
-    float range = (target.getWidth() / 2f) + C.INTERACTION_RANGE;
-    return new Vector2(target.getPosition()).sub(dir.scl(range));
   }
 
   private boolean recentlyVisited(String nodeId) {

@@ -3,8 +3,8 @@
     {
       "type": "pipe",
       "displayName": "Pipe",
-      "widthTiles": 1,
-      "heightTiles": 1,
+      "widthTiles": 2,
+      "heightTiles": 2,
       "constructionUnitsRequired": 100,
       "spriteInfo": {
         "type": "PNG",

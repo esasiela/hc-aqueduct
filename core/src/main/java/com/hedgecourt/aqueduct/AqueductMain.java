@@ -364,13 +364,18 @@ public class AqueductMain extends ApplicationAdapter {
     if (constructionPlacementEntity == null) return;
 
     Vector2 mouseWorldPos = worldRenderer.mouseInWorld();
+
     int tileW = world.getTileWidth();
     int tileH = world.getTileHeight();
 
     int tileX = (int) (mouseWorldPos.x / tileW);
     int tileY = (int) (mouseWorldPos.y / tileH);
 
-    constructionPlacementEntity.setPosition(tileX * tileW + tileW / 2f, tileY * tileH + tileH / 2f);
+    // snap lower-left to tile corner
+    float snappedX = tileX * tileW + constructionPlacementEntity.getWidth() / 2f;
+    float snappedY = tileY * tileH + constructionPlacementEntity.getHeight() / 2f;
+
+    constructionPlacementEntity.setPosition(snappedX, snappedY);
 
     // to be valid, must pass pathfinder walkability check AND no existing constructionPending
     boolean isWalkable =
