@@ -6,6 +6,8 @@
       "widthTiles": 3,
       "heightTiles": 3,
       "constructionUnitsRequired": 2000,
+      "waterCapacity": 200,
+      "waterCost": 5,
       "spriteInfo": {
         "type": "PNG",
         "path": "maps/TREE_HOUSE4.png"
@@ -17,6 +19,8 @@
       "widthTiles": 2,
       "heightTiles": 2,
       "constructionUnitsRequired": 100,
+      "waterCapacity": 0,
+      "waterCost": 0,
       "spriteInfo": {
         "type": "PNG",
         "path": "puzzle_pipes/horizontal/pipe_horizontal.png"
@@ -28,6 +32,8 @@
       "widthTiles": 1,
       "heightTiles": 1,
       "constructionUnitsRequired": 200,
+      "waterCapacity": 100,
+      "waterCost": 5,
       "spriteInfo": {
         "type": "PIPOYA_BASE",
         "spriteId": 937
@@ -38,14 +44,18 @@
       "displayName": "Pump",
       "widthTiles": 1,
       "heightTiles": 1,
-      "constructionUnitsRequired": 200
+      "constructionUnitsRequired": 200,
+      "waterCapacity": 200,
+      "waterCost": 5
     },
     {
       "type": "aqueduct",
       "displayName": "Aqueduct",
       "widthTiles": 1,
       "heightTiles": 1,
-      "constructionUnitsRequired": 200
+      "constructionUnitsRequired": 200,
+      "waterCapacity": 0,
+      "waterCost": 0
     }
   ]
 }

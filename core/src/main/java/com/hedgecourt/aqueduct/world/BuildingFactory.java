@@ -44,6 +44,8 @@ public class BuildingFactory {
 
     building.setDisplayName(def.displayName);
     building.setConstructionUnitsRequired(def.constructionUnitsRequired);
+    building.setWaterCapacity(def.waterCapacity);
+    building.setWaterCost(def.waterCost);
 
     building.setSprite(def.sprite);
 
@@ -111,8 +113,17 @@ public class BuildingFactory {
     float widthTiles = requireFloat(e, "widthTiles", jsonPath);
     float heightTiles = requireFloat(e, "heightTiles", jsonPath);
     float constructionUnitsRequired = requireFloat(e, "constructionUnitsRequired", jsonPath);
+    float waterCapacity = requireFloat(e, "waterCapacity", jsonPath);
+    float waterCost = requireFloat(e, "waterCost", jsonPath);
+
     return new BuildingDefinition(
-        type, displayName, widthTiles, heightTiles, constructionUnitsRequired);
+        type,
+        displayName,
+        widthTiles,
+        heightTiles,
+        constructionUnitsRequired,
+        waterCapacity,
+        waterCost);
   }
 
   public BuildingDefinition get(String type) {

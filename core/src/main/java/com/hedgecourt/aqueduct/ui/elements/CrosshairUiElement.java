@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct.ui.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.ui.UiElement;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -9,7 +10,7 @@ public class CrosshairUiElement extends UiElement {
 
   private static final float SIZE = 20f;
   private static final float THICKNESS = 2f;
-  private static final Color COLOR = Color.CYAN;
+  private static final Color COLOR = C.UI_LINE_COLOR;
 
   public CrosshairUiElement() {
     super(0, 0, 0, 0); // no fixed bounds, follows mouse

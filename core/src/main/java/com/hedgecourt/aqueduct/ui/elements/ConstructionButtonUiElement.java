@@ -1,9 +1,9 @@
 package com.hedgecourt.aqueduct.ui.elements;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.ui.UiElement;
@@ -40,7 +40,7 @@ public class ConstructionButtonUiElement extends UiElement {
 
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    shapeDrawer.rectangle(bounds, Color.PURPLE, containsMouse() ? 4f : 1f);
+    shapeDrawer.rectangle(bounds, C.UI_LINE_COLOR, containsMouse() ? 4f : 1f);
 
     String buttonText = this.displayName;
     glyphLayout.setText(buildButtonFont, buttonText);

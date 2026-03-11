@@ -29,6 +29,8 @@ public class C {
   public static final float CLEAR_G = 0.2f;
   public static final float CLEAR_B = 0.2f;
 
+  public static final Color UI_LINE_COLOR = Color.PURPLE;
+
   public static final Color BUILDING_SELECTION_RECT_COLOR = new Color(1f, 1f, 1f, 1.0f);
   public static final Color BUILDING_HOVER_RECT_COLOR = new Color(0f, 1f, 0f, 1.0f);
 

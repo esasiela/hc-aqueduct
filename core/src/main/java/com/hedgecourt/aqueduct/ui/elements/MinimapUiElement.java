@@ -147,8 +147,7 @@ public class MinimapUiElement extends UiElement {
     }
 
     // ── border ────────────────────────────────────────────────────────────
-    shapeDrawer.setColor(Color.WHITE);
-    shapeDrawer.rectangle(bounds.x, bounds.y, bounds.width, bounds.height, 1.5f);
+    shapeDrawer.rectangle(bounds.x, bounds.y, bounds.width, bounds.height, C.UI_LINE_COLOR, 1f);
   }
 
   private void drawViewportRect(ShapeDrawer shapeDrawer) {

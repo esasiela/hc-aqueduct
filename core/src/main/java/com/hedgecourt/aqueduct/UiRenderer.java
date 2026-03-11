@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.ui.UiElement;
+import com.hedgecourt.aqueduct.ui.elements.BuildingInfoUiElement;
 import com.hedgecourt.aqueduct.ui.elements.ConstructionButtonUiElement;
 import com.hedgecourt.aqueduct.ui.elements.CrosshairUiElement;
 import com.hedgecourt.aqueduct.ui.elements.MinimapUiElement;
@@ -53,7 +54,14 @@ public class UiRenderer implements Disposable {
     minimap = new MinimapUiElement(world, worldRenderer);
     addElement(minimap);
 
-    addElement(new CrosshairUiElement());
+    addElement(
+        new BuildingInfoUiElement(
+            world,
+            fontManager,
+            minimap.getBounds().x + minimap.getBounds().width + UI_PADDING,
+            UI_PADDING,
+            200f,
+            getUiHeight() - 2f * UI_PADDING));
 
     float buildButtonWidth = 100f;
     float buildButtonHeight = (getUiHeight() - 2f * UI_PADDING) / 2f;
@@ -96,6 +104,8 @@ public class UiRenderer implements Disposable {
             buildButtonHeight,
             world.getBuildingFactory().get("pump"),
             onConstructionButtonClicked));
+
+    addElement(new CrosshairUiElement());
   }
 
   public boolean isMinimapDragging() {

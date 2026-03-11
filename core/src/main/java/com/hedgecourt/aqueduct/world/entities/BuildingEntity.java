@@ -114,6 +114,42 @@ public abstract class BuildingEntity extends WorldEntity {
     this.constructionUnitsCompleted = constructionUnitsCompleted;
   }
 
+  public float getWaterInventoryPct() {
+    return (waterCapacity == 0) ? 1f : waterInventory / waterCapacity;
+  }
+
+  public float getWaterCapacity() {
+    return waterCapacity;
+  }
+
+  public void setWaterCapacity(float waterCapacity) {
+    this.waterCapacity = waterCapacity;
+  }
+
+  public float getWaterInventory() {
+    return waterInventory;
+  }
+
+  public void setWaterInventory(float waterInventory) {
+    this.waterInventory = waterInventory;
+  }
+
+  public float getWaterCost() {
+    return waterCost;
+  }
+
+  public void setWaterCost(float waterCost) {
+    this.waterCost = waterCost;
+  }
+
+  public float getWaterIntakeRate() {
+    return waterIntakeRate;
+  }
+
+  public void setWaterIntakeRate(float waterIntakeRate) {
+    this.waterIntakeRate = waterIntakeRate;
+  }
+
   public TextureRegion getSprite() {
     return sprite;
   }
