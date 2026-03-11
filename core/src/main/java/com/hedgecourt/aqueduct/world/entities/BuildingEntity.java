@@ -25,6 +25,8 @@ public abstract class BuildingEntity extends WorldEntity {
 
   protected TextureRegion sprite;
 
+  protected boolean waterConnected = false;
+
   public BuildingEntity(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
   }
@@ -56,7 +58,7 @@ public abstract class BuildingEntity extends WorldEntity {
       world.updateWalkabilityForEntity(this, false);
     } else if (wasNotComplete && isConstructionComplete()) {
       // grand opening! entity is already in world, nothing to do here.
-      // TODO trigger completion effects, sounds, notifications
+      world.recomputeWaterNetwork();
     }
   }
 
@@ -156,5 +158,13 @@ public abstract class BuildingEntity extends WorldEntity {
 
   public void setSprite(TextureRegion sprite) {
     this.sprite = sprite;
+  }
+
+  public boolean isWaterConnected() {
+    return waterConnected;
+  }
+
+  public void setWaterConnected(boolean waterConnected) {
+    this.waterConnected = waterConnected;
   }
 }

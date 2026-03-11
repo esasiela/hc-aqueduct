@@ -41,11 +41,9 @@ public class BuildingInfoUiElement extends UiElement {
       lines.add("");
 
       if (b.isConstructionComplete()) {
-        /*
-         * waterInventory / waterCapacity (pct)
-         * waterCost
-         * waterIntakeRate
-         */
+        lines.add("Connected: " + (b.isWaterConnected() ? "Yes" : "No"));
+        lines.add("");
+
         lines.add(
             String.format(
                 "Water Qty  : %d / %d (%d%%)",

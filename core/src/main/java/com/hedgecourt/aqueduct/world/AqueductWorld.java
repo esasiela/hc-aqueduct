@@ -1,6 +1,7 @@
 package com.hedgecourt.aqueduct.world;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
@@ -8,13 +9,20 @@ import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 public class AqueductWorld implements Disposable {
   private final List<WorldEntity> worldEntities = new ArrayList<>();
   private final List<Worker> workers = new ArrayList<>();
   private final List<Node> nodes = new ArrayList<>();
-  private final List<TownHall> townHalls = new ArrayList<>();
+
+  private final Map<TownHall, Set<GridPoint2>> waterNetworkTiles = new HashMap<>();
 
   private final ResourceConfig resourceConfig = new ResourceConfig();
 
@@ -38,7 +46,6 @@ public class AqueductWorld implements Disposable {
   public void clear() {
     workers.clear();
     nodes.clear();
-    townHalls.clear();
     worldEntities.clear();
 
     resourceConfig.clear();
@@ -52,12 +59,10 @@ public class AqueductWorld implements Disposable {
       nodes.add(node);
       updateWalkabilityForEntity(node, false);
     }
-    if (entity instanceof TownHall townHall) {
-      townHalls.add(townHall);
-      updateWalkabilityForEntity(townHall, false);
-    }
-    if (entity instanceof Pipe pipe) {
-      updateWalkabilityForEntity(pipe, false);
+
+    if (entity instanceof BuildingEntity building) {
+      updateWalkabilityForEntity(building, false);
+      recomputeWaterNetwork();
     }
   }
 
@@ -70,13 +75,9 @@ public class AqueductWorld implements Disposable {
       updateWalkabilityForEntity(node, true);
     }
 
-    if (entity instanceof TownHall townHall) {
-      townHalls.remove(townHall);
-      updateWalkabilityForEntity(townHall, true);
-    }
-
-    if (entity instanceof Pipe pipe) {
-      updateWalkabilityForEntity(pipe, true);
+    if (entity instanceof BuildingEntity building) {
+      updateWalkabilityForEntity(building, true);
+      recomputeWaterNetwork();
     }
   }
 
@@ -97,7 +98,7 @@ public class AqueductWorld implements Disposable {
     // TODO shouldnt workers just figure out where they want to go on their own?
     TownHall nearest = null;
     float bestDist = Float.MAX_VALUE;
-    for (TownHall townHall : townHalls) {
+    for (TownHall townHall : getEntities(TownHall.class)) {
       if (!townHall.isConstructionComplete()) continue;
 
       float dist = townHall.distanceTo(entity);
@@ -159,10 +160,6 @@ public class AqueductWorld implements Disposable {
     return nodes;
   }
 
-  public List<TownHall> getTownHalls() {
-    return townHalls;
-  }
-
   public List<BuildingEntity> getIncompleteBuildings() {
     List<BuildingEntity> result = new ArrayList<>();
 
@@ -193,6 +190,86 @@ public class AqueductWorld implements Disposable {
       if (building.containsPoint(x, y)) return building;
     }
     return null;
+  }
+
+  public void recomputeWaterNetwork() {
+    waterNetworkTiles.clear();
+
+    List<TownHall> townHalls = getEntities(TownHall.class);
+    Set<GridPoint2> pipeTiles = new HashSet<>();
+
+    // build set of all pipe tiles
+    for (Pipe pipe : getEntities(Pipe.class)) {
+      if (!pipe.isConstructionComplete()) continue;
+      pipeTiles.addAll(getEntityTiles(pipe));
+    }
+
+    // flood fill from each TownHall
+    for (TownHall th : townHalls) {
+      Set<GridPoint2> reachable = new HashSet<>();
+      Queue<GridPoint2> frontier = new LinkedList<>();
+
+      // seed frontier with TownHall's own tiles
+      for (GridPoint2 tile : getEntityTiles(th)) {
+        frontier.add(tile);
+        reachable.add(tile);
+      }
+
+      while (!frontier.isEmpty()) {
+        GridPoint2 current = frontier.poll();
+        for (GridPoint2 neighbor : getCardinalNeighbors(current)) {
+          if (!reachable.contains(neighbor) && pipeTiles.contains(neighbor)) {
+            reachable.add(neighbor);
+            frontier.add(neighbor);
+          }
+        }
+      }
+
+      waterNetworkTiles.put(th, reachable);
+    }
+
+    // update waterConnected on all buildings
+    for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+      building.setWaterConnected(isWaterConnected(building));
+    }
+  }
+
+  public boolean isWaterConnected(BuildingEntity building) {
+    if (building instanceof TownHall) return true;
+
+    Set<GridPoint2> adjacentTiles = new HashSet<>();
+    for (GridPoint2 tile : getEntityTiles(building)) {
+      adjacentTiles.addAll(getCardinalNeighbors(tile));
+    }
+
+    for (Set<GridPoint2> reachable : waterNetworkTiles.values()) {
+      for (GridPoint2 adj : adjacentTiles) {
+        if (reachable.contains(adj)) return true;
+      }
+    }
+    return false;
+  }
+
+  private Set<GridPoint2> getEntityTiles(WorldEntity entity) {
+    Set<GridPoint2> tiles = new HashSet<>();
+    int left = (int) ((entity.getPosition().x - entity.getWidth() / 2f) / tileWidth);
+    int bottom = (int) ((entity.getPosition().y - entity.getHeight() / 2f) / tileHeight);
+    int right = (int) ((entity.getPosition().x + entity.getWidth() / 2f - 1) / tileWidth);
+    int top = (int) ((entity.getPosition().y + entity.getHeight() / 2f - 1) / tileHeight);
+    for (int tx = left; tx <= right; tx++) {
+      for (int ty = bottom; ty <= top; ty++) {
+        tiles.add(new GridPoint2(tx, ty));
+      }
+    }
+    return tiles;
+  }
+
+  private List<GridPoint2> getCardinalNeighbors(GridPoint2 tile) {
+    return List.of(
+        new GridPoint2(tile.x + 1, tile.y),
+        new GridPoint2(tile.x - 1, tile.y),
+        new GridPoint2(tile.x, tile.y + 1),
+        new GridPoint2(tile.x, tile.y - 1));
   }
 
   public int getTileWidth() {

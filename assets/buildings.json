@@ -16,8 +16,8 @@
     {
       "type": "pipe",
       "displayName": "Pipe",
-      "widthTiles": 2,
-      "heightTiles": 2,
+      "widthTiles": 1,
+      "heightTiles": 1,
       "constructionUnitsRequired": 100,
       "waterCapacity": 0,
       "waterCost": 0,
@@ -29,8 +29,8 @@
     {
       "type": "sprinkler",
       "displayName": "Sprinkler",
-      "widthTiles": 1,
-      "heightTiles": 1,
+      "widthTiles": 2,
+      "heightTiles": 2,
       "constructionUnitsRequired": 200,
       "waterCapacity": 100,
       "waterCost": 5,
