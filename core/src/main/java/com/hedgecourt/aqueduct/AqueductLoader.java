@@ -31,16 +31,36 @@ public class AqueductLoader {
     world.clear();
 
     /* ****
-     * Resource Config
-     */
-    world.getResourceConfig().load(resourcesJsonFilename);
-
-    /* ****
-     * Building Factory
+     * Instantiate buildingFactory so we can get asset paths
      */
     BuildingFactory buildingFactory = new BuildingFactory(world);
-    buildingFactory.load(buildingsJsonFilename);
     world.setBuildingFactory(buildingFactory);
+
+    /* ****
+     * Load assets
+     */
+    String pipoyaBaseChipPath = "maps/[Base]BaseChip_pipo.png";
+    String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
+    String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
+    String townhallSpritePath = "maps/TREE_HOUSE4.png";
+    assetManager.load(pipoyaBaseChipPath, Texture.class);
+    assetManager.load(workerSpritePath1, Texture.class);
+    assetManager.load(workerSpritePath2, Texture.class);
+    assetManager.load(townhallSpritePath, Texture.class);
+
+    buildingFactory.loadAssets(buildingsJsonFilename, assetManager);
+
+    assetManager.finishLoading();
+
+    /* ****
+     * Load buildingFactory, must go after assetManager is loaded
+     */
+    buildingFactory.loadDefinitions(buildingsJsonFilename, assetManager);
+
+    /* ****
+     * Node Resource Definitions
+     */
+    world.getResourceConfig().load(resourcesJsonFilename);
 
     /* ****
      * Open Tiled Map
@@ -61,16 +81,6 @@ public class AqueductLoader {
     /* ****
      * Workers
      */
-    String pipoyaBaseChipPath = "maps/[Base]BaseChip_pipo.png";
-    String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
-    String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
-    String townhallSpritePath = "maps/TREE_HOUSE4.png";
-    assetManager.load(pipoyaBaseChipPath, Texture.class);
-    assetManager.load(workerSpritePath1, Texture.class);
-    assetManager.load(workerSpritePath2, Texture.class);
-    assetManager.load(townhallSpritePath, Texture.class);
-    assetManager.finishLoading();
-
     Texture workerTexture1 = assetManager.get(workerSpritePath1, Texture.class);
     TextureRegion[][] grid1 = TextureRegion.split(workerTexture1, 32, 32);
 

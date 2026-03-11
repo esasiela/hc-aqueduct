@@ -5,14 +5,22 @@
       "displayName": "Pipe",
       "widthTiles": 1,
       "heightTiles": 1,
-      "constructionUnitsRequired": 100
+      "constructionUnitsRequired": 100,
+      "spriteInfo": {
+        "type": "PNG",
+        "path": "puzzle_pipes/horizontal/pipe_horizontal.png"
+      }
     },
     {
       "type": "sprinkler",
       "displayName": "Sprinkler",
       "widthTiles": 1,
       "heightTiles": 1,
-      "constructionUnitsRequired": 200
+      "constructionUnitsRequired": 200,
+      "spriteInfo": {
+        "type": "PIPOYA_BASE",
+        "spriteId": 937
+      }
     },
     {
       "type": "pump",

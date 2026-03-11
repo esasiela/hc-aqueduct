@@ -45,4 +45,5 @@ public class C {
 
   // ── misc ────────────────────────────────────────────────────────────────
   public static final float DRAG_THRESHOLD = 6f;
+  public static final String PIPOYA_BASE_PATH = "maps/[Base]BaseChip_pipo.png";
 }

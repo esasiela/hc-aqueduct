@@ -1,7 +1,10 @@
 package com.hedgecourt.aqueduct.world.entities;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
+import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class BuildingEntity extends WorldEntity {
 
@@ -20,8 +23,20 @@ public abstract class BuildingEntity extends WorldEntity {
   protected int widthTiles;
   protected int heightTiles;
 
+  protected TextureRegion sprite;
+
   public BuildingEntity(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
+  }
+
+  @Override
+  public void update(float delta) {}
+
+  @Override
+  public void draw(SpriteBatch batch, ShapeDrawer drawer) {
+    if (sprite != null) {
+      batch.draw(sprite, position.x - width / 2f, position.y - height / 2f, width, height);
+    }
   }
 
   public BuildingEntity freshCopy() {
@@ -89,5 +104,21 @@ public abstract class BuildingEntity extends WorldEntity {
 
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
+  }
+
+  public float getConstructionUnitsCompleted() {
+    return constructionUnitsCompleted;
+  }
+
+  public void setConstructionUnitsCompleted(float constructionUnitsCompleted) {
+    this.constructionUnitsCompleted = constructionUnitsCompleted;
+  }
+
+  public TextureRegion getSprite() {
+    return sprite;
+  }
+
+  public void setSprite(TextureRegion sprite) {
+    this.sprite = sprite;
   }
 }
