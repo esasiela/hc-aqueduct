@@ -20,6 +20,7 @@ import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Worker;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import java.util.ArrayList;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -165,8 +166,9 @@ public class AqueductMain extends ApplicationAdapter {
               switch (worldInputMode) {
                 case NORMAL:
                   Vector2 worldPos = worldRenderer.mouseInWorld();
-                  workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
-                  return true;
+                  return handleLeftClickNormal(worldPos, shiftIsPressed);
+                // workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
+                // return true;
                 case SELECT_BOX:
                   Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
                   clearSelectionBox();
@@ -295,6 +297,36 @@ public class AqueductMain extends ApplicationAdapter {
     Gdx.input.setInputProcessor(multiplexer);
   }
 
+  private boolean handleLeftClickNormal(Vector2 worldPos, boolean shiftIsPressed) {
+    // What did you click on?
+    WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
+    if (clickedEntity == null) {
+      // click is on BG, not an entity
+      deselectAll();
+      return true;
+    }
+
+    if (clickedEntity instanceof BuildingEntity building) {
+      // building selection is single-select
+      deselectAll();
+      building.select();
+      return true;
+    }
+
+    if (clickedEntity instanceof Worker) {
+      workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
+      return true;
+    }
+
+    return false;
+  }
+
+  private void deselectAll() {
+    for (WorldEntity worldEntity : world.getEntities()) {
+      worldEntity.deselect();
+    }
+  }
+
   private Rectangle buildSelRect(Vector2 a, Vector2 b) {
     float x = Math.min(a.x, b.x);
     float y = Math.min(a.y, b.y);
@@ -315,8 +347,6 @@ public class AqueductMain extends ApplicationAdapter {
   public void render() {
     float delta = Gdx.graphics.getDeltaTime();
 
-    handleInput(delta);
-
     updateWorld(delta);
     updateUi(delta);
 
@@ -329,8 +359,6 @@ public class AqueductMain extends ApplicationAdapter {
     drawWorld();
     drawUi();
   }
-
-  private void handleInput(float delta) {}
 
   private void updateWorld(float delta) {
     if (!paused) {

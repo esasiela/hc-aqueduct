@@ -21,7 +21,7 @@ public class BuildingLayer extends WorldLayer {
   @Override
   public void drawUnderlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
     for (BuildingEntity building : world.getEntities(BuildingEntity.class)) {
-      if (building.isHovered()) {
+      if (building.isSelected()) {
         Vector2 pos = building.getPosition();
         shapeDrawer.rectangle(
             pos.x - building.getWidth() / 2f,
@@ -31,11 +31,23 @@ public class BuildingLayer extends WorldLayer {
             C.BUILDING_SELECTION_RECT_COLOR,
             2f);
       }
+      if (building.isHovered()) {
+        float hoverOffset = 3f;
+        Vector2 pos = building.getPosition();
+        shapeDrawer.rectangle(
+            pos.x - building.getWidth() / 2f + hoverOffset,
+            pos.y - building.getHeight() / 2f + hoverOffset,
+            building.getWidth() - 2f * hoverOffset,
+            building.getHeight() - 2f * hoverOffset,
+            C.BUILDING_HOVER_RECT_COLOR,
+            2f);
+      }
     }
   }
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (BuildingEntity building : world.getEntities(BuildingEntity.class)) building.draw(batch, shapeDrawer);
+    for (BuildingEntity building : world.getEntities(BuildingEntity.class))
+      building.draw(batch, shapeDrawer);
   }
 }

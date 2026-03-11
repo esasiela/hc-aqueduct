@@ -12,6 +12,7 @@ import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
+import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
@@ -145,9 +146,17 @@ public class WorkerLayer extends WorldLayer {
        * Selection Decoration
        */
       if (worker.isSelected()) {
-        shapeDrawer.setColor(C.SELECTION_RING_COLOR);
+        shapeDrawer.setColor(C.WORKER_SELECTION_RING_COLOR);
         shapeDrawer.circle(
             worker.getPosition().x, worker.getPosition().y, worker.getWidth() * 0.6f, 2f);
+      }
+      /* ****
+       * Hover Decoration
+       */
+      if (worker.isHovered()) {
+        shapeDrawer.setColor(C.WORKER_HOVER_RING_COLOR);
+        shapeDrawer.circle(
+            worker.getPosition().x, worker.getPosition().y, worker.getWidth() * 0.48f, 2f);
       }
       /* ****
        * Selection-Box Decoration
@@ -263,8 +272,8 @@ public class WorkerLayer extends WorldLayer {
   }
 
   public void deselectAll() {
-    for (Worker worker : world.getWorkers()) {
-      worker.deselect();
+    for (WorldEntity worldEntity : world.getEntities()) {
+      worldEntity.deselect();
     }
   }
 

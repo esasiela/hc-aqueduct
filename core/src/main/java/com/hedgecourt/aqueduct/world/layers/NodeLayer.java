@@ -29,7 +29,7 @@ public class NodeLayer extends WorldLayer {
        * Selection Decoration
        */
       if (node.isSelected()) {
-        shapeDrawer.setColor(C.SELECTION_RING_COLOR);
+        shapeDrawer.setColor(C.WORKER_SELECTION_RING_COLOR);
         shapeDrawer.circle(node.getPosition().x, node.getPosition().y, node.getWidth() * 0.6f, 2f);
       }
       /* ****
