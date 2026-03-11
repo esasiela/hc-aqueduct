@@ -38,9 +38,10 @@ public class AqueductWorld implements Disposable {
   private int mapTilesTall;
 
   public void update(float delta) {
-    for (WorldEntity entity : worldEntities) {
+    for (WorldEntity entity : new ArrayList<>(worldEntities)) {
       entity.update(delta);
     }
+    distributeWater(delta);
   }
 
   public void clear() {
@@ -190,6 +191,39 @@ public class AqueductWorld implements Disposable {
       if (building.containsPoint(x, y)) return building;
     }
     return null;
+  }
+
+  private void distributeWater(float delta) {
+    List<TownHall> townHalls = getEntities(TownHall.class);
+
+    for (TownHall th : townHalls) {
+      // find eligible recipients
+      List<BuildingEntity> recipients = new ArrayList<>();
+      for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+
+        if (building instanceof TownHall) continue;
+        if (!building.isConstructionComplete()) continue;
+        if (!building.isWaterConnected()) continue;
+        if (building.getWaterInventory() >= building.getWaterCapacity()) continue;
+        recipients.add(building);
+      }
+
+      if (recipients.isEmpty()) continue;
+
+      float available = Math.min(th.getWaterInventory(), th.getWaterOutputRate() * delta);
+
+      float share = available / recipients.size();
+      float totalDistributed = 0f;
+
+      for (BuildingEntity recipient : recipients) {
+        float space = recipient.getWaterCapacity() - recipient.getWaterInventory();
+        float amount = Math.min(share, space);
+        recipient.setWaterInventory(recipient.getWaterInventory() + amount);
+        totalDistributed += amount;
+      }
+
+      th.setWaterInventory(th.getWaterInventory() - totalDistributed);
+    }
   }
 
   public void recomputeWaterNetwork() {

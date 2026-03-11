@@ -51,7 +51,7 @@ public class BuildingInfoUiElement extends UiElement {
                 Math.round(b.getWaterCapacity()),
                 Math.round(b.getWaterInventoryPct() * 100f)));
         lines.add(String.format("Cost       : %d", Math.round(b.getWaterCost())));
-        lines.add(String.format("Intake Rate: %d", 0));
+        lines.add(String.format("Output Rate: %d", Math.round(b.getWaterOutputRate())));
       } else {
         // unitsCompleted / unitsRequired (pct)
         lines.add(

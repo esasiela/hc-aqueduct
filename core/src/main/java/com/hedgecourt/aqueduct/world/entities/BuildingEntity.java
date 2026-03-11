@@ -18,7 +18,7 @@ public abstract class BuildingEntity extends WorldEntity {
   protected float waterCapacity;
   protected float waterInventory;
   protected float waterCost;
-  protected float waterIntakeRate;
+  protected float waterOutputRate;
 
   protected int widthTiles;
   protected int heightTiles;
@@ -144,12 +144,12 @@ public abstract class BuildingEntity extends WorldEntity {
     this.waterCost = waterCost;
   }
 
-  public float getWaterIntakeRate() {
-    return waterIntakeRate;
+  public float getWaterOutputRate() {
+    return waterOutputRate;
   }
 
-  public void setWaterIntakeRate(float waterIntakeRate) {
-    this.waterIntakeRate = waterIntakeRate;
+  public void setWaterOutputRate(float waterOutputRate) {
+    this.waterOutputRate = waterOutputRate;
   }
 
   public TextureRegion getSprite() {

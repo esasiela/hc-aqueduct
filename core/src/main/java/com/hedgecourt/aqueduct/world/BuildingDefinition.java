@@ -10,6 +10,7 @@ public class BuildingDefinition {
   public final float constructionUnitsRequired;
   public final float waterCapacity;
   public final float waterCost;
+  public final float waterOutputRate;
 
   public TextureRegion sprite;
 
@@ -20,7 +21,8 @@ public class BuildingDefinition {
       float heightTiles,
       float constructionUnitsRequired,
       float waterCapacity,
-      float waterCost) {
+      float waterCost,
+      float waterOutputRate) {
     this.buildingType = buildingType;
     this.displayName = displayName;
     this.widthTiles = widthTiles;
@@ -28,5 +30,6 @@ public class BuildingDefinition {
     this.constructionUnitsRequired = constructionUnitsRequired;
     this.waterCapacity = waterCapacity;
     this.waterCost = waterCost;
+    this.waterOutputRate = waterOutputRate;
   }
 }

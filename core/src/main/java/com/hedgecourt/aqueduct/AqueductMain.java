@@ -22,7 +22,6 @@ import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
-import java.util.ArrayList;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class AqueductMain extends ApplicationAdapter {
@@ -362,9 +361,7 @@ public class AqueductMain extends ApplicationAdapter {
 
   private void updateWorld(float delta) {
     if (!paused) {
-      for (WorldEntity e : new ArrayList<>(world.getEntities())) {
-        e.update(delta);
-      }
+      world.update(delta);
       workerLayer.applySeparation(delta);
     }
 
