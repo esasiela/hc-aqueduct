@@ -8,12 +8,14 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.sprite.SpriteFactory;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.BuildingFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
-import com.hedgecourt.aqueduct.world.ResourceDef;
+import com.hedgecourt.aqueduct.world.ResourceDefinition;
+import com.hedgecourt.aqueduct.world.ResourceFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Worker;
@@ -40,6 +42,9 @@ public class AqueductLoader {
     BuildingFactory buildingFactory = new BuildingFactory(world);
     world.setBuildingFactory(buildingFactory);
 
+    ResourceFactory resourceFactory = new ResourceFactory(world);
+    world.setResourceFactory(resourceFactory);
+
     /* ****
      * Load assets
      */
@@ -53,6 +58,7 @@ public class AqueductLoader {
     assetManager.load(townhallSpritePath, Texture.class);
 
     buildingFactory.loadAssets(buildingsJsonFilename, assetManager);
+    resourceFactory.loadAssets(resourcesJsonFilename, assetManager);
 
     assetManager.finishLoading();
 
@@ -62,10 +68,13 @@ public class AqueductLoader {
     buildingFactory.loadDefinitions(buildingsJsonFilename, assetManager);
     buildingFactory.buildSprites(assetManager);
 
+    resourceFactory.loadDefinitions(resourcesJsonFilename, assetManager);
+    resourceFactory.buildSprites(assetManager);
+
     /* ****
      * Node Resource Definitions
      */
-    world.getResourceConfig().load(resourcesJsonFilename);
+    // world.getResourceConfig().load(resourcesJsonFilename);
 
     /* ****
      * Open Tiled Map
@@ -124,21 +133,17 @@ public class AqueductLoader {
           throw new RuntimeException(
               "EntityLayer: node object missing name (resourceType) " + "at (" + x + "," + y + ")");
         }
-        ResourceDef resourceDef = world.getResourceConfig().get(resourceType);
-        world.add(
-            new Node(
-                world,
-                id,
-                centerX,
-                centerY,
-                w,
-                h,
-                resourceDef,
-                getPipoyaBaseChip(
-                    assetManager.get(pipoyaBaseChipPath, Texture.class), resourceDef.spriteIdFull),
-                getPipoyaBaseChip(
-                    assetManager.get(pipoyaBaseChipPath, Texture.class),
-                    resourceDef.spriteIdEmpty)));
+
+        ResourceDefinition resourceDefinition = world.getResourceFactory().get(resourceType);
+
+        Node node = new Node(world, id, centerX, centerY, w, h, resourceDefinition);
+
+        if (resourceDefinition.sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
+          nodeSprite.setHasInventory(() -> node.getInventory() > 0);
+        }
+        node.setSprite(resourceDefinition.sprite);
+
+        world.add(node);
 
       } else if ("townhall".equals(objClass)) {
 
@@ -151,11 +156,5 @@ public class AqueductLoader {
             "unknown entity class: '" + objClass + "' at (" + x + "," + y + ")");
       }
     }
-  }
-
-  private TextureRegion getPipoyaBaseChip(Texture texture, int spriteId) {
-    // packed png 8 cols x 133 rows = 1064 total sprites, index starts at 0
-    TextureRegion[][] baseTiles = TextureRegion.split(texture, 32, 32);
-    return baseTiles[spriteId / 8][spriteId % 8];
   }
 }

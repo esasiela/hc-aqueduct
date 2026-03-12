@@ -53,10 +53,19 @@ public class BuildingFactory {
     return building;
   }
 
-  public void buildSprites(AssetManager assetManager) {
-    for (BuildingDefinition def : definitions.values()) {
-      if (def.sprite != null) {
-        def.sprite.build(assetManager);
+  public void loadAssets(String jsonPath, AssetManager assetManager) {
+    JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
+    JsonValue buildings = root.get("buildings");
+    if (buildings == null)
+      throw new InvalidBuildingConfigException("missing 'buildings' array in " + jsonPath);
+
+    for (JsonValue entry : buildings) {
+      JsonValue spriteInfo = entry.get("spriteInfo");
+      if (spriteInfo == null) continue;
+
+      EntitySprite sprite = spriteFactory.create(spriteInfo);
+      for (String path : sprite.assetPaths()) {
+        assetManager.load(path, Texture.class);
       }
     }
   }
@@ -80,19 +89,10 @@ public class BuildingFactory {
     }
   }
 
-  public void loadAssets(String jsonPath, AssetManager assetManager) {
-    JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
-    JsonValue buildings = root.get("buildings");
-    if (buildings == null)
-      throw new InvalidBuildingConfigException("missing 'buildings' array in " + jsonPath);
-
-    for (JsonValue entry : buildings) {
-      JsonValue spriteInfo = entry.get("spriteInfo");
-      if (spriteInfo == null) continue;
-
-      EntitySprite sprite = spriteFactory.create(spriteInfo);
-      for (String path : sprite.assetPaths()) {
-        assetManager.load(path, Texture.class);
+  public void buildSprites(AssetManager assetManager) {
+    for (BuildingDefinition def : definitions.values()) {
+      if (def.sprite != null) {
+        def.sprite.build(assetManager);
       }
     }
   }

@@ -24,10 +24,9 @@ public class AqueductWorld implements Disposable {
 
   private final Map<TownHall, Set<GridPoint2>> waterNetworkTiles = new HashMap<>();
 
-  private final ResourceConfig resourceConfig = new ResourceConfig();
-
   private SpriteFactory spriteFactory;
   private BuildingFactory buildingFactory;
+  private ResourceFactory resourceFactory;
 
   private TiledMap map;
   private MapGraph mapGraph;
@@ -47,7 +46,8 @@ public class AqueductWorld implements Disposable {
 
   public void clear() {
     worldEntities.clear();
-    resourceConfig.clear();
+    if (buildingFactory != null) buildingFactory.clear();
+    if (resourceFactory != null) resourceFactory.clear();
   }
 
   public void add(Entity entity) {
@@ -112,10 +112,6 @@ public class AqueductWorld implements Disposable {
       if (entity.containsPoint(x, y)) return entity;
     }
     return null;
-  }
-
-  public ResourceConfig getResourceConfig() {
-    return resourceConfig;
   }
 
   public void initializeMap(
@@ -336,6 +332,14 @@ public class AqueductWorld implements Disposable {
 
   public void setBuildingFactory(BuildingFactory buildingFactory) {
     this.buildingFactory = buildingFactory;
+  }
+
+  public ResourceFactory getResourceFactory() {
+    return resourceFactory;
+  }
+
+  public void setResourceFactory(ResourceFactory resourceFactory) {
+    this.resourceFactory = resourceFactory;
   }
 
   @Override

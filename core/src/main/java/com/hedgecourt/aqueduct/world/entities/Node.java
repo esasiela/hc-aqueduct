@@ -1,19 +1,15 @@
 package com.hedgecourt.aqueduct.world.entities;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
+import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.ResourceDef;
-import space.earlygrey.shapedrawer.ShapeDrawer;
+import com.hedgecourt.aqueduct.world.ResourceDefinition;
 
 public class Node extends Entity {
 
   private final String id;
-  private final ResourceDef def;
+  private final ResourceDefinition resourceDefinition;
   private float inventory;
-
-  private TextureRegion spriteFull;
-  private TextureRegion spriteEmpty;
 
   public Node(
       AqueductWorld world,
@@ -22,15 +18,13 @@ public class Node extends Entity {
       float y,
       float width,
       float height,
-      ResourceDef def,
-      TextureRegion spriteFull,
-      TextureRegion spriteEmpty) {
+      ResourceDefinition resourceDefinition) {
     super(world, x, y, width, height);
     this.id = id;
-    this.def = def;
-    this.inventory = def.maxInventory;
-    this.spriteFull = spriteFull;
-    this.spriteEmpty = spriteEmpty;
+    this.resourceDefinition = resourceDefinition;
+    this.inventory = resourceDefinition.maxInventory;
+
+    setSprite(resourceDefinition.sprite);
   }
 
   // ── inventory ─────────────────────────────────────────────────────────────
@@ -40,7 +34,7 @@ public class Node extends Entity {
   }
 
   public boolean isFull() {
-    return inventory >= def.maxInventory;
+    return inventory >= resourceDefinition.maxInventory;
   }
 
   public float getInventory() {
@@ -48,19 +42,27 @@ public class Node extends Entity {
   }
 
   public float getMaxInventory() {
-    return def.maxInventory;
+    return resourceDefinition.maxInventory;
   }
 
   public float getHarvestRate() {
-    return def.harvestRate;
+    return resourceDefinition.harvestRate;
   }
 
   public String getResourceType() {
-    return def.type;
+    return resourceDefinition.type;
   }
 
   public String getId() {
     return id;
+  }
+
+  @Override
+  public void setSprite(EntitySprite sprite) {
+    super.setSprite(sprite);
+    if (sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
+      nodeSprite.setHasInventory(() -> this.getInventory() > 0);
+    }
   }
 
   /** Harvest up to amount from node, returns how much was actually harvested. */
@@ -75,24 +77,18 @@ public class Node extends Entity {
   @Override
   public void update(float delta) {
     if (!isFull()) {
-      inventory = Math.min(def.maxInventory, inventory + def.regenRate * delta);
+      inventory =
+          Math.min(
+              resourceDefinition.maxInventory, inventory + resourceDefinition.regenRate * delta);
     }
-  }
-
-  // ── draw ──────────────────────────────────────────────────────────────────
-
-  @Override
-  public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    batch.draw(
-        inventory > 0 ? spriteFull : spriteEmpty,
-        position.x - width / 2f,
-        position.y - height / 2f,
-        width,
-        height);
   }
 
   @Override
   public String getHoverTooltip() {
-    return def.displayName + ": " + String.format("%.1f", inventory) + "/" + def.maxInventory;
+    return resourceDefinition.displayName
+        + ": "
+        + String.format("%.1f", inventory)
+        + "/"
+        + resourceDefinition.maxInventory;
   }
 }

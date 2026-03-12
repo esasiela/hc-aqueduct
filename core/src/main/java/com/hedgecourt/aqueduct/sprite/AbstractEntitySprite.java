@@ -13,4 +13,7 @@ public abstract class AbstractEntitySprite implements EntitySprite {
   public void setType(String type) {
     this.type = type;
   }
+
+  @Override
+  public void update(float delta) {}
 }
