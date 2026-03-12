@@ -3,58 +3,66 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hedgecourt.aqueduct.InvalidResourceConfigException;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.sprite.SpriteFactory;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ResourceFactory {
 
+  private static class ResourcesJson {
+    public List<ResourceDefinition> resources;
+  }
+
   private final Map<String, ResourceDefinition> defs = new HashMap<>();
-  private final AqueductWorld world;
   private final SpriteFactory spriteFactory;
+  private final ObjectMapper jackson = new ObjectMapper();
 
   public ResourceFactory(AqueductWorld world) {
-    this.world = world;
-    this.spriteFactory = new SpriteFactory();
+    this.spriteFactory = world.getSpriteFactory();
   }
 
   public void loadAssets(String jsonPath, AssetManager assetManager) {
-    JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
-    JsonValue resources = root.get("resources");
-    if (resources == null)
-      throw new InvalidResourceConfigException("missing 'resources' array in " + jsonPath);
+    try {
+      String json = Gdx.files.internal(jsonPath).readString();
+      ResourcesJson wrapper = jackson.readValue(json, ResourcesJson.class);
+      if (wrapper.resources == null) return;
 
-    for (JsonValue entry : resources) {
-      JsonValue spriteInfo = entry.get("spriteInfo");
-      if (spriteInfo == null) continue;
-
-      EntitySprite sprite = spriteFactory.create(spriteInfo);
-      for (String path : sprite.assetPaths()) {
-        assetManager.load(path, Texture.class);
+      for (ResourceDefinition def : wrapper.resources) {
+        if (def.spriteInfo == null) continue;
+        EntitySprite sprite = spriteFactory.create(def.spriteInfo);
+        for (String path : sprite.assetPaths()) {
+          assetManager.load(path, Texture.class);
+        }
       }
+    } catch (Exception e) {
+      throw new InvalidResourceConfigException(
+          "failed to parse " + jsonPath + ": " + e.getMessage());
     }
   }
 
   public void loadDefinitions(String jsonPath, AssetManager assetManager) {
-    JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
-    JsonValue resources = root.get("resources");
-    if (resources == null)
-      throw new InvalidResourceConfigException("missing 'resources' array in " + jsonPath);
+    try {
+      String json = Gdx.files.internal(jsonPath).readString();
+      ResourcesJson wrapper = jackson.readValue(json, ResourcesJson.class);
 
-    for (JsonValue entry : resources) {
-      ResourceDefinition def = parse(entry, jsonPath);
+      if (wrapper.resources == null || wrapper.resources.isEmpty())
+        throw new InvalidResourceConfigException("no resources defined in " + jsonPath);
 
-      JsonValue spriteInfo = entry.get("spriteInfo");
-      def.sprite = (spriteInfo != null) ? spriteFactory.create(spriteInfo) : null;
-
-      defs.put(def.type, def);
-    }
-    if (defs.isEmpty()) {
-      throw new InvalidResourceConfigException("no resources defined in " + jsonPath);
+      for (ResourceDefinition def : wrapper.resources) {
+        if (def.spriteInfo != null) {
+          def.sprite = spriteFactory.create(def.spriteInfo);
+        }
+        defs.put(def.type, def);
+      }
+    } catch (InvalidResourceConfigException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new InvalidResourceConfigException(
+          "failed to parse " + jsonPath + ": " + e.getMessage());
     }
   }
 
@@ -70,45 +78,11 @@ public class ResourceFactory {
     defs.clear();
   }
 
-  private ResourceDefinition parse(JsonValue e, String jsonPath) {
-    String type = requireString(e, "type", jsonPath);
-    String displayName = requireString(e, "displayName", jsonPath);
-    float regenRate = requireFloat(e, "regenRate", jsonPath);
-    float regenCooldown = requireFloat(e, "regenCooldown", jsonPath);
-    float maxInventory = requireFloat(e, "maxInventory", jsonPath);
-    float harvestRate = requireFloat(e, "harvestRate", jsonPath);
-    return new ResourceDefinition(
-        type, displayName, regenRate, regenCooldown, maxInventory, harvestRate);
-  }
-
   public ResourceDefinition get(String type) {
     ResourceDefinition def = defs.get(type);
     if (def == null) {
       throw new InvalidResourceConfigException("unknown resource type '" + type + "'");
     }
     return def;
-  }
-
-  // ── fail-fast helpers ─────────────────────────────────────────────────────
-
-  private String requireString(JsonValue e, String key, String path) {
-    if (!e.has(key) || e.get(key).isNull()) {
-      throw new InvalidResourceConfigException("missing required field '" + key + "' in " + path);
-    }
-    return e.getString(key);
-  }
-
-  private float requireFloat(JsonValue e, String key, String path) {
-    if (!e.has(key) || e.get(key).isNull()) {
-      throw new InvalidResourceConfigException("missing required field '" + key + "' in " + path);
-    }
-    return e.getFloat(key);
-  }
-
-  private int requireInt(JsonValue e, String key, String path) {
-    if (!e.has(key) || e.get(key).isNull()) {
-      throw new InvalidResourceConfigException("missing required field '" + key + "' in " + path);
-    }
-    return e.getInt(key);
   }
 }

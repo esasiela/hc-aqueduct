@@ -1,29 +1,20 @@
 package com.hedgecourt.aqueduct.world;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 
 public class ResourceDefinition {
-  public final String type;
-  public final String displayName;
-  public final float regenRate;
-  public final float regenCooldown;
-  public final float maxInventory;
-  public final float harvestRate;
+  public String type;
+  public String displayName;
+  public float regenRate;
+  public float regenCooldown;
+  public float maxInventory;
+  public float harvestRate;
 
-  public EntitySprite sprite;
+  public JsonNode spriteInfo; // raw, handled by SpriteFactory
 
-  public ResourceDefinition(
-      String type,
-      String displayName,
-      float regenRate,
-      float regenCooldown,
-      float maxInventory,
-      float harvestRate) {
-    this.type = type;
-    this.displayName = displayName;
-    this.regenRate = regenRate;
-    this.regenCooldown = regenCooldown;
-    this.maxInventory = maxInventory;
-    this.harvestRate = harvestRate;
-  }
+  @JsonIgnore public EntitySprite sprite;
+
+  public ResourceDefinition() {}
 }

@@ -30,7 +30,7 @@ public class ConstructionButtonUiElement extends UiElement {
       Consumer<String> onClick) {
     super(x, y, width, height);
 
-    this.buildingType = buildingDefinition.buildingType;
+    this.buildingType = buildingDefinition.type;
     this.displayName = buildingDefinition.displayName;
     this.onClick = onClick;
 

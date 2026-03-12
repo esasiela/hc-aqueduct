@@ -1,35 +1,22 @@
 package com.hedgecourt.aqueduct.world;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 
 public class BuildingDefinition {
-  public final String buildingType;
-  public final String displayName;
-  public final float widthTiles;
-  public final float heightTiles;
-  public final float constructionUnitsRequired;
-  public final float waterCapacity;
-  public final float waterCost;
-  public final float waterOutputRate;
+  public String type;
+  public String displayName;
+  public float widthTiles;
+  public float heightTiles;
+  public float constructionUnitsRequired;
+  public float waterCapacity;
+  public float waterCost;
+  public float waterOutputRate;
 
-  public EntitySprite sprite;
+  public JsonNode spriteInfo; // raw, handled by SpriteFactory
 
-  public BuildingDefinition(
-      String buildingType,
-      String displayName,
-      float widthTiles,
-      float heightTiles,
-      float constructionUnitsRequired,
-      float waterCapacity,
-      float waterCost,
-      float waterOutputRate) {
-    this.buildingType = buildingType;
-    this.displayName = displayName;
-    this.widthTiles = widthTiles;
-    this.heightTiles = heightTiles;
-    this.constructionUnitsRequired = constructionUnitsRequired;
-    this.waterCapacity = waterCapacity;
-    this.waterCost = waterCost;
-    this.waterOutputRate = waterOutputRate;
-  }
+  @JsonIgnore public EntitySprite sprite;
+
+  public BuildingDefinition() {}
 }

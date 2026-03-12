@@ -3,8 +3,7 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.sprite.SpriteFactory;
@@ -13,13 +12,19 @@ import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BuildingFactory {
 
+  private static class BuildingsJson {
+    public List<BuildingDefinition> buildings;
+  }
+
   private final Map<String, BuildingDefinition> definitions = new HashMap<>();
   private final AqueductWorld world;
   private final SpriteFactory spriteFactory;
+  private final ObjectMapper jackson = new ObjectMapper();
 
   public BuildingFactory(AqueductWorld world) {
     this.world = world;
@@ -54,38 +59,43 @@ public class BuildingFactory {
   }
 
   public void loadAssets(String jsonPath, AssetManager assetManager) {
-    JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
-    JsonValue buildings = root.get("buildings");
-    if (buildings == null)
-      throw new InvalidBuildingConfigException("missing 'buildings' array in " + jsonPath);
+    try {
+      String json = Gdx.files.internal(jsonPath).readString();
+      BuildingsJson wrapper = jackson.readValue(json, BuildingsJson.class);
+      if (wrapper.buildings == null) return;
 
-    for (JsonValue entry : buildings) {
-      JsonValue spriteInfo = entry.get("spriteInfo");
-      if (spriteInfo == null) continue;
-
-      EntitySprite sprite = spriteFactory.create(spriteInfo);
-      for (String path : sprite.assetPaths()) {
-        assetManager.load(path, Texture.class);
+      for (BuildingDefinition def : wrapper.buildings) {
+        if (def.spriteInfo == null) continue;
+        EntitySprite sprite = spriteFactory.create(def.spriteInfo);
+        for (String path : sprite.assetPaths()) {
+          assetManager.load(path, Texture.class);
+        }
       }
+    } catch (Exception e) {
+      throw new InvalidBuildingConfigException(
+          "failed to parse " + jsonPath + ": " + e.getMessage());
     }
   }
 
   public void loadDefinitions(String jsonPath, AssetManager assetManager) {
-    JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
-    JsonValue buildings = root.get("buildings");
-    if (buildings == null)
-      throw new InvalidBuildingConfigException("missing 'buildings' array in " + jsonPath);
+    try {
+      String json = Gdx.files.internal(jsonPath).readString();
+      BuildingsJson wrapper = jackson.readValue(json, BuildingsJson.class);
 
-    for (JsonValue entry : buildings) {
-      BuildingDefinition def = parse(entry, jsonPath);
+      if (wrapper.buildings == null || wrapper.buildings.isEmpty())
+        throw new InvalidBuildingConfigException("no buildings defined in " + jsonPath);
 
-      JsonValue spriteInfo = entry.get("spriteInfo");
-      def.sprite = (spriteInfo != null) ? spriteFactory.create(spriteInfo) : null;
-
-      definitions.put(def.buildingType, def);
-    }
-    if (definitions.isEmpty()) {
-      throw new InvalidBuildingConfigException("no resources defined in " + jsonPath);
+      for (BuildingDefinition def : wrapper.buildings) {
+        if (def.spriteInfo != null) {
+          def.sprite = spriteFactory.create(def.spriteInfo);
+        }
+        definitions.put(def.type, def);
+      }
+    } catch (InvalidBuildingConfigException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new InvalidBuildingConfigException(
+          "failed to parse " + jsonPath + ": " + e.getMessage());
     }
   }
 
@@ -101,55 +111,11 @@ public class BuildingFactory {
     definitions.clear();
   }
 
-  private BuildingDefinition parse(JsonValue e, String jsonPath) {
-    String type = requireString(e, "type", jsonPath);
-    String displayName = requireString(e, "displayName", jsonPath);
-    float widthTiles = requireFloat(e, "widthTiles", jsonPath);
-    float heightTiles = requireFloat(e, "heightTiles", jsonPath);
-    float constructionUnitsRequired = requireFloat(e, "constructionUnitsRequired", jsonPath);
-    float waterCapacity = requireFloat(e, "waterCapacity", jsonPath);
-    float waterCost = requireFloat(e, "waterCost", jsonPath);
-    float waterOutputRate = requireFloat(e, "waterOutputRate", jsonPath);
-
-    return new BuildingDefinition(
-        type,
-        displayName,
-        widthTiles,
-        heightTiles,
-        constructionUnitsRequired,
-        waterCapacity,
-        waterCost,
-        waterOutputRate);
-  }
-
   public BuildingDefinition get(String type) {
     BuildingDefinition def = definitions.get(type);
     if (def == null) {
       throw new InvalidBuildingConfigException("unknown resource type '" + type + "'");
     }
     return def;
-  }
-
-  // ── fail-fast helpers ─────────────────────────────────────────────────────
-
-  private String requireString(JsonValue e, String key, String path) {
-    if (!e.has(key) || e.get(key).isNull()) {
-      throw new InvalidBuildingConfigException("missing required field '" + key + "' in " + path);
-    }
-    return e.getString(key);
-  }
-
-  private float requireFloat(JsonValue e, String key, String path) {
-    if (!e.has(key) || e.get(key).isNull()) {
-      throw new InvalidBuildingConfigException("missing required field '" + key + "' in " + path);
-    }
-    return e.getFloat(key);
-  }
-
-  private int requireInt(JsonValue e, String key, String path) {
-    if (!e.has(key) || e.get(key).isNull()) {
-      throw new InvalidBuildingConfigException("missing required field '" + key + "' in " + path);
-    }
-    return e.getInt(key);
   }
 }
