@@ -9,9 +9,14 @@ public class SpriteFactory {
 
   private static final Map<String, Class<? extends EntitySprite>> SPRITE_TYPES =
       Map.of(
-          "PNG", SingleTextureSprite.class,
-          "PIPOYA_BASE", PipoyaBaseSprite.class,
-          "PIPOYA_BASE_NODE", PipoyaBaseNodeSprite.class);
+          "PNG",
+          SingleTextureSprite.class,
+          "PIPOYA_BASE",
+          PipoyaBaseSprite.class,
+          "PIPOYA_BASE_NODE",
+          PipoyaBaseNodeSprite.class,
+          "TWO_FRAME_PNG",
+          TwoFramePngSprite.class);
 
   private final ObjectMapper jackson = new ObjectMapper();
 

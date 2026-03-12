@@ -32,14 +32,14 @@
       "type": "sprinkler",
       "displayName": "Sprinkler",
       "widthTiles": 2,
-      "heightTiles": 2,
+      "heightTiles": 4,
       "constructionUnitsRequired": 200,
       "waterCapacity": 100,
       "waterCost": 1,
       "waterOutputRate": 0,
       "spriteInfo": {
-        "type": "PIPOYA_BASE",
-        "spriteId": 937
+        "type": "TWO_FRAME_PNG",
+        "path": "img/WaterFountain.png"
       }
     },
     {
@@ -50,7 +50,11 @@
       "constructionUnitsRequired": 200,
       "waterCapacity": 200,
       "waterCost": 5,
-      "waterOutputRate": 0
+      "waterOutputRate": 0,
+      "spriteInfo": {
+        "type": "PIPOYA_BASE",
+        "spriteId": 937
+      }
     },
     {
       "type": "aqueduct",
@@ -62,5 +66,8 @@
       "waterCost": 0,
       "waterOutputRate": 0
     }
-  ]
+  ],
+  "scratch": {
+    "key": "this is my scratchpad"
+  }
 }

@@ -3,6 +3,7 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
@@ -17,8 +18,10 @@ import java.util.Map;
 
 public class BuildingFactory {
 
+  @JsonIgnoreProperties("scratch")
   private static class BuildingsJson {
     public List<BuildingDefinition> buildings;
+    public Object scratch;
   }
 
   private final Map<String, BuildingDefinition> definitions = new HashMap<>();
