@@ -9,6 +9,7 @@ import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
+import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

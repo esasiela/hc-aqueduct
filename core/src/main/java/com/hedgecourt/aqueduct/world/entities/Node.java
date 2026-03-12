@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.ResourceDef;
-import com.hedgecourt.aqueduct.world.WorldEntity;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Node extends WorldEntity {

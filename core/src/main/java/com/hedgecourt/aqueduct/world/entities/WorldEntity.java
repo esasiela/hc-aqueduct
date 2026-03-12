@@ -1,8 +1,10 @@
-package com.hedgecourt.aqueduct.world;
+package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class WorldEntity {
@@ -14,6 +16,8 @@ public abstract class WorldEntity {
   protected float height;
   protected boolean selected;
   protected boolean hovered;
+
+  protected EntitySprite sprite;
 
   public WorldEntity(AqueductWorld world, float x, float y, float width, float height) {
     this.world = world;
@@ -78,9 +82,16 @@ public abstract class WorldEntity {
 
   public abstract void update(float delta);
 
-  public abstract void draw(SpriteBatch batch, ShapeDrawer drawer);
+  public void updateSprite(float delta) {
+    if (sprite != null) sprite.update(delta);
+  }
 
-  // ── getters ────────────────────────────────────────────────────────────
+  public void draw(SpriteBatch batch, ShapeDrawer drawer) {
+    if (sprite != null)
+      sprite.draw(batch, position.x - width / 2f, position.y - height / 2f, width, height);
+  }
+
+  // ── getters & setters  ────────────────────────────────────────────────────────────
 
   public Vector2 getPosition() {
     return position;
@@ -94,9 +105,15 @@ public abstract class WorldEntity {
     return height;
   }
 
-  // ── setters ────────────────────────────────────────────────────────────
-
   public void setPosition(float x, float y) {
     position.set(x, y);
+  }
+
+  public EntitySprite getSprite() {
+    return sprite;
+  }
+
+  public void setSprite(EntitySprite sprite) {
+    this.sprite = sprite;
   }
 }

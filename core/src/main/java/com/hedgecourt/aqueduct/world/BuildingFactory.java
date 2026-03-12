@@ -48,15 +48,15 @@ public class BuildingFactory {
     building.setWaterCost(def.waterCost);
     building.setWaterOutputRate(def.waterOutputRate);
 
-    building.setEntitySprite(def.entitySprite);
+    building.setSprite(def.sprite);
 
     return building;
   }
 
   public void buildSprites(AssetManager assetManager) {
     for (BuildingDefinition def : definitions.values()) {
-      if (def.entitySprite != null) {
-        def.entitySprite.build(assetManager);
+      if (def.sprite != null) {
+        def.sprite.build(assetManager);
       }
     }
   }
@@ -71,7 +71,7 @@ public class BuildingFactory {
       BuildingDefinition def = parse(entry, jsonPath);
 
       JsonValue spriteInfo = entry.get("spriteInfo");
-      def.entitySprite = (spriteInfo != null) ? spriteFactory.create(spriteInfo) : null;
+      def.sprite = (spriteInfo != null) ? spriteFactory.create(spriteInfo) : null;
 
       definitions.put(def.buildingType, def);
     }

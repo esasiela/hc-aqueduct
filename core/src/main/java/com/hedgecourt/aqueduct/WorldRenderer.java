@@ -12,9 +12,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.WorldLayer;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import com.hedgecourt.aqueduct.world.layers.BuildingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPendingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
@@ -132,6 +132,12 @@ public class WorldRenderer implements Disposable {
 
   public void onZoom(float zoomDelta, float screenX, float screenY) {
     if (cameraController != null) cameraController.onZoom(zoomDelta, screenX, screenY);
+  }
+
+  public void updateSprites(float delta) {
+    for (WorldEntity entity : world.getEntities()) {
+      entity.updateSprite(delta);
+    }
   }
 
   public void render() {

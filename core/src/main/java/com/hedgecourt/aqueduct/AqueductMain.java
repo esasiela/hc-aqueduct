@@ -16,11 +16,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
+import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -363,6 +363,7 @@ public class AqueductMain extends ApplicationAdapter {
     if (!paused) {
       world.update(delta);
       workerLayer.applySeparation(delta);
+      worldRenderer.updateSprites(delta);
     }
 
     worldRenderer.updateCamera(delta);

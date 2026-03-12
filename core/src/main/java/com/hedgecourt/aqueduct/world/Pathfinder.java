@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.math.Vector2;
+import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import java.util.ArrayList;
 import java.util.List;
 
