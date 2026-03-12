@@ -1,7 +1,7 @@
 package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -23,7 +23,7 @@ public abstract class BuildingEntity extends WorldEntity {
   protected int widthTiles;
   protected int heightTiles;
 
-  protected TextureRegion sprite;
+  protected EntitySprite entitySprite;
 
   protected boolean waterConnected = false;
 
@@ -35,12 +35,14 @@ public abstract class BuildingEntity extends WorldEntity {
   public void update(float delta) {
     // gotta pay the piper
     waterInventory = Math.max(waterInventory - waterCost * delta, 0f);
+
+    if (entitySprite != null) entitySprite.update(delta);
   }
 
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer drawer) {
-    if (sprite != null) {
-      batch.draw(sprite, position.x - width / 2f, position.y - height / 2f, width, height);
+    if (entitySprite != null) {
+      entitySprite.draw(batch, position.x - width / 2f, position.y - height / 2f, width, height);
     }
   }
 
@@ -159,12 +161,12 @@ public abstract class BuildingEntity extends WorldEntity {
     this.waterOutputRate = waterOutputRate;
   }
 
-  public TextureRegion getSprite() {
-    return sprite;
+  public EntitySprite getEntitySprite() {
+    return entitySprite;
   }
 
-  public void setSprite(TextureRegion sprite) {
-    this.sprite = sprite;
+  public void setEntitySprite(EntitySprite entitySprite) {
+    this.entitySprite = entitySprite;
   }
 
   public boolean isWaterConnected() {

@@ -56,6 +56,7 @@ public class AqueductLoader {
      * Load buildingFactory, must go after assetManager is loaded
      */
     buildingFactory.loadDefinitions(buildingsJsonFilename, assetManager);
+    buildingFactory.buildSprites(assetManager);
 
     /* ****
      * Node Resource Definitions

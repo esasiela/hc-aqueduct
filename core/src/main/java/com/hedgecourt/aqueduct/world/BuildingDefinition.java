@@ -1,6 +1,7 @@
 package com.hedgecourt.aqueduct.world;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
 
 public class BuildingDefinition {
   public final String buildingType;
@@ -12,6 +13,7 @@ public class BuildingDefinition {
   public final float waterCost;
   public final float waterOutputRate;
 
+  public EntitySprite entitySprite;
   public TextureRegion sprite;
 
   public BuildingDefinition(

@@ -3,21 +3,29 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.hedgecourt.aqueduct.C;
+import com.badlogic.gdx.utils.JsonWriter;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
+import com.hedgecourt.aqueduct.sprite.PipoyaBaseSprite;
+import com.hedgecourt.aqueduct.sprite.SingleTextureSprite;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BuildingFactory {
+
+  private static final Map<String, Class<? extends EntitySprite>> SPRITE_TYPES =
+      Map.of(
+          "PNG", SingleTextureSprite.class,
+          "PIPOYA_BASE", PipoyaBaseSprite.class);
+
+  private final ObjectMapper jackson = new ObjectMapper();
 
   private final Map<String, BuildingDefinition> definitions = new HashMap<>();
   private final AqueductWorld world;
@@ -48,12 +56,18 @@ public class BuildingFactory {
     building.setWaterCost(def.waterCost);
     building.setWaterOutputRate(def.waterOutputRate);
 
-    building.setSprite(def.sprite);
+    building.setEntitySprite(def.entitySprite);
 
     return building;
   }
 
-  // ── defaults ─────────────────────────────────────────────────────
+  public void buildSprites(AssetManager assetManager) {
+    for (BuildingDefinition def : definitions.values()) {
+      if (def.entitySprite != null) {
+        def.entitySprite.build(assetManager);
+      }
+    }
+  }
 
   public void loadDefinitions(String jsonPath, AssetManager assetManager) {
     JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
@@ -65,7 +79,7 @@ public class BuildingFactory {
       BuildingDefinition def = parse(entry, jsonPath);
 
       JsonValue spriteInfo = entry.get("spriteInfo");
-      def.sprite = spriteInfo != null ? parseSpriteInfo(spriteInfo, assetManager) : null;
+      def.entitySprite = (spriteInfo != null) ? parseSpriteInfo(spriteInfo) : null;
 
       definitions.put(def.buildingType, def);
     }
@@ -75,31 +89,18 @@ public class BuildingFactory {
   }
 
   public void loadAssets(String jsonPath, AssetManager assetManager) {
-    List<String> assetPaths = new ArrayList<>();
-
     JsonValue root = new JsonReader().parse(Gdx.files.internal(jsonPath));
     JsonValue buildings = root.get("buildings");
     if (buildings == null)
       throw new InvalidBuildingConfigException("missing 'buildings' array in " + jsonPath);
 
     for (JsonValue entry : buildings) {
-      String buildingType = requireString(entry, "type", jsonPath);
-
       JsonValue spriteInfo = entry.get("spriteInfo");
       if (spriteInfo == null) continue;
 
-      String spriteType = requireString(spriteInfo, "type", jsonPath);
-
-      switch (spriteType) {
-        case "PNG":
-          String pngPath = requireString(spriteInfo, "path", jsonPath);
-          assetManager.load(pngPath, Texture.class);
-          break;
-        case "PIPOYA_BASE":
-          assetManager.load(C.PIPOYA_BASE_PATH, Texture.class);
-          break;
-        default:
-          throw new InvalidBuildingConfigException("unknown sprite type: " + spriteType);
+      EntitySprite sprite = parseSpriteInfo(spriteInfo);
+      for (String path : sprite.assetPaths()) {
+        assetManager.load(path, Texture.class);
       }
     }
   }
@@ -139,26 +140,18 @@ public class BuildingFactory {
 
   // ── load sprite textures ─────────────────────────────────────────────────────
 
-  private TextureRegion parseSpriteInfo(JsonValue spriteInfo, AssetManager assetManager) {
-    String type = requireString(spriteInfo, "type", "spriteInfo");
-    return switch (type) {
-      case "PNG" -> parsePngSprite(spriteInfo, assetManager);
-      case "PIPOYA_BASE" -> parsePipoyaBaseSprite(spriteInfo, assetManager);
-      default -> throw new InvalidBuildingConfigException("Unknown spriteInfo type: " + type);
-    };
-  }
-
-  private TextureRegion parsePngSprite(JsonValue e, AssetManager assetManager) {
-    String path = requireString(e, "path", "spriteInfo.PNG");
-    Texture texture = assetManager.get(path, Texture.class);
-    return new TextureRegion(texture);
-  }
-
-  private TextureRegion parsePipoyaBaseSprite(JsonValue e, AssetManager assetManager) {
-    int spriteId = requireInt(e, "spriteId", "spriteInfo.PIPOYA_BASE");
-    Texture sheet = assetManager.get(C.PIPOYA_BASE_PATH, Texture.class);
-    TextureRegion[][] grid = TextureRegion.split(sheet, 32, 32);
-    return grid[spriteId / 8][spriteId % 8];
+  private EntitySprite parseSpriteInfo(JsonValue spriteInfo) {
+    String type = spriteInfo.getString("type");
+    Class<? extends EntitySprite> implClass = SPRITE_TYPES.get(type);
+    if (implClass == null) {
+      throw new InvalidBuildingConfigException("Unknown spriteInfo type: " + type);
+    }
+    try {
+      return jackson.treeToValue(
+          jackson.readTree(spriteInfo.toJson(JsonWriter.OutputType.json)), implClass);
+    } catch (Exception e) {
+      throw new InvalidBuildingConfigException("Failed to parse spriteInfo: " + e.getMessage());
+    }
   }
 
   // ── fail-fast helpers ─────────────────────────────────────────────────────
