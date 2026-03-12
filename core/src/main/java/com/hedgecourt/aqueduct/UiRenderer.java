@@ -9,10 +9,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.ui.UiElement;
-import com.hedgecourt.aqueduct.ui.elements.BuildingInfoUiElement;
 import com.hedgecourt.aqueduct.ui.elements.ConstructionButtonUiElement;
 import com.hedgecourt.aqueduct.ui.elements.CrosshairUiElement;
 import com.hedgecourt.aqueduct.ui.elements.MinimapUiElement;
+import com.hedgecourt.aqueduct.ui.elements.SelectedInfoUiElement;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +55,7 @@ public class UiRenderer implements Disposable {
     addElement(minimap);
 
     addElement(
-        new BuildingInfoUiElement(
+        new SelectedInfoUiElement(
             world,
             fontManager,
             minimap.getBounds().x + minimap.getBounds().width + UI_PADDING,

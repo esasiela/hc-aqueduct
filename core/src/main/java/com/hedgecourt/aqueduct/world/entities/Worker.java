@@ -418,6 +418,14 @@ public class Worker extends WorldEntity {
     return carryCapacity - carrying;
   }
 
+  public float getCarryPct() {
+    return (carryCapacity == 0) ? 1f : carrying / carryCapacity;
+  }
+
+  public String getCarryingType() {
+    return carryingType;
+  }
+
   public float getMoveSpeed() {
     return moveSpeed;
   }
