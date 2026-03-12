@@ -20,7 +20,6 @@ import java.util.Set;
 public class AqueductWorld implements Disposable {
   private final List<WorldEntity> worldEntities = new ArrayList<>();
   private final List<Worker> workers = new ArrayList<>();
-  private final List<Node> nodes = new ArrayList<>();
 
   private final Map<TownHall, Set<GridPoint2>> waterNetworkTiles = new HashMap<>();
 
@@ -46,7 +45,6 @@ public class AqueductWorld implements Disposable {
 
   public void clear() {
     workers.clear();
-    nodes.clear();
     worldEntities.clear();
 
     resourceConfig.clear();
@@ -57,7 +55,6 @@ public class AqueductWorld implements Disposable {
     if (entity instanceof Worker worker) workers.add(worker);
 
     if (entity instanceof Node node) {
-      nodes.add(node);
       updateWalkabilityForEntity(node, false);
     }
 
@@ -72,7 +69,6 @@ public class AqueductWorld implements Disposable {
     if (entity instanceof Worker worker) workers.remove(worker);
 
     if (entity instanceof Node node) {
-      nodes.remove(node);
       updateWalkabilityForEntity(node, true);
     }
 
@@ -155,10 +151,6 @@ public class AqueductWorld implements Disposable {
 
   public List<Worker> getWorkers() {
     return workers;
-  }
-
-  public List<Node> getNodes() {
-    return nodes;
   }
 
   public List<BuildingEntity> getIncompleteBuildings() {

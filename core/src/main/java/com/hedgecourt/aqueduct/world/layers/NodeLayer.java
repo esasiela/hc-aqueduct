@@ -19,12 +19,12 @@ public class NodeLayer extends WorldLayer {
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (Node node : world.getNodes()) node.draw(batch, shapeDrawer);
+    for (Node node : world.getEntities(Node.class)) node.draw(batch, shapeDrawer);
   }
 
   @Override
   public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (Node node : world.getNodes()) {
+    for (Node node : world.getEntities(Node.class)) {
       /* ****
        * Selection Decoration
        */
