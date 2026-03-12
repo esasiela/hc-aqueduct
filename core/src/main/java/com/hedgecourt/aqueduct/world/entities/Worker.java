@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class Worker extends Entity {
+public class Worker extends Unit {
 
   // ── direction ─────────────────────────────────────────────────────────────
 

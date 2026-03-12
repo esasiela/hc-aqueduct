@@ -3,7 +3,7 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
-import com.hedgecourt.aqueduct.sprite.SpriteFactory;
+import com.hedgecourt.aqueduct.SpriteFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;

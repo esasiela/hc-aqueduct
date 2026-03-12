@@ -37,18 +37,22 @@ public class NodeLayer extends WorldLayer {
        */
       float bagBarHeight = 4f;
       float barBarYOffset = 4f;
+
       shapeDrawer.filledRectangle(
           node.getPosition().x - node.getWidth() / 2f,
           node.getPosition().y + node.getHeight() / 2f + barBarYOffset,
           node.getWidth(),
           bagBarHeight,
-          C.BAG_BAR_CAPACITY_COLOR);
-      shapeDrawer.filledRectangle(
-          node.getPosition().x - node.getWidth() / 2f,
-          node.getPosition().y + node.getHeight() / 2f + barBarYOffset,
-          node.getWidth() * (node.getInventory() / node.getMaxInventory()),
-          bagBarHeight,
-          C.BAG_BAR_CARRY_COLOR);
+          node.isOnCooldown() ? C.NODE_COOLDOWN_COLOR : C.NODE_CAPACITY_COLOR);
+
+      if (!node.isOnCooldown()) {
+        shapeDrawer.filledRectangle(
+            node.getPosition().x - node.getWidth() / 2f,
+            node.getPosition().y + node.getHeight() / 2f + barBarYOffset,
+            node.getWidth() * (node.getInventory() / node.getMaxInventory()),
+            bagBarHeight,
+            C.NODE_INVENTORY_COLOR);
+      }
     }
   }
 }

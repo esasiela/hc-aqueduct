@@ -15,11 +15,10 @@ public abstract class Building extends Entity {
   protected float waterInventory;
   protected float waterCost;
   protected float waterOutputRate;
+  protected boolean waterConnected = false;
 
   protected int widthTiles;
   protected int heightTiles;
-
-  protected boolean waterConnected = false;
 
   public Building(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
@@ -36,6 +35,7 @@ public abstract class Building extends Entity {
   }
 
   public boolean isActive() {
+    // TODO do we really need isWaterConected for a building to be active? or just waterInventory>0?
     return isConstructionComplete() && isWaterConnected() && waterInventory > 0;
   }
 

@@ -7,7 +7,6 @@ import com.hedgecourt.aqueduct.world.ResourceDefinition;
 
 public class Node extends Entity {
 
-  private final String id;
   private final ResourceDefinition resourceDefinition;
   private float inventory;
 
@@ -15,14 +14,12 @@ public class Node extends Entity {
 
   public Node(
       AqueductWorld world,
-      String id,
       float x,
       float y,
       float width,
       float height,
       ResourceDefinition resourceDefinition) {
     super(world, x, y, width, height);
-    this.id = id;
     this.resourceDefinition = resourceDefinition;
     this.inventory = resourceDefinition.maxInventory;
 
@@ -55,8 +52,8 @@ public class Node extends Entity {
     return resourceDefinition.type;
   }
 
-  public String getId() {
-    return id;
+  public boolean isOnCooldown() {
+    return regenCooldownTimer > 0f;
   }
 
   @Override
@@ -75,11 +72,9 @@ public class Node extends Entity {
     return actual;
   }
 
-  // ── update ────────────────────────────────────────────────────────────────
-
   @Override
   public void update(float delta) {
-    if (regenCooldownTimer > 0f) {
+    if (isOnCooldown()) {
       regenCooldownTimer -= delta;
       return;
     }

@@ -1,7 +1,12 @@
-package com.hedgecourt.aqueduct.sprite;
+package com.hedgecourt.aqueduct;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
+import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
+import com.hedgecourt.aqueduct.sprite.PipoyaBaseSprite;
+import com.hedgecourt.aqueduct.sprite.SingleTextureSprite;
+import com.hedgecourt.aqueduct.sprite.TwoFramePngSprite;
 import java.util.List;
 import java.util.Map;
 
