@@ -74,9 +74,11 @@ public class ResourceFactory {
     String type = requireString(e, "type", jsonPath);
     String displayName = requireString(e, "displayName", jsonPath);
     float regenRate = requireFloat(e, "regenRate", jsonPath);
+    float regenCooldown = requireFloat(e, "regenCooldown", jsonPath);
     float maxInventory = requireFloat(e, "maxInventory", jsonPath);
     float harvestRate = requireFloat(e, "harvestRate", jsonPath);
-    return new ResourceDefinition(type, displayName, regenRate, maxInventory, harvestRate);
+    return new ResourceDefinition(
+        type, displayName, regenRate, regenCooldown, maxInventory, harvestRate);
   }
 
   public ResourceDefinition get(String type) {

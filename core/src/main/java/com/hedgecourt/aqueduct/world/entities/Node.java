@@ -11,6 +11,8 @@ public class Node extends Entity {
   private final ResourceDefinition resourceDefinition;
   private float inventory;
 
+  private float regenCooldownTimer = 0f;
+
   public Node(
       AqueductWorld world,
       String id,
@@ -59,8 +61,9 @@ public class Node extends Entity {
 
   @Override
   public void setSprite(EntitySprite sprite) {
-    super.setSprite(sprite);
-    if (sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
+    EntitySprite copy = sprite.freshCopy();
+    super.setSprite(copy);
+    if (copy instanceof PipoyaBaseNodeSprite nodeSprite) {
       nodeSprite.setHasInventory(() -> this.getInventory() > 0);
     }
   }
@@ -76,11 +79,17 @@ public class Node extends Entity {
 
   @Override
   public void update(float delta) {
-    if (!isFull()) {
-      inventory =
-          Math.min(
-              resourceDefinition.maxInventory, inventory + resourceDefinition.regenRate * delta);
+    if (regenCooldownTimer > 0f) {
+      regenCooldownTimer -= delta;
+      return;
     }
+
+    if (inventory <= 0f) {
+      regenCooldownTimer = resourceDefinition.regenCooldown;
+    }
+
+    inventory =
+        Math.min(inventory + resourceDefinition.regenRate * delta, resourceDefinition.maxInventory);
   }
 
   @Override

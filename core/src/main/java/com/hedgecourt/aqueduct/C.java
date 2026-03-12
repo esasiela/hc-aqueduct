@@ -14,7 +14,7 @@ public class C {
   public static final float WORKER_BASE_SPEED = 90f; // pixels per second
   public static final float WORKER_SEPARATION_RADIUS = 20f;
   public static final float WORKER_SEPARATION_STRENGTH = 60f;
-  public static final float WORKER_CARRY_CAPACITY = 20f;
+  public static final float WORKER_CARRY_CAPACITY = 5f;
   public static final int WORKER_NODE_MEMORY_DEPTH = 3;
 
   public static final float ENTITY_RENDER_SIZE = 24f;

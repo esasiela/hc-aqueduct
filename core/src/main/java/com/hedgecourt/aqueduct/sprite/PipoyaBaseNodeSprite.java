@@ -45,4 +45,17 @@ public class PipoyaBaseNodeSprite extends AbstractEntitySprite {
     TextureRegion region = (hasInventory != null && hasInventory.get()) ? regionFull : regionEmpty;
     if (region != null) batch.draw(region, x, y, width, height);
   }
+
+  @Override
+  public EntitySprite freshCopy() {
+    PipoyaBaseNodeSprite copy = new PipoyaBaseNodeSprite();
+
+    copy.spriteIdFull = this.spriteIdFull;
+    copy.spriteIdEmpty = this.spriteIdEmpty;
+
+    copy.regionFull = this.regionFull;
+    copy.regionEmpty = this.regionEmpty;
+
+    return copy;
+  }
 }

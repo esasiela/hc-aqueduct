@@ -34,4 +34,12 @@ public class SingleTextureSprite extends AbstractEntitySprite implements EntityS
     if (region == null) return;
     batch.draw(region, x, y, width, height);
   }
+
+  @Override
+  public EntitySprite freshCopy() {
+    SingleTextureSprite copy = new SingleTextureSprite();
+    copy.path = this.path;
+    copy.region = this.region;
+    return copy;
+  }
 }

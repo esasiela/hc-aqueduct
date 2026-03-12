@@ -40,4 +40,12 @@ public class PipoyaBaseSprite extends AbstractEntitySprite implements EntitySpri
     if (region == null) return;
     batch.draw(region, x, y, width, height);
   }
+
+  @Override
+  public EntitySprite freshCopy() {
+    PipoyaBaseSprite copy = new PipoyaBaseSprite();
+    copy.path = this.path;
+    copy.region = this.region;
+    return copy;
+  }
 }

@@ -12,4 +12,6 @@ public interface EntitySprite {
   void update(float delta); // called each frame, advances animation etc
 
   void draw(SpriteBatch batch, float x, float y, float width, float height);
+
+  EntitySprite freshCopy();
 }

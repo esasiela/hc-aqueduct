@@ -8,7 +8,6 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.sprite.SpriteFactory;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.BuildingFactory;
@@ -137,11 +136,13 @@ public class AqueductLoader {
         ResourceDefinition resourceDefinition = world.getResourceFactory().get(resourceType);
 
         Node node = new Node(world, id, centerX, centerY, w, h, resourceDefinition);
+        /*
+               if (resourceDefinition.sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
+                 nodeSprite.setHasInventory(() -> node.getInventory() > 0);
+               }
+               node.setSprite(resourceDefinition.sprite);
 
-        if (resourceDefinition.sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
-          nodeSprite.setHasInventory(() -> node.getInventory() > 0);
-        }
-        node.setSprite(resourceDefinition.sprite);
+        */
 
         world.add(node);
 
