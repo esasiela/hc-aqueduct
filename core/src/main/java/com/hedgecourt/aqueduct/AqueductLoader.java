@@ -46,6 +46,8 @@ public class AqueductLoader {
     /* ****
      * Load assets
      */
+    assetManager.load(C.WORKER_DEFAULT_SPRITE_PATH, Texture.class);
+
     String pipoyaBaseChipPath = "maps/[Base]BaseChip_pipo.png";
     String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
     String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";

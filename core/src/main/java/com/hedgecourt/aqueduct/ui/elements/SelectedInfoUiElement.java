@@ -9,8 +9,11 @@ import com.hedgecourt.aqueduct.ui.UiElement;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Entity;
+import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Unit;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,6 +98,26 @@ public class SelectedInfoUiElement extends UiElement {
               Math.round(b.getWaterInventoryPct() * 100f)));
       lines.add(String.format("Cost       : %d", Math.round(b.getWaterCost())));
       lines.add(String.format("Output Rate: %d", Math.round(b.getWaterOutputRate())));
+
+      if (b instanceof TownHall t) {
+        lines.add("");
+
+        Deque<Unit> queue = t.getTrainingQueue();
+        lines.add("Training Queue: " + queue.size());
+        if (!queue.isEmpty()) {
+          Unit current = queue.peek();
+          lines.add(
+              String.format(
+                  " Current: %s (%d%%)",
+                  current.getClass().getSimpleName(), Math.round(current.getTrainingPct() * 100f)));
+
+          queue.stream()
+              .collect(
+                  Collectors.groupingBy(u -> u.getClass().getSimpleName(), Collectors.counting()))
+              .forEach((name, count) -> lines.add("  " + count + " " + name));
+        }
+      }
+
     } else {
       // unitsCompleted / unitsRequired (pct)
       lines.add(

@@ -7,29 +7,38 @@ public abstract class Unit extends Entity {
   protected String unitType;
   protected String displayName;
 
-  protected float trainingUnitsRequired;
-  protected float trainingUnitsCompleted;
+  // TODO dont hardcode training points required
+  protected float trainingPointsRequired = 100f;
+  protected float trainingPointsCompleted;
 
   public Unit(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
   }
 
-  public void addTrainingUnits(float amount) {
+  public void addTrainingPoints(float amount) {
     if (isTrainingComplete()) return;
 
-    trainingUnitsCompleted += amount;
+    trainingPointsCompleted += amount;
   }
 
   public boolean isTrainingComplete() {
-    return trainingUnitsCompleted >= trainingUnitsRequired;
+    return trainingPointsCompleted >= trainingPointsRequired;
   }
 
   public boolean isTrainingStarted() {
-    return trainingUnitsCompleted > 0f;
+    return trainingPointsCompleted > 0f;
   }
 
   public float getTrainingPct() {
-    return (trainingUnitsRequired == 0f) ? 1f : trainingUnitsCompleted / trainingUnitsRequired;
+    return (trainingPointsRequired == 0f) ? 1f : trainingPointsCompleted / trainingPointsRequired;
+  }
+
+  public float getTrainingPointsRequired() {
+    return trainingPointsRequired;
+  }
+
+  public float getTrainingPointsCompleted() {
+    return trainingPointsCompleted;
   }
 
   public String getUnitType() {
@@ -38,13 +47,5 @@ public abstract class Unit extends Entity {
 
   public String getDisplayName() {
     return displayName;
-  }
-
-  public float getTrainingUnitsRequired() {
-    return trainingUnitsRequired;
-  }
-
-  public float getTrainingUnitsCompleted() {
-    return trainingUnitsCompleted;
   }
 }

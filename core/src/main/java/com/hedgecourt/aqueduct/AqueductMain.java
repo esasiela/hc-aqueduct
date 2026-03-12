@@ -3,6 +3,7 @@ package com.hedgecourt.aqueduct;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.assets.AssetManager;
@@ -166,8 +167,6 @@ public class AqueductMain extends ApplicationAdapter {
                 case NORMAL:
                   Vector2 worldPos = worldRenderer.mouseInWorld();
                   return handleLeftClickNormal(worldPos, shiftIsPressed);
-                // workerLayer.handleLeftClick(worldPos.x, worldPos.y, shiftIsPressed);
-                // return true;
                 case SELECT_BOX:
                   Rectangle selRect = buildSelRect(selectDragStart, selectDragCurrent);
                   clearSelectionBox();
@@ -280,6 +279,28 @@ public class AqueductMain extends ApplicationAdapter {
 
             switch (worldInputMode) {
               case NORMAL:
+                // TODO uiButton to queue a worker
+                TownHall selectedHall = null;
+                for (TownHall townHall : world.getEntities(TownHall.class)) {
+                  if (townHall.isSelected()) {
+                    selectedHall = townHall;
+                    break;
+                  }
+                }
+                if (selectedHall != null) {
+                  if (keycode == Keys.W) {
+                    // TODO unit factory
+                    Texture workerTexture =
+                        assetManager.get(C.WORKER_DEFAULT_SPRITE_PATH, Texture.class);
+                    TextureRegion[][] workerGrid = TextureRegion.split(workerTexture, 32, 32);
+                    Worker trainingWorker = new Worker(world, 0, 0);
+                    trainingWorker.buildSprites(workerGrid);
+
+                    selectedHall.addToTrainingQueue(trainingWorker);
+                    return true;
+                  }
+                }
+
                 break;
               case SELECT_BOX:
                 break;
