@@ -10,11 +10,11 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class ConstructionPendingLayer extends WorldLayer {
 
-  private static final Color NOT_STARTED_FILL_COLOR = new Color(1.0f, 0.647f, 0.0f, 0.3f);
-  private static final Color NOT_STARTED_LINE_COLOR = new Color(1.0f, 0.647f, 0.0f, 1f);
+  private static final Color NOT_STARTED_FILL_COLOR = new Color(1.0f, 0.0f, 0.0f, 0.3f);
+  private static final Color NOT_STARTED_LINE_COLOR = new Color(1.0f, 0.0f, 0.0f, 1f);
 
-  private static final Color HAS_PROGRESS_FILL_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.3f);
-  private static final Color HAS_PROGRESS_LINE_COLOR = new Color(0.5f, 0.5f, 0.5f, 1f);
+  private static final Color HAS_PROGRESS_FILL_COLOR = new Color(1.0f, 0.647f, 0.0f, 0.3f);
+  private static final Color HAS_PROGRESS_LINE_COLOR = new Color(1.0f, 0.647f, 0.0f, 1f);
 
   private final Supplier<List<BuildingEntity>> buildingSupplier;
 
