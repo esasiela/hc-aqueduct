@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class Pump extends BuildingEntity {
+public class Pump extends Building {
   public Pump(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
   }

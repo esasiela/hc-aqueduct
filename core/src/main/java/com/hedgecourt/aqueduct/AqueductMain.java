@@ -16,11 +16,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
+import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
-import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -43,7 +43,7 @@ public class AqueductMain extends ApplicationAdapter {
 
   private WorldInputMode worldInputMode = WorldInputMode.NORMAL;
 
-  private BuildingEntity constructionPlacementEntity;
+  private Building constructionPlacementEntity;
 
   // private boolean selectDragging = false;
   private final Vector2 selectDragStart = new Vector2();
@@ -192,7 +192,7 @@ public class AqueductMain extends ApplicationAdapter {
               switch (worldInputMode) {
                 case NORMAL:
                   if (workerLayer.hasSelection()) {
-                    WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
+                    Entity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
 
                     if (clickedEntity == null) {
                       workerLayer.commandSelectedMoveTo(worldPos);
@@ -204,7 +204,7 @@ public class AqueductMain extends ApplicationAdapter {
                       return true;
                     }
 
-                    BuildingEntity clickedIncompleteBuilding =
+                    Building clickedIncompleteBuilding =
                         world.getIncompleteBuildingAt(worldPos.x, worldPos.y);
                     if (clickedIncompleteBuilding != null) {
                       workerLayer.commandSelectedConstruct(clickedIncompleteBuilding);
@@ -217,7 +217,7 @@ public class AqueductMain extends ApplicationAdapter {
                     }
                   } else {
                     // no workers selected
-                    BuildingEntity pendingBuilding =
+                    Building pendingBuilding =
                         world.getConstructionPendingAt(worldPos.x, worldPos.y);
                     if (pendingBuilding != null && !pendingBuilding.isConstructionStarted()) {
                       world.remove(pendingBuilding);
@@ -298,14 +298,14 @@ public class AqueductMain extends ApplicationAdapter {
 
   private boolean handleLeftClickNormal(Vector2 worldPos, boolean shiftIsPressed) {
     // What did you click on?
-    WorldEntity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
+    Entity clickedEntity = world.getEntityAt(worldPos.x, worldPos.y);
     if (clickedEntity == null) {
       // click is on BG, not an entity
       deselectAll();
       return true;
     }
 
-    if (clickedEntity instanceof BuildingEntity building) {
+    if (clickedEntity instanceof Building building) {
       // building selection is single-select
       deselectAll();
       building.select();
@@ -321,8 +321,8 @@ public class AqueductMain extends ApplicationAdapter {
   }
 
   private void deselectAll() {
-    for (WorldEntity worldEntity : world.getEntities()) {
-      worldEntity.deselect();
+    for (Entity entity : world.getEntities()) {
+      entity.deselect();
     }
   }
 
@@ -410,7 +410,7 @@ public class AqueductMain extends ApplicationAdapter {
         world.getPathfinder().validateConstructionPlacementLocation(constructionPlacementEntity);
 
     boolean isClearOfConstruction = true;
-    for (BuildingEntity pendingBuilding : world.getConstructionPendingList()) {
+    for (Building pendingBuilding : world.getConstructionPendingList()) {
       if (pendingBuilding.getBounds().overlaps(constructionPlacementEntity.getBounds())) {
         // TODO fancy [][] of tiles to know what tile is not clear of construction
         isClearOfConstruction = false;

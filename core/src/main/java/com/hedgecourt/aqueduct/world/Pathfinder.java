@@ -4,7 +4,7 @@ import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
 import com.badlogic.gdx.math.Vector2;
-import com.hedgecourt.aqueduct.world.entities.WorldEntity;
+import com.hedgecourt.aqueduct.world.entities.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,11 +89,11 @@ public class Pathfinder {
     return pulled;
   }
 
-  public Vector2 nearestWalkableApproach(WorldEntity to, WorldEntity from) {
+  public Vector2 nearestWalkableApproach(Entity to, Entity from) {
     return nearestWalkableApproach(to, from.getPosition().x, from.getPosition().y);
   }
 
-  public Vector2 nearestWalkableApproach(WorldEntity entity, float fromX, float fromY) {
+  public Vector2 nearestWalkableApproach(Entity entity, float fromX, float fromY) {
     int tileW = tileWidth;
     int tileH = tileHeight;
 
@@ -130,7 +130,7 @@ public class Pathfinder {
     return best; // null if completely surrounded by unwalkable tiles
   }
 
-  public boolean validateConstructionPlacementLocation(WorldEntity entity) {
+  public boolean validateConstructionPlacementLocation(Entity entity) {
     int tileW = tileWidth;
     int tileH = tileHeight;
 

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class Sprinkler extends BuildingEntity {
+public class Sprinkler extends Building {
   public Sprinkler(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
   }

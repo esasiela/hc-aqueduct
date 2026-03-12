@@ -2,7 +2,7 @@ package com.hedgecourt.aqueduct.world.entities;
 
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 
-public abstract class BuildingEntity extends WorldEntity {
+public abstract class Building extends Entity {
 
   protected String buildingType;
   protected String displayName;
@@ -21,7 +21,7 @@ public abstract class BuildingEntity extends WorldEntity {
 
   protected boolean waterConnected = false;
 
-  public BuildingEntity(AqueductWorld world, float x, float y, float width, float height) {
+  public Building(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
   }
 
@@ -29,10 +29,9 @@ public abstract class BuildingEntity extends WorldEntity {
   public void update(float delta) {
     // gotta pay the piper
     waterInventory = Math.max(waterInventory - waterCost * delta, 0f);
-
   }
 
-  public BuildingEntity freshCopy() {
+  public Building freshCopy() {
     return world.getBuildingFactory().create(buildingType, 0f, 0f);
   }
 

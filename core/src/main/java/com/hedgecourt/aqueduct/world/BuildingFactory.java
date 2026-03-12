@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.sprite.SpriteFactory;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
@@ -26,14 +26,14 @@ public class BuildingFactory {
     spriteFactory = world.getSpriteFactory();
   }
 
-  public BuildingEntity create(String type, float x, float y) {
+  public Building create(String type, float x, float y) {
     BuildingDefinition def = definitions.get(type);
     if (def == null) throw new InvalidBuildingConfigException("no defaults for type: " + type);
 
     float w = def.widthTiles * world.getTileWidth();
     float h = def.heightTiles * world.getTileHeight();
 
-    BuildingEntity building =
+    Building building =
         switch (type) {
           case "townhall" -> new TownHall(world, x, y, w, h);
           case "pipe" -> new Pipe(world, x, y, w, h);

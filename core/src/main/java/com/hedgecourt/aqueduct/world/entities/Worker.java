@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class Worker extends WorldEntity {
+public class Worker extends Entity {
 
   // ── direction ─────────────────────────────────────────────────────────────
 
@@ -87,7 +87,7 @@ public class Worker extends WorldEntity {
     moveTo(target);
   }
 
-  public void commandMoveAdjacentTo(WorldEntity entity) {
+  public void commandMoveAdjacentTo(Entity entity) {
     clearPlan();
     plan.planType = PlanType.MOVE;
 
@@ -121,7 +121,7 @@ public class Worker extends WorldEntity {
     // TODO if you are carrying something different than this node, jettison bag contents :-(
   }
 
-  public void commandConstruct(BuildingEntity building) {
+  public void commandConstruct(Building building) {
     clearPlan();
 
     if (!moveAdjacentTo(building)) {
@@ -303,7 +303,7 @@ public class Worker extends WorldEntity {
   }
 
   private void updateConstructing(float delta) {
-    BuildingEntity building = plan.underConstruction;
+    Building building = plan.underConstruction;
 
     if (!isWithinInteractionRange(building)) {
       moveAdjacentTo(building);
@@ -315,7 +315,7 @@ public class Worker extends WorldEntity {
 
     if (building.isConstructionComplete()) {
       // look for nearby work
-      for (BuildingEntity nextBuilding : world.getIncompleteBuildings()) {
+      for (Building nextBuilding : world.getIncompleteBuildings()) {
         if (distanceTo(nextBuilding) <= 150f) {
           commandConstruct(nextBuilding);
           return;
@@ -327,7 +327,7 @@ public class Worker extends WorldEntity {
 
   // ── helpers ────────────────────────────────────────────────────────────────
 
-  public boolean isWithinInteractionRange(WorldEntity target) {
+  public boolean isWithinInteractionRange(Entity target) {
     Rectangle bounds = target.getBounds();
     // find closest point on bounds rectangle to this entity's position
     float closestX = Math.max(bounds.x, Math.min(position.x, bounds.x + bounds.width));
@@ -347,11 +347,11 @@ public class Worker extends WorldEntity {
     return true;
   }
 
-  private boolean moveTo(WorldEntity dest) {
+  private boolean moveTo(Entity dest) {
     return moveTo(dest.getPosition());
   }
 
-  private boolean moveAdjacentTo(WorldEntity dest) {
+  private boolean moveAdjacentTo(Entity dest) {
     // ensure there is a walkable path to this node
     Vector2 approach = world.getPathfinder().nearestWalkableApproach(dest, this);
     if (approach == null) {
@@ -459,13 +459,13 @@ public class Worker extends WorldEntity {
 
     Node node;
     TownHall townHall;
-    BuildingEntity underConstruction;
+    Building underConstruction;
 
     public PlanType getPlanType() {
       return planType;
     }
 
-    public WorldEntity getTargetEntity() {
+    public Entity getTargetEntity() {
       return switch (planType) {
         case HARVEST -> node;
         case DELIVER -> townHall;

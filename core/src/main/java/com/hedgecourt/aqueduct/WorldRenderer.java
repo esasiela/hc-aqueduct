@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
-import com.hedgecourt.aqueduct.world.entities.WorldEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
+import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.layers.BuildingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPendingLayer;
 import com.hedgecourt.aqueduct.world.layers.ConstructionPlacementCursorLayer;
@@ -53,7 +53,7 @@ public class WorldRenderer implements Disposable {
       ShapeDrawer shapeDrawer,
       FontManager fontManager,
       AqueductWorld world,
-      Supplier<BuildingEntity> constructionPlacementEntitySupplier) {
+      Supplier<Building> constructionPlacementEntitySupplier) {
     this.shapeDrawer = shapeDrawer;
     this.world = world;
 
@@ -112,7 +112,7 @@ public class WorldRenderer implements Disposable {
     Vector2 mouse = mouseInWorld();
 
     boolean foundHovered = false;
-    for (WorldEntity entity : world.getEntities()) {
+    for (Entity entity : world.getEntities()) {
       if (!foundHovered && entity.containsPoint(mouse.x, mouse.y)) {
         entity.setHovered(true);
         foundHovered = true;
@@ -135,7 +135,7 @@ public class WorldRenderer implements Disposable {
   }
 
   public void updateSprites(float delta) {
-    for (WorldEntity entity : world.getEntities()) {
+    for (Entity entity : world.getEntities()) {
       entity.updateSprite(delta);
     }
   }

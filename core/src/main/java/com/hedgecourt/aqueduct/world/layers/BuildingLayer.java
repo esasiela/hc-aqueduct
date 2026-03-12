@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class BuildingLayer extends WorldLayer {
@@ -20,7 +20,7 @@ public class BuildingLayer extends WorldLayer {
 
   @Override
   public void drawUnderlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (BuildingEntity building : world.getEntities(BuildingEntity.class)) {
+    for (Building building : world.getEntities(Building.class)) {
       if (building.isSelected()) {
         Vector2 pos = building.getPosition();
         shapeDrawer.rectangle(
@@ -47,7 +47,6 @@ public class BuildingLayer extends WorldLayer {
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (BuildingEntity building : world.getEntities(BuildingEntity.class))
-      building.draw(batch, shapeDrawer);
+    for (Building building : world.getEntities(Building.class)) building.draw(batch, shapeDrawer);
   }
 }

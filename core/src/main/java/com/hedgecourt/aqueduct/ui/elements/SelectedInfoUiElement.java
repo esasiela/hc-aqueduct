@@ -7,9 +7,9 @@ import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.ui.UiElement;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
+import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Worker;
-import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +32,8 @@ public class SelectedInfoUiElement extends UiElement {
   @Override
   public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
 
-    List<WorldEntity> selectedEntities = new ArrayList<>();
-    for (WorldEntity entity : world.getEntities()) {
+    List<Entity> selectedEntities = new ArrayList<>();
+    for (Entity entity : world.getEntities()) {
       if (entity.isSelected()) selectedEntities.add(entity);
     }
 
@@ -45,8 +45,8 @@ public class SelectedInfoUiElement extends UiElement {
       lines.add("Multiple selections: " + selectedEntities.size());
       lines.addAll(getMultiSelectionLines(selectedEntities));
     } else {
-      WorldEntity entity = selectedEntities.getFirst();
-      if (entity instanceof BuildingEntity building) {
+      Entity entity = selectedEntities.getFirst();
+      if (entity instanceof Building building) {
         lines = getBuildingLines(building);
       } else if (entity instanceof Worker worker) {
         lines = getWorkerLines(worker);
@@ -77,7 +77,7 @@ public class SelectedInfoUiElement extends UiElement {
     return lines;
   }
 
-  private List<String> getBuildingLines(BuildingEntity b) {
+  private List<String> getBuildingLines(Building b) {
     List<String> lines = new ArrayList<>();
 
     lines.add("Building: " + b.getDisplayName());
@@ -107,7 +107,7 @@ public class SelectedInfoUiElement extends UiElement {
     return lines;
   }
 
-  private List<String> getMultiSelectionLines(List<WorldEntity> selected) {
+  private List<String> getMultiSelectionLines(List<Entity> selected) {
     Map<String, Long> counts =
         selected.stream()
             .collect(

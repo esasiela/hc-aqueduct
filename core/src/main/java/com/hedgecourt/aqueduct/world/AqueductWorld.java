@@ -4,12 +4,12 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
 import com.hedgecourt.aqueduct.sprite.SpriteFactory;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
+import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
-import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +20,7 @@ import java.util.Queue;
 import java.util.Set;
 
 public class AqueductWorld implements Disposable {
-  private final List<WorldEntity> worldEntities = new ArrayList<>();
+  private final List<Entity> worldEntities = new ArrayList<>();
 
   private final Map<TownHall, Set<GridPoint2>> waterNetworkTiles = new HashMap<>();
 
@@ -39,7 +39,7 @@ public class AqueductWorld implements Disposable {
   private int mapTilesTall;
 
   public void update(float delta) {
-    for (WorldEntity entity : new ArrayList<>(worldEntities)) {
+    for (Entity entity : new ArrayList<>(worldEntities)) {
       entity.update(delta);
     }
     distributeWater(delta);
@@ -50,28 +50,28 @@ public class AqueductWorld implements Disposable {
     resourceConfig.clear();
   }
 
-  public void add(WorldEntity entity) {
+  public void add(Entity entity) {
     worldEntities.add(entity);
 
-    if (entity instanceof BuildingEntity building) {
+    if (entity instanceof Building building) {
       recomputeWaterNetwork();
     }
   }
 
-  public void remove(WorldEntity entity) {
+  public void remove(Entity entity) {
     worldEntities.remove(entity);
 
     if (entity instanceof Node node) {
       updateWalkabilityForEntity(node, true);
     }
 
-    if (entity instanceof BuildingEntity building) {
+    if (entity instanceof Building building) {
       updateWalkabilityForEntity(building, true);
       recomputeWaterNetwork();
     }
   }
 
-  public void updateWalkabilityForEntity(WorldEntity entity, boolean isWalkable) {
+  public void updateWalkabilityForEntity(Entity entity, boolean isWalkable) {
     int tileX = (int) (entity.getPosition().x - entity.getWidth() / 2f) / tileWidth;
     int tileY = (int) (entity.getPosition().y - entity.getHeight() / 2f) / tileHeight;
     int tilesWide = (int) (entity.getWidth() / tileWidth);
@@ -91,7 +91,7 @@ public class AqueductWorld implements Disposable {
     }
   }
 
-  public TownHall getNearestTownHall(WorldEntity entity) {
+  public TownHall getNearestTownHall(Entity entity) {
     // TODO shouldnt workers just figure out where they want to go on their own?
     TownHall nearest = null;
     float bestDist = Float.MAX_VALUE;
@@ -107,8 +107,8 @@ public class AqueductWorld implements Disposable {
     return nearest;
   }
 
-  public WorldEntity getEntityAt(float x, float y) {
-    for (WorldEntity entity : worldEntities) {
+  public Entity getEntityAt(float x, float y) {
+    for (Entity entity : worldEntities) {
       if (entity.containsPoint(x, y)) return entity;
     }
     return null;
@@ -135,9 +135,9 @@ public class AqueductWorld implements Disposable {
     this.mapTilesTall = mapTilesTall;
   }
 
-  public <T extends WorldEntity> List<T> getEntities(Class<T> type) {
+  public <T extends Entity> List<T> getEntities(Class<T> type) {
     List<T> result = new ArrayList<>();
-    for (WorldEntity entity : worldEntities) {
+    for (Entity entity : worldEntities) {
       if (type.isInstance(entity)) {
         result.add(type.cast(entity));
       }
@@ -145,37 +145,37 @@ public class AqueductWorld implements Disposable {
     return result;
   }
 
-  public List<WorldEntity> getEntities() {
+  public List<Entity> getEntities() {
     return worldEntities;
   }
 
-  public List<BuildingEntity> getIncompleteBuildings() {
-    List<BuildingEntity> result = new ArrayList<>();
+  public List<Building> getIncompleteBuildings() {
+    List<Building> result = new ArrayList<>();
 
-    for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+    for (Building building : getEntities(Building.class)) {
       if (!building.isConstructionComplete()) result.add(building);
     }
     return result;
   }
 
-  public List<BuildingEntity> getConstructionPendingList() {
-    List<BuildingEntity> result = new ArrayList<>();
+  public List<Building> getConstructionPendingList() {
+    List<Building> result = new ArrayList<>();
 
-    for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+    for (Building building : getEntities(Building.class)) {
       if (!building.isConstructionStarted()) result.add(building);
     }
     return result;
   }
 
-  public BuildingEntity getIncompleteBuildingAt(float x, float y) {
-    for (BuildingEntity building : getIncompleteBuildings()) {
+  public Building getIncompleteBuildingAt(float x, float y) {
+    for (Building building : getIncompleteBuildings()) {
       if (building.containsPoint(x, y)) return building;
     }
     return null;
   }
 
-  public BuildingEntity getConstructionPendingAt(float x, float y) {
-    for (BuildingEntity building : getConstructionPendingList()) {
+  public Building getConstructionPendingAt(float x, float y) {
+    for (Building building : getConstructionPendingList()) {
       if (building.containsPoint(x, y)) return building;
     }
     return null;
@@ -186,8 +186,8 @@ public class AqueductWorld implements Disposable {
 
     for (TownHall th : townHalls) {
       // find eligible recipients
-      List<BuildingEntity> recipients = new ArrayList<>();
-      for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+      List<Building> recipients = new ArrayList<>();
+      for (Building building : getEntities(Building.class)) {
 
         if (building instanceof TownHall) continue;
         if (!building.isConstructionComplete()) continue;
@@ -203,7 +203,7 @@ public class AqueductWorld implements Disposable {
       float share = available / recipients.size();
       float totalDistributed = 0f;
 
-      for (BuildingEntity recipient : recipients) {
+      for (Building recipient : recipients) {
         float space = recipient.getWaterCapacity() - recipient.getWaterInventory();
         float amount = Math.min(share, space);
         recipient.setWaterInventory(recipient.getWaterInventory() + amount);
@@ -251,12 +251,12 @@ public class AqueductWorld implements Disposable {
     }
 
     // update waterConnected on all buildings
-    for (BuildingEntity building : getEntities(BuildingEntity.class)) {
+    for (Building building : getEntities(Building.class)) {
       building.setWaterConnected(isWaterConnected(building));
     }
   }
 
-  public boolean isWaterConnected(BuildingEntity building) {
+  public boolean isWaterConnected(Building building) {
     if (building instanceof TownHall) return true;
 
     Set<GridPoint2> adjacentTiles = new HashSet<>();
@@ -272,7 +272,7 @@ public class AqueductWorld implements Disposable {
     return false;
   }
 
-  private Set<GridPoint2> getEntityTiles(WorldEntity entity) {
+  private Set<GridPoint2> getEntityTiles(Entity entity) {
     Set<GridPoint2> tiles = new HashSet<>();
     int left = (int) ((entity.getPosition().x - entity.getWidth() / 2f) / tileWidth);
     int bottom = (int) ((entity.getPosition().y - entity.getHeight() / 2f) / tileHeight);

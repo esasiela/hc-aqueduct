@@ -3,7 +3,7 @@ package com.hedgecourt.aqueduct.world.layers;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hedgecourt.aqueduct.world.WorldLayer;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
 import java.util.List;
 import java.util.function.Supplier;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -16,15 +16,15 @@ public class ConstructionPendingLayer extends WorldLayer {
   private static final Color HAS_PROGRESS_FILL_COLOR = new Color(1.0f, 0.647f, 0.0f, 0.3f);
   private static final Color HAS_PROGRESS_LINE_COLOR = new Color(1.0f, 0.647f, 0.0f, 1f);
 
-  private final Supplier<List<BuildingEntity>> buildingSupplier;
+  private final Supplier<List<Building>> buildingSupplier;
 
-  public ConstructionPendingLayer(Supplier<List<BuildingEntity>> buildingSupplier) {
+  public ConstructionPendingLayer(Supplier<List<Building>> buildingSupplier) {
     this.buildingSupplier = buildingSupplier;
   }
 
   @Override
   public void drawOverlay(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (BuildingEntity building : buildingSupplier.get()) {
+    for (Building building : buildingSupplier.get()) {
 
       float x = building.getBounds().x;
       float y = building.getBounds().y;

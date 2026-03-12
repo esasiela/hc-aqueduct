@@ -14,7 +14,7 @@ import com.hedgecourt.aqueduct.world.BuildingFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.ResourceDef;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 
@@ -142,7 +142,7 @@ public class AqueductLoader {
 
       } else if ("townhall".equals(objClass)) {
 
-        BuildingEntity building = world.getBuildingFactory().create("townhall", centerX, centerY);
+        Building building = world.getBuildingFactory().create("townhall", centerX, centerY);
         world.add(building);
         building.addConstructionUnits(building.getConstructionUnitsRequired());
 

@@ -7,7 +7,7 @@ import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public abstract class WorldEntity {
+public abstract class Entity {
 
   protected AqueductWorld world;
 
@@ -19,7 +19,7 @@ public abstract class WorldEntity {
 
   protected EntitySprite sprite;
 
-  public WorldEntity(AqueductWorld world, float x, float y, float width, float height) {
+  public Entity(AqueductWorld world, float x, float y, float width, float height) {
     this.world = world;
     this.position = new Vector2(x, y);
     this.width = width;
@@ -42,7 +42,7 @@ public abstract class WorldEntity {
     return position.dst(x, y);
   }
 
-  public float distanceTo(WorldEntity entity) {
+  public float distanceTo(Entity entity) {
     return position.dst(entity.position);
   }
 

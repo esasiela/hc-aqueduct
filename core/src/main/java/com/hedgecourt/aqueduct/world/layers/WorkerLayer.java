@@ -13,11 +13,11 @@ import com.hedgecourt.aqueduct.FontManager.FontType;
 import com.hedgecourt.aqueduct.WorldRenderer;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldLayer;
-import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
+import com.hedgecourt.aqueduct.world.entities.Building;
+import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
-import com.hedgecourt.aqueduct.world.entities.WorldEntity;
 import java.util.List;
 import java.util.Queue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -56,7 +56,7 @@ public class WorkerLayer extends WorldLayer {
     }
   }
 
-  public void commandSelectedConstruct(BuildingEntity building) {
+  public void commandSelectedConstruct(Building building) {
     for (Worker worker : world.getEntities(Worker.class)) {
       if (worker.isSelected()) worker.commandConstruct(building);
     }
@@ -153,7 +153,7 @@ public class WorkerLayer extends WorldLayer {
         shapeDrawer.circle(
             worker.getPosition().x, worker.getPosition().y, worker.getWidth() * 0.6f, 2f);
 
-        WorldEntity target = worker.getPlan().getTargetEntity();
+        Entity target = worker.getPlan().getTargetEntity();
         if (target == null) continue;
         Rectangle bounds = target.getBounds();
         float buf = C.WORKER_INTERACTION_RANGE;
@@ -286,8 +286,8 @@ public class WorkerLayer extends WorldLayer {
   }
 
   public void deselectAll() {
-    for (WorldEntity worldEntity : world.getEntities()) {
-      worldEntity.deselect();
+    for (Entity entity : world.getEntities()) {
+      entity.deselect();
     }
   }
 

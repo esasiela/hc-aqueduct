@@ -6,7 +6,7 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.ResourceDef;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-public class Node extends WorldEntity {
+public class Node extends Entity {
 
   private final String id;
   private final ResourceDef def;
