@@ -139,7 +139,7 @@ public class MinimapUiElement extends UiElement {
     drawViewportRect(shapeDrawer);
 
     // ── worker dots ───────────────────────────────────────────────────────
-    List<Worker> workers = world.getWorkers();
+    List<Worker> workers = world.getEntities(Worker.class);
     for (Worker worker : workers) {
       Vector2 dot = worldToMinimap(worker.getPosition().x, worker.getPosition().y);
       shapeDrawer.setColor(worker.isSelected() ? COLOR_SEL : COLOR_WORKER);

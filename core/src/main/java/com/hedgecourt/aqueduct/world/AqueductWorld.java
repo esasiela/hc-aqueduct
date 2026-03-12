@@ -7,7 +7,6 @@ import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
-import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,7 +18,6 @@ import java.util.Set;
 
 public class AqueductWorld implements Disposable {
   private final List<WorldEntity> worldEntities = new ArrayList<>();
-  private final List<Worker> workers = new ArrayList<>();
 
   private final Map<TownHall, Set<GridPoint2>> waterNetworkTiles = new HashMap<>();
 
@@ -44,15 +42,12 @@ public class AqueductWorld implements Disposable {
   }
 
   public void clear() {
-    workers.clear();
     worldEntities.clear();
-
     resourceConfig.clear();
   }
 
   public void add(WorldEntity entity) {
     worldEntities.add(entity);
-    if (entity instanceof Worker worker) workers.add(worker);
 
     if (entity instanceof Node node) {
       updateWalkabilityForEntity(node, false);
@@ -66,7 +61,6 @@ public class AqueductWorld implements Disposable {
 
   public void remove(WorldEntity entity) {
     worldEntities.remove(entity);
-    if (entity instanceof Worker worker) workers.remove(worker);
 
     if (entity instanceof Node node) {
       updateWalkabilityForEntity(node, true);
@@ -147,10 +141,6 @@ public class AqueductWorld implements Disposable {
 
   public List<WorldEntity> getEntities() {
     return worldEntities;
-  }
-
-  public List<Worker> getWorkers() {
-    return workers;
   }
 
   public List<BuildingEntity> getIncompleteBuildings() {
