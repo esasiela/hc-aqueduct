@@ -5,12 +5,9 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
-import com.hedgecourt.aqueduct.sprite.PipoyaBaseSprite;
-import com.hedgecourt.aqueduct.sprite.SingleTextureSprite;
+import com.hedgecourt.aqueduct.sprite.SpriteFactory;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;
@@ -20,18 +17,13 @@ import java.util.Map;
 
 public class BuildingFactory {
 
-  private static final Map<String, Class<? extends EntitySprite>> SPRITE_TYPES =
-      Map.of(
-          "PNG", SingleTextureSprite.class,
-          "PIPOYA_BASE", PipoyaBaseSprite.class);
-
-  private final ObjectMapper jackson = new ObjectMapper();
-
   private final Map<String, BuildingDefinition> definitions = new HashMap<>();
   private final AqueductWorld world;
+  private final SpriteFactory spriteFactory;
 
   public BuildingFactory(AqueductWorld world) {
     this.world = world;
+    spriteFactory = world.getSpriteFactory();
   }
 
   public BuildingEntity create(String type, float x, float y) {
@@ -79,7 +71,7 @@ public class BuildingFactory {
       BuildingDefinition def = parse(entry, jsonPath);
 
       JsonValue spriteInfo = entry.get("spriteInfo");
-      def.entitySprite = (spriteInfo != null) ? parseSpriteInfo(spriteInfo) : null;
+      def.entitySprite = (spriteInfo != null) ? spriteFactory.create(spriteInfo) : null;
 
       definitions.put(def.buildingType, def);
     }
@@ -98,7 +90,7 @@ public class BuildingFactory {
       JsonValue spriteInfo = entry.get("spriteInfo");
       if (spriteInfo == null) continue;
 
-      EntitySprite sprite = parseSpriteInfo(spriteInfo);
+      EntitySprite sprite = spriteFactory.create(spriteInfo);
       for (String path : sprite.assetPaths()) {
         assetManager.load(path, Texture.class);
       }
@@ -136,22 +128,6 @@ public class BuildingFactory {
       throw new InvalidBuildingConfigException("unknown resource type '" + type + "'");
     }
     return def;
-  }
-
-  // ── load sprite textures ─────────────────────────────────────────────────────
-
-  private EntitySprite parseSpriteInfo(JsonValue spriteInfo) {
-    String type = spriteInfo.getString("type");
-    Class<? extends EntitySprite> implClass = SPRITE_TYPES.get(type);
-    if (implClass == null) {
-      throw new InvalidBuildingConfigException("Unknown spriteInfo type: " + type);
-    }
-    try {
-      return jackson.treeToValue(
-          jackson.readTree(spriteInfo.toJson(JsonWriter.OutputType.json)), implClass);
-    } catch (Exception e) {
-      throw new InvalidBuildingConfigException("Failed to parse spriteInfo: " + e.getMessage());
-    }
   }
 
   // ── fail-fast helpers ─────────────────────────────────────────────────────

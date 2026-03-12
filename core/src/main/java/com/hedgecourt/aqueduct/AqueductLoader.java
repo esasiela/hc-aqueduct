@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.hedgecourt.aqueduct.sprite.SpriteFactory;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.BuildingFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
@@ -31,8 +32,11 @@ public class AqueductLoader {
     world.clear();
 
     /* ****
-     * Instantiate buildingFactory so we can get asset paths
+     * Instantiate sprite & building factory so we can get asset paths
      */
+    SpriteFactory spriteFactory = new SpriteFactory();
+    world.setSpriteFactory(spriteFactory);
+
     BuildingFactory buildingFactory = new BuildingFactory(world);
     world.setBuildingFactory(buildingFactory);
 

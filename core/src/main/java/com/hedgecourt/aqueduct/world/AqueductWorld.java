@@ -3,6 +3,7 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
+import com.hedgecourt.aqueduct.sprite.SpriteFactory;
 import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
@@ -24,6 +25,7 @@ public class AqueductWorld implements Disposable {
 
   private final ResourceConfig resourceConfig = new ResourceConfig();
 
+  private SpriteFactory spriteFactory;
   private BuildingFactory buildingFactory;
 
   private TiledMap map;
@@ -317,6 +319,14 @@ public class AqueductWorld implements Disposable {
 
   public Pathfinder getPathfinder() {
     return pathfinder;
+  }
+
+  public SpriteFactory getSpriteFactory() {
+    return spriteFactory;
+  }
+
+  public void setSpriteFactory(SpriteFactory spriteFactory) {
+    this.spriteFactory = spriteFactory;
   }
 
   public BuildingFactory getBuildingFactory() {
