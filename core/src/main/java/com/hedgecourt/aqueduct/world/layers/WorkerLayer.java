@@ -152,6 +152,17 @@ public class WorkerLayer extends WorldLayer {
         shapeDrawer.setColor(C.WORKER_SELECTION_RING_COLOR);
         shapeDrawer.circle(
             worker.getPosition().x, worker.getPosition().y, worker.getWidth() * 0.6f, 2f);
+
+        WorldEntity target = worker.getPlan().getTargetEntity();
+        if (target == null) continue;
+        Rectangle bounds = target.getBounds();
+        float buf = C.WORKER_INTERACTION_RANGE;
+        shapeDrawer.filledRectangle(
+            bounds.x - buf,
+            bounds.y - buf,
+            bounds.width + buf * 2,
+            bounds.height + buf * 2,
+            new Color(0f, 0f, 1f, 0.3f));
       }
       /* ****
        * Hover Decoration

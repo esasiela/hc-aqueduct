@@ -9,11 +9,11 @@ import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.WorldEntity;
 import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
+import java.util.Deque;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Worker extends WorldEntity {
@@ -48,7 +48,7 @@ public class Worker extends WorldEntity {
   private WorkerState state = WorkerState.IDLE;
   private final WorkerPlan plan;
 
-  private final Queue<Vector2> waypoints = new LinkedList<>();
+  private final Deque<Vector2> waypoints = new LinkedList<>();
 
   private float moveSpeed;
   private Direction facing = Direction.SOUTH;
@@ -132,6 +132,11 @@ public class Worker extends WorldEntity {
 
     plan.planType = PlanType.CONSTRUCT;
     plan.underConstruction = building;
+  }
+
+  public void commandRecomputePath() {
+    if (waypoints.isEmpty()) return;
+    moveTo(waypoints.getLast());
   }
 
   // ── state machine ─────────────────────────────────────────────────────────
@@ -434,7 +439,11 @@ public class Worker extends WorldEntity {
     this.moveSpeed = moveSpeed;
   }
 
-  public Queue<Vector2> getWaypoints() {
+  public boolean isMoving() {
+    return state == WorkerState.MOVING;
+  }
+
+  public Deque<Vector2> getWaypoints() {
     return waypoints;
   }
 
@@ -455,6 +464,15 @@ public class Worker extends WorldEntity {
 
     public PlanType getPlanType() {
       return planType;
+    }
+
+    public WorldEntity getTargetEntity() {
+      return switch (planType) {
+        case HARVEST -> node;
+        case DELIVER -> townHall;
+        case CONSTRUCT -> underConstruction;
+        default -> null;
+      };
     }
   }
 }

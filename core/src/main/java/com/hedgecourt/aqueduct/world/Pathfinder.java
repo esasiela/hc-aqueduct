@@ -45,7 +45,47 @@ public class Pathfinder {
       waypoints.add(tileCenter(node.tileX(), node.tileY()));
     }
 
-    return waypoints;
+    return stringPull(waypoints);
+  }
+
+  private boolean hasLineOfSight(Vector2 from, Vector2 to) {
+    float dx = to.x - from.x;
+    float dy = to.y - from.y;
+    float dist = (float) Math.sqrt(dx * dx + dy * dy);
+    int steps = (int) (dist / (tileWidth / 2f)) + 1;
+
+    for (int i = 1; i <= steps; i++) {
+      float t = (float) i / steps;
+      float wx = from.x + dx * t;
+      float wy = from.y + dy * t;
+      int tx = (int) (wx / tileWidth);
+      int ty = (int) (wy / tileHeight);
+      if (!graph.isWalkable(tx, ty)) return false;
+    }
+    return true;
+  }
+
+  private List<Vector2> stringPull(List<Vector2> path) {
+    if (path.size() <= 2) return path;
+
+    List<Vector2> pulled = new ArrayList<>();
+    pulled.add(path.getFirst());
+
+    int anchor = 0;
+    while (anchor < path.size() - 1) {
+      int farthest = anchor + 1;
+      for (int i = anchor + 2; i < path.size(); i++) {
+        if (hasLineOfSight(path.get(anchor), path.get(i))) {
+          farthest = i;
+        } else {
+          break;
+        }
+      }
+      pulled.add(path.get(farthest));
+      anchor = farthest;
+    }
+
+    return pulled;
   }
 
   public Vector2 nearestWalkableApproach(WorldEntity to, WorldEntity from) {

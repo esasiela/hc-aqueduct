@@ -138,8 +138,8 @@ public class AqueductLoader {
       } else if ("townhall".equals(objClass)) {
 
         BuildingEntity building = world.getBuildingFactory().create("townhall", centerX, centerY);
-        building.setConstructionUnitsCompleted(building.getConstructionUnitsRequired());
         world.add(building);
+        building.addConstructionUnits(building.getConstructionUnitsRequired());
 
       } else {
         throw new InvalidMapException(

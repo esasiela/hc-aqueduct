@@ -7,6 +7,7 @@ import com.hedgecourt.aqueduct.world.entities.BuildingEntity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,12 +50,7 @@ public class AqueductWorld implements Disposable {
   public void add(WorldEntity entity) {
     worldEntities.add(entity);
 
-    if (entity instanceof Node node) {
-      updateWalkabilityForEntity(node, false);
-    }
-
     if (entity instanceof BuildingEntity building) {
-      updateWalkabilityForEntity(building, false);
       recomputeWaterNetwork();
     }
   }
@@ -81,6 +77,13 @@ public class AqueductWorld implements Disposable {
     for (int x = tileX; x < tileX + tilesWide; x++) {
       for (int y = tileY; y < tileY + tilesTall; y++) {
         mapGraph.setWalkable(x, y, isWalkable);
+      }
+    }
+
+    // notify moving workers to recompute
+    for (Worker worker : getEntities(Worker.class)) {
+      if (worker.isMoving()) {
+        worker.commandRecomputePath();
       }
     }
   }
