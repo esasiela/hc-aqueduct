@@ -148,9 +148,7 @@ public class AqueductWorld implements Disposable {
   public <T extends Building> T getSelectedBuilding(Class<T> type) {
     List<T> result = new ArrayList<>();
     for (Building building : getEntities(type)) {
-      if (type.isInstance(building) && building.isSelected()) {
-        result.add(type.cast(building));
-      }
+      if (building.isSelected()) result.add(type.cast(building));
     }
     if (result.isEmpty()) return null;
 

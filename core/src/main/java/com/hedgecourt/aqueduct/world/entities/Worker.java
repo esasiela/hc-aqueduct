@@ -1,7 +1,5 @@
 package com.hedgecourt.aqueduct.world.entities;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
@@ -10,10 +8,8 @@ import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
 import java.util.Deque;
-import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class Worker extends Unit {
 
@@ -35,12 +31,6 @@ public class Worker extends Unit {
     DELIVERING,
     CONSTRUCTING
   }
-
-  // ── animation ─────────────────────────────────────────────────────────────
-
-  private Map<Direction, Animation<TextureRegion>> animations;
-  private float animTime = 0f;
-  private final int IDLE_FRAME = 1;
 
   // ── movement ──────────────────────────────────────────────────────────────
 
@@ -77,14 +67,6 @@ public class Worker extends Unit {
     if (copy instanceof DirectionalAnimatedSprite das) {
       das.setFacing(() -> this.facing);
       das.setIsMoving(this::isMoving);
-    }
-  }
-
-  public void buildSprites(TextureRegion[][] grid) {
-    animations = new EnumMap<>(Direction.class);
-    Direction[] dirs = Direction.values();
-    for (int row = 0; row < dirs.length; row++) {
-      animations.put(dirs[row], new Animation<>(C.ANIMATION_FRAME_DURATION, grid[row]));
     }
   }
 
@@ -165,13 +147,9 @@ public class Worker extends Unit {
   private void enterState(WorkerState newState) {
     this.state = newState;
     switch (newState) {
-      case IDLE, DELIVERING, CONSTRUCTING:
-        animTime = 0f;
-        break;
-      case MOVING:
+      case IDLE, DELIVERING, CONSTRUCTING, MOVING:
         break;
       case HARVESTING:
-        animTime = 0f;
         rememberNode(plan.node.getId());
         break;
     }
@@ -248,7 +226,6 @@ public class Worker extends Unit {
     float step = moveSpeed * delta;
     if (step > distance) step = distance;
     position.mulAdd(dir, step);
-    animTime += delta;
   }
 
   private void updateHarvesting(float delta) {
@@ -397,17 +374,6 @@ public class Worker extends Unit {
   @Override
   public void update(float delta) {
     updateState(delta);
-  }
-
-  // ── drawing ───────────────────────────────────────────────────────────────
-
-  public TextureRegion getCurrentAnimationFrame() {
-    if (animations == null) return null;
-    Animation<TextureRegion> anim = animations.get(facing);
-    if (state == WorkerState.IDLE) {
-      return animations.get(facing).getKeyFrames()[IDLE_FRAME];
-    }
-    return anim.getKeyFrame(animTime, true);
   }
 
   // ── getters ───────────────────────────────────────────────────────────────
