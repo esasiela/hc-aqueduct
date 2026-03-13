@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hedgecourt.aqueduct.sprite.DirectionalAnimatedSprite;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.sprite.PipoyaBaseSprite;
@@ -21,7 +22,9 @@ public class SpriteFactory {
           "PIPOYA_BASE_NODE",
           PipoyaBaseNodeSprite.class,
           "TWO_FRAME_PNG",
-          TwoFramePngSprite.class);
+          TwoFramePngSprite.class,
+          "DIRECTIONAL_ANIMATED",
+          DirectionalAnimatedSprite.class);
 
   private final ObjectMapper jackson = new ObjectMapper();
 

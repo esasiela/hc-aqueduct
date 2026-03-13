@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
+import com.hedgecourt.aqueduct.sprite.DirectionalAnimatedSprite;
+import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.entities.Worker.WorkerPlan.PlanType;
 import java.util.Deque;
@@ -68,6 +70,15 @@ public class Worker extends Unit {
   }
 
   // ── sprites ───────────────────────────────────────────────────────────────
+  @Override
+  public void setSprite(EntitySprite sprite) {
+    EntitySprite copy = sprite.freshCopy();
+    super.setSprite(copy);
+    if (copy instanceof DirectionalAnimatedSprite das) {
+      das.setFacing(() -> this.facing);
+      das.setIsMoving(this::isMoving);
+    }
+  }
 
   public void buildSprites(TextureRegion[][] grid) {
     animations = new EnumMap<>(Direction.class);

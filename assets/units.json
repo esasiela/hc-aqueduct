@@ -7,8 +7,8 @@
       "heightPx": 24,
       "trainingPointsRequired": 100,
       "spriteInfo": {
-        "type": "PNG",
-        "path": "characters/hcr/experimental/poink-03.png"
+        "type": "DIRECTIONAL_ANIMATED",
+        "path": "characters/hcr/pinkeye-02.png"
       }
     }
   ],
