@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
@@ -213,6 +212,8 @@ public class WorkerLayer extends WorldLayer {
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
+    for (Worker worker : world.getEntities(Worker.class)) worker.draw(batch,  shapeDrawer);
+    /*
     for (Worker worker : world.getEntities(Worker.class)) {
       TextureRegion frame = worker.getCurrentAnimationFrame();
       if (frame == null) continue;
@@ -224,6 +225,8 @@ public class WorkerLayer extends WorldLayer {
           renderSize,
           renderSize);
     }
+
+     */
   }
 
   @Override

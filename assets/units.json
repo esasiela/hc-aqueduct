@@ -1,0 +1,30 @@
+{
+  "units": [
+    {
+      "type": "worker",
+      "displayName": "Worker",
+      "widthPx": 24,
+      "heightPx": 24,
+      "trainingPointsRequired": 100,
+      "spriteInfo": {
+        "type": "PNG",
+        "path": "characters/hcr/experimental/poink-03.png"
+      }
+    }
+  ],
+  "scratch": {
+    "key": "this is my scratchpad",
+    "apples": {
+      "spriteInfo": {
+        "type": "TWO_FRAME_PNG",
+        "path": "img/WaterFountain.png"
+      }
+    },
+    "bananas": {
+      "spriteInfo": {
+        "type": "PIPOYA_BASE",
+        "spriteId": 937
+      }
+    }
+  }
+}

@@ -1,7 +1,6 @@
 package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -13,7 +12,6 @@ import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public class Worker extends Unit {
 
@@ -53,17 +51,18 @@ public class Worker extends Unit {
   private Direction facing = Direction.SOUTH;
 
   private float carrying = 0f;
-  private float carryCapacity = C.WORKER_CARRY_CAPACITY;
+  private float carryCapacity;
   private String carryingType = null;
 
   private final LinkedList<String> nodeMemory = new LinkedList<>();
 
   // ── constructor ───────────────────────────────────────────────────────────
 
-  public Worker(AqueductWorld world, float x, float y) {
+  public Worker(AqueductWorld world, float x, float y, float w, float h) {
     // TODO worker size needs to be defined elsewhere than hardcoded C
-    super(world, x, y, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
+    super(world, x, y, w, h);
     this.moveSpeed = C.WORKER_BASE_SPEED;
+    this.carryCapacity = C.WORKER_CARRY_CAPACITY;
 
     this.plan = new WorkerPlan();
   }
@@ -390,11 +389,6 @@ public class Worker extends Unit {
   }
 
   // ── drawing ───────────────────────────────────────────────────────────────
-
-  @Override
-  public void draw(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    // Worker drawing is handled by WorkerLayer
-  }
 
   public TextureRegion getCurrentAnimationFrame() {
     if (animations == null) return null;

@@ -34,7 +34,15 @@ public abstract class Unit extends Entity {
     return trainingPointsRequired;
   }
 
+  public void setTrainingPointsRequired(float trainingPointsRequired) {
+    this.trainingPointsRequired = trainingPointsRequired;
+  }
+
   public float getTrainingPointsCompleted() {
     return trainingPointsCompleted;
+  }
+
+  public void setTrainingPointsCompleted(float trainingPointsCompleted) {
+    this.trainingPointsCompleted = trainingPointsCompleted;
   }
 }

@@ -21,6 +21,7 @@ import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Unit;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import com.hedgecourt.aqueduct.world.layers.WorkerLayer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -57,7 +58,7 @@ public class AqueductMain extends ApplicationAdapter {
     world = new AqueductWorld();
     assetManager = new AssetManager();
     loader = new AqueductLoader(world, assetManager);
-    loader.load("resources.json", "buildings.json", "maps/test2.tmx");
+    loader.load("resources.json", "buildings.json", "units.json", "maps/test2.tmx");
 
     batch = new SpriteBatch();
 
@@ -290,12 +291,17 @@ public class AqueductMain extends ApplicationAdapter {
                 if (selectedHall != null) {
                   if (keycode == Keys.W) {
                     // TODO unit factory
+                    /*
                     Texture workerTexture =
                         assetManager.get(C.WORKER_DEFAULT_SPRITE_PATH, Texture.class);
                     TextureRegion[][] workerGrid = TextureRegion.split(workerTexture, 32, 32);
-                    Worker trainingWorker = new Worker(world, 0, 0);
+                    Worker trainingWorker =
+                        new Worker(world, 0, 0, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
                     trainingWorker.buildSprites(workerGrid);
 
+                     */
+
+                    Unit trainingWorker = world.getUnitFactory().create("worker", 0, 0);
                     selectedHall.addToTrainingQueue(trainingWorker);
                     return true;
                   }

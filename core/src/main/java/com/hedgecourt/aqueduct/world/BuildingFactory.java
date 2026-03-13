@@ -56,7 +56,7 @@ public class BuildingFactory {
     building.setWaterCost(def.waterCost);
     building.setWaterOutputRate(def.waterOutputRate);
 
-    building.setSprite(def.sprite);
+    building.setSprite(def.sprite.freshCopy());
 
     return building;
   }
@@ -65,7 +65,8 @@ public class BuildingFactory {
     try {
       String json = Gdx.files.internal(jsonPath).readString();
       BuildingsJson wrapper = jackson.readValue(json, BuildingsJson.class);
-      if (wrapper.buildings == null) return;
+      if (wrapper.buildings == null)
+        throw new InvalidBuildingConfigException("no buildings defined");
 
       for (BuildingDefinition def : wrapper.buildings) {
         if (def.spriteInfo == null) continue;
@@ -117,7 +118,7 @@ public class BuildingFactory {
   public BuildingDefinition get(String type) {
     BuildingDefinition def = definitions.get(type);
     if (def == null) {
-      throw new InvalidBuildingConfigException("unknown resource type '" + type + "'");
+      throw new InvalidBuildingConfigException("unknown building type '" + type + "'");
     }
     return def;
   }

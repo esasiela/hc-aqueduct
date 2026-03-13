@@ -14,6 +14,7 @@ import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
 import com.hedgecourt.aqueduct.world.ResourceDefinition;
 import com.hedgecourt.aqueduct.world.ResourceFactory;
+import com.hedgecourt.aqueduct.world.UnitFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Worker;
@@ -27,7 +28,11 @@ public class AqueductLoader {
     this.assetManager = assetManager;
   }
 
-  public void load(String resourcesJsonFilename, String buildingsJsonFilename, String mapFilename)
+  public void load(
+      String resourcesJsonFilename,
+      String buildingsJsonFilename,
+      String unitsJsonFilename,
+      String mapFilename)
       throws InvalidMapException, InvalidResourceConfigException {
     world.clear();
 
@@ -42,6 +47,9 @@ public class AqueductLoader {
 
     ResourceFactory resourceFactory = new ResourceFactory(world);
     world.setResourceFactory(resourceFactory);
+
+    UnitFactory unitFactory = new UnitFactory(world);
+    world.setUnitFactory(unitFactory);
 
     /* ****
      * Load assets
@@ -59,6 +67,7 @@ public class AqueductLoader {
 
     buildingFactory.loadAssets(buildingsJsonFilename, assetManager);
     resourceFactory.loadAssets(resourcesJsonFilename, assetManager);
+    unitFactory.loadAssets(unitsJsonFilename, assetManager);
 
     assetManager.finishLoading();
 
@@ -70,6 +79,9 @@ public class AqueductLoader {
 
     resourceFactory.loadDefinitions(resourcesJsonFilename, assetManager);
     resourceFactory.buildSprites(assetManager);
+
+    unitFactory.loadDefinitions(unitsJsonFilename, assetManager);
+    unitFactory.buildSprites(assetManager);
 
     /* ****
      * Node Resource Definitions
@@ -101,11 +113,23 @@ public class AqueductLoader {
     Texture workerTexture2 = assetManager.get(workerSpritePath2, Texture.class);
     TextureRegion[][] grid2 = TextureRegion.split(workerTexture2, 32, 32);
 
-    Worker worker1 = new Worker(world, world.getMapWidth() / 6f, world.getMapHeight() / 3f);
+    Worker worker1 =
+        new Worker(
+            world,
+            world.getMapWidth() / 6f,
+            world.getMapHeight() / 3f,
+            C.ENTITY_RENDER_SIZE,
+            C.ENTITY_RENDER_SIZE);
     worker1.buildSprites(grid1);
     world.add(worker1);
 
-    Worker worker2 = new Worker(world, world.getMapWidth() / 6f + 64f, world.getMapHeight() / 3f);
+    Worker worker2 =
+        new Worker(
+            world,
+            world.getMapWidth() / 6f + 64f,
+            world.getMapHeight() / 3f,
+            C.ENTITY_RENDER_SIZE,
+            C.ENTITY_RENDER_SIZE);
     worker2.buildSprites(grid2);
     world.add(worker2);
 
@@ -138,13 +162,6 @@ public class AqueductLoader {
 
         Node node = new Node(world, centerX, centerY, w, h, resourceDefinition);
         node.setId(id);
-        /*
-               if (resourceDefinition.sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
-                 nodeSprite.setHasInventory(() -> node.getInventory() > 0);
-               }
-               node.setSprite(resourceDefinition.sprite);
-
-        */
 
         world.add(node);
 
