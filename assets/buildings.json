@@ -31,15 +31,17 @@
     {
       "type": "sprinkler",
       "displayName": "Sprinkler",
-      "widthTiles": 2,
-      "heightTiles": 4,
+      "widthTiles": 3,
+      "heightTiles": 3,
       "constructionUnitsRequired": 200,
       "waterCapacity": 100,
       "waterCost": 1,
       "waterOutputRate": 0,
       "spriteInfo": {
-        "type": "TWO_FRAME_PNG",
-        "path": "img/WaterFountain.png"
+        "type": "PIPOYA_BASE",
+        "spriteId": 928,
+        "widthTiles": 3,
+        "heightTiles": 3
       }
     },
     {
@@ -68,6 +70,22 @@
     }
   ],
   "scratch": {
-    "key": "this is my scratchpad"
+    "key": "this is my scratchpad",
+    "snippets": [
+      {
+        "type": "sprinkler",
+        "displayName": "Sprinkler",
+        "widthTiles": 2,
+        "heightTiles": 4,
+        "constructionUnitsRequired": 200,
+        "waterCapacity": 100,
+        "waterCost": 1,
+        "waterOutputRate": 0,
+        "spriteInfo": {
+          "type": "TWO_FRAME_PNG",
+          "path": "img/WaterFountain.png"
+        }
+      }
+    ]
   }
 }

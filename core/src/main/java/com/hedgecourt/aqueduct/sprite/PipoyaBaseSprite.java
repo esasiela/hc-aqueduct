@@ -15,6 +15,10 @@ public class PipoyaBaseSprite extends AbstractEntitySprite implements EntitySpri
   @JsonProperty(required = true)
   private int spriteId;
 
+  @JsonProperty private int widthTiles = 1;
+
+  @JsonProperty private int heightTiles = 1;
+
   private TextureRegion region;
 
   public PipoyaBaseSprite() {}
@@ -27,9 +31,10 @@ public class PipoyaBaseSprite extends AbstractEntitySprite implements EntitySpri
   @Override
   public void build(AssetManager assetManager) {
     Texture texture = assetManager.get(path, Texture.class);
-    TextureRegion[][] grid = TextureRegion.split(texture, 32, 32);
     int cols = texture.getWidth() / 32;
-    region = grid[spriteId / cols][spriteId % cols];
+    int tileX = spriteId % cols;
+    int tileY = spriteId / cols;
+    region = new TextureRegion(texture, tileX * 32, tileY * 32, widthTiles * 32, heightTiles * 32);
   }
 
   @Override
@@ -45,6 +50,9 @@ public class PipoyaBaseSprite extends AbstractEntitySprite implements EntitySpri
   public EntitySprite freshCopy() {
     PipoyaBaseSprite copy = new PipoyaBaseSprite();
     copy.path = this.path;
+    copy.spriteId = this.spriteId;
+    copy.widthTiles = this.widthTiles;
+    copy.heightTiles = this.heightTiles;
     copy.region = this.region;
     return copy;
   }
