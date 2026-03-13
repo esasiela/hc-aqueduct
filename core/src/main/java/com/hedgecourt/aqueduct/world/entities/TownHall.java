@@ -1,6 +1,7 @@
 package com.hedgecourt.aqueduct.world.entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import java.util.ArrayDeque;
@@ -39,17 +40,18 @@ public class TownHall extends Building {
 
       if (worker.isTrainingComplete()) {
         // Happy Birthday!
-        // TODO better rally point for townhall
         trainingQueue.poll();
 
-        float spawnX = position.x - width;
-        float spawnY = position.y - height;
-
-        // random jitter to allow applySeparation to work its magic
-        worker.setPosition(
-            (float) (spawnX + (Math.random() - 0.5f) * 2f),
-            (float) (spawnY + (Math.random() - 0.5f) * 2f));
-
+        Vector2 spawn = world.getPathfinder().nearestWalkableApproach(this, position.x, position.y);
+        if (spawn != null) {
+          // random jitter to allow applySeparation to work its magic
+          worker.setPosition(
+              (float) (spawn.x + (Math.random() - 0.5f) * 2f),
+              (float) (spawn.y + (Math.random() - 0.5f) * 2f));
+        } else {
+          Gdx.app.log("TOWNHALL", "no walkable approach, worker spawned at townhall center");
+          worker.setPosition(position.x, position.y);
+        }
         world.add(worker);
       }
     } else {
