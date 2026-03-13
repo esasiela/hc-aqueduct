@@ -8,7 +8,11 @@
       "trainingPointsRequired": 100,
       "spriteInfo": {
         "type": "DIRECTIONAL_ANIMATED",
-        "path": "characters/hcr/pinkeye-02.png"
+        "paths": [
+          "characters/hcr/pinkeye-02.png",
+          "characters/pipoya/Other/pien2.png",
+          "characters/pipoya/Japanese school characters/teachers/Headmaster fmale.png"
+        ]
       }
     }
   ],

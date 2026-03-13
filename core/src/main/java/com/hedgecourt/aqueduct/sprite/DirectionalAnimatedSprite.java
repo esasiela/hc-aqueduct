@@ -15,9 +15,13 @@ import java.util.function.Supplier;
 public class DirectionalAnimatedSprite extends AbstractEntitySprite {
 
   @JsonProperty(required = true)
-  private String path;
+  private List<String> paths;
 
-  private EnumMap<Direction, Animation<TextureRegion>> animations;
+  @SuppressWarnings("unchecked")
+  private EnumMap<Direction, Animation<TextureRegion>>[] animationSets;
+
+  private int spriteIndex = 0;
+  private static int nextIndex = 0;
 
   private Supplier<Direction> facing;
   private Supplier<Boolean> isMoving;
@@ -34,17 +38,23 @@ public class DirectionalAnimatedSprite extends AbstractEntitySprite {
 
   @Override
   public List<String> assetPaths() {
-    return List.of(path);
+    return paths;
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void build(AssetManager assetManager) {
-    Texture texture = assetManager.get(path, Texture.class);
-    TextureRegion[][] grid = TextureRegion.split(texture, 32, 32);
-    animations = new EnumMap<>(Direction.class);
+    animationSets = new EnumMap[paths.size()];
     Direction[] dirs = Direction.values();
-    for (int row = 0; row < dirs.length; row++) {
-      animations.put(dirs[row], new Animation<>(C.ANIMATION_FRAME_DURATION, grid[row]));
+
+    for (int i = 0; i < paths.size(); i++) {
+      Texture texture = assetManager.get(paths.get(i), Texture.class);
+      TextureRegion[][] grid = TextureRegion.split(texture, 32, 32);
+      EnumMap<Direction, Animation<TextureRegion>> anims = new EnumMap<>(Direction.class);
+      for (int row = 0; row < dirs.length; row++) {
+        anims.put(dirs[row], new Animation<>(C.ANIMATION_FRAME_DURATION, grid[row]));
+      }
+      animationSets[i] = anims;
     }
   }
 
@@ -57,21 +67,23 @@ public class DirectionalAnimatedSprite extends AbstractEntitySprite {
 
   @Override
   public void draw(SpriteBatch batch, float x, float y, float width, float height) {
-    if (animations == null || facing == null) return;
-    Direction dir = facing.get();
-    Animation<TextureRegion> anim = animations.get(dir);
+    if (animationSets == null || facing == null) return;
+    EnumMap<Direction, Animation<TextureRegion>> anims = animationSets[spriteIndex];
+    Animation<TextureRegion> anim = anims.get(facing.get());
     TextureRegion frame =
         isMoving != null && isMoving.get()
             ? anim.getKeyFrame(animTime, true)
-            : anim.getKeyFrames()[1]; // middle frame = idle pose
+            : anim.getKeyFrames()[1];
     batch.draw(frame, x, y, width, height);
   }
 
   @Override
   public EntitySprite freshCopy() {
     DirectionalAnimatedSprite copy = new DirectionalAnimatedSprite();
-    copy.path = this.path;
-    copy.animations = this.animations; // shared, TextureRegions are lightweight
+    copy.paths = this.paths;
+    copy.animationSets = this.animationSets;
+    copy.spriteIndex = nextIndex % animationSets.length;
+    nextIndex++;
     return copy;
   }
 }
