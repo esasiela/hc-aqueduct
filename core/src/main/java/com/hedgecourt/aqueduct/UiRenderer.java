@@ -13,6 +13,7 @@ import com.hedgecourt.aqueduct.ui.elements.ConstructionButtonUiElement;
 import com.hedgecourt.aqueduct.ui.elements.CrosshairUiElement;
 import com.hedgecourt.aqueduct.ui.elements.MinimapUiElement;
 import com.hedgecourt.aqueduct.ui.elements.SelectedInfoUiElement;
+import com.hedgecourt.aqueduct.ui.elements.TrainingButtonUiElement;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,8 @@ public class UiRenderer implements Disposable {
       ShapeDrawer shapeDrawer,
       FontManager fontManager,
       WorldRenderer worldRenderer,
-      Consumer<String> onConstructionButtonClicked) {
+      Consumer<String> onConstructionButtonClicked,
+      Consumer<String> onTrainingButtonClicked) {
     this.world = world;
     this.shapeDrawer = shapeDrawer;
     this.fontManager = fontManager;
@@ -54,15 +56,35 @@ public class UiRenderer implements Disposable {
     minimap = new MinimapUiElement(world, worldRenderer);
     addElement(minimap);
 
-    addElement(
+    SelectedInfoUiElement selectedInfo =
         new SelectedInfoUiElement(
             world,
             fontManager,
             minimap.getBounds().x + minimap.getBounds().width + UI_PADDING,
             UI_PADDING,
             200f,
-            getUiHeight() - 2f * UI_PADDING));
+            getUiHeight() - 2f * UI_PADDING);
+    addElement(selectedInfo);
 
+    float trainingButtonWidth = 100f;
+    float trainingButtonHeight = (getUiHeight() - 2f * UI_PADDING) / 2f;
+    float trainingButtonX =
+        selectedInfo.getBounds().x + selectedInfo.getBounds().width + UI_PADDING;
+
+    addElement(
+        new TrainingButtonUiElement(
+            world,
+            fontManager,
+            trainingButtonX,
+            UI_PADDING,
+            trainingButtonWidth,
+            trainingButtonHeight,
+            world.getUnitFactory().get("worker"),
+            onTrainingButtonClicked));
+
+    /* ****
+     * Right-side of UI
+     */
     float buildButtonWidth = 100f;
     float buildButtonHeight = (getUiHeight() - 2f * UI_PADDING) / 2f;
     addElement(

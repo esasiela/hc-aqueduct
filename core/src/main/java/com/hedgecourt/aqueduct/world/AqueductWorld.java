@@ -92,22 +92,6 @@ public class AqueductWorld implements Disposable {
     }
   }
 
-  public TownHall getNearestTownHall(Entity entity) {
-    // TODO shouldnt workers just figure out where they want to go on their own?
-    TownHall nearest = null;
-    float bestDist = Float.MAX_VALUE;
-    for (TownHall townHall : getEntities(TownHall.class)) {
-      if (!townHall.isConstructionComplete()) continue;
-
-      float dist = townHall.distanceTo(entity);
-      if (dist < bestDist) {
-        bestDist = dist;
-        nearest = townHall;
-      }
-    }
-    return nearest;
-  }
-
   public Entity getEntityAt(float x, float y) {
     for (Entity entity : worldEntities) {
       if (entity.containsPoint(x, y)) return entity;
@@ -144,6 +128,36 @@ public class AqueductWorld implements Disposable {
 
   public List<Entity> getEntities() {
     return worldEntities;
+  }
+
+  public TownHall getNearestTownHall(Entity entity) {
+    TownHall nearest = null;
+    float bestDist = Float.MAX_VALUE;
+    for (TownHall townHall : getEntities(TownHall.class)) {
+      if (!townHall.isConstructionComplete()) continue;
+
+      float dist = townHall.distanceTo(entity);
+      if (dist < bestDist) {
+        bestDist = dist;
+        nearest = townHall;
+      }
+    }
+    return nearest;
+  }
+
+  public <T extends Building> T getSelectedBuilding(Class<T> type) {
+    List<T> result = new ArrayList<>();
+    for (Building building : getEntities(type)) {
+      if (type.isInstance(building) && building.isSelected()) {
+        result.add(type.cast(building));
+      }
+    }
+    if (result.isEmpty()) return null;
+
+    if (result.size() > 1)
+      throw new IllegalStateException("Does not support multiple selected buildings");
+
+    return result.getFirst();
   }
 
   public List<Node> getAbundantNodes() {

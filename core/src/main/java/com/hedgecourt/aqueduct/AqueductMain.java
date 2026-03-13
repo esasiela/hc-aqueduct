@@ -88,6 +88,10 @@ public class AqueductMain extends ApplicationAdapter {
             buildingType -> {
               constructionPlacementEntity = world.getBuildingFactory().create(buildingType, 0, 0);
               worldInputMode = WorldInputMode.CONSTRUCTION_PLACEMENT;
+            },
+            unitType -> {
+              TownHall th = world.getSelectedBuilding(TownHall.class);
+              if (th != null) th.addToTrainingQueue(world.getUnitFactory().create(unitType, 0, 0));
             });
 
     /* ****
@@ -280,27 +284,9 @@ public class AqueductMain extends ApplicationAdapter {
 
             switch (worldInputMode) {
               case NORMAL:
-                // TODO uiButton to queue a worker
-                TownHall selectedHall = null;
-                for (TownHall townHall : world.getEntities(TownHall.class)) {
-                  if (townHall.isSelected()) {
-                    selectedHall = townHall;
-                    break;
-                  }
-                }
+                TownHall selectedHall = world.getSelectedBuilding(TownHall.class);
                 if (selectedHall != null) {
                   if (keycode == Keys.W) {
-                    // TODO unit factory
-                    /*
-                    Texture workerTexture =
-                        assetManager.get(C.WORKER_DEFAULT_SPRITE_PATH, Texture.class);
-                    TextureRegion[][] workerGrid = TextureRegion.split(workerTexture, 32, 32);
-                    Worker trainingWorker =
-                        new Worker(world, 0, 0, C.ENTITY_RENDER_SIZE, C.ENTITY_RENDER_SIZE);
-                    trainingWorker.buildSprites(workerGrid);
-
-                     */
-
                     Unit trainingWorker = world.getUnitFactory().create("worker", 0, 0);
                     selectedHall.addToTrainingQueue(trainingWorker);
                     return true;

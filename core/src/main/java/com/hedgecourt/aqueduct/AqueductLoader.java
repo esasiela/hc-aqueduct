@@ -2,7 +2,6 @@ package com.hedgecourt.aqueduct;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -17,7 +16,7 @@ import com.hedgecourt.aqueduct.world.ResourceFactory;
 import com.hedgecourt.aqueduct.world.UnitFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Node;
-import com.hedgecourt.aqueduct.world.entities.Worker;
+import com.hedgecourt.aqueduct.world.entities.Unit;
 
 public class AqueductLoader {
   private final AqueductWorld world;
@@ -107,30 +106,16 @@ public class AqueductLoader {
     /* ****
      * Workers
      */
-    Texture workerTexture1 = assetManager.get(workerSpritePath1, Texture.class);
-    TextureRegion[][] grid1 = TextureRegion.split(workerTexture1, 32, 32);
-
-    Texture workerTexture2 = assetManager.get(workerSpritePath2, Texture.class);
-    TextureRegion[][] grid2 = TextureRegion.split(workerTexture2, 32, 32);
-
-    Worker worker1 =
-        new Worker(
-            world,
-            world.getMapWidth() / 6f,
-            world.getMapHeight() / 3f,
-            C.ENTITY_RENDER_SIZE,
-            C.ENTITY_RENDER_SIZE);
-    worker1.buildSprites(grid1);
+    Unit worker1 =
+        world
+            .getUnitFactory()
+            .create("worker", world.getMapWidth() / 6f, world.getMapHeight() / 3f);
     world.add(worker1);
 
-    Worker worker2 =
-        new Worker(
-            world,
-            world.getMapWidth() / 6f + 64f,
-            world.getMapHeight() / 3f,
-            C.ENTITY_RENDER_SIZE,
-            C.ENTITY_RENDER_SIZE);
-    worker2.buildSprites(grid2);
+    Unit worker2 =
+        world
+            .getUnitFactory()
+            .create("worker", world.getMapWidth() / 6f + 64f, world.getMapHeight() / 3f);
     world.add(worker2);
 
     /* ****
