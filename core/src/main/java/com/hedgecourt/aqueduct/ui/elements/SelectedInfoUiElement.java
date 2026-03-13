@@ -51,8 +51,8 @@ public class SelectedInfoUiElement extends UiElement {
       Entity entity = selectedEntities.getFirst();
       if (entity instanceof Building building) {
         lines = getBuildingLines(building);
-      } else if (entity instanceof Worker worker) {
-        lines = getWorkerLines(worker);
+      } else if (entity instanceof Unit unit) {
+        lines = getUnitLines(unit);
       } else {
         lines = List.of("Selection type: " + entity.getClass().getSimpleName());
       }
@@ -63,20 +63,24 @@ public class SelectedInfoUiElement extends UiElement {
     shapeDrawer.rectangle(bounds, C.UI_LINE_COLOR, 1f);
   }
 
-  private List<String> getWorkerLines(Worker w) {
+  private List<String> getUnitLines(Unit u) {
     List<String> lines = new ArrayList<>();
 
-    lines.add("Worker:");
+    lines.add("Unit: " + u.getDisplayName());
     lines.add("");
-    lines.add(w.getPlan().getPlanType() + " / " + w.getState());
-    lines.add("");
-    lines.add(
-        String.format(
-            "Bag: %d / %d (%d%%)",
-            Math.round(w.getCarrying()),
-            Math.round(w.getCarryCapacity()),
-            Math.round(w.getCarryPct() * 100)));
-    lines.add(String.format("     %s", w.getCarryingType() != null ? w.getCarryingType() : ""));
+
+    if (u instanceof Worker w) {
+      lines.add(w.getPlan().getPlanType() + " / " + w.getState());
+      lines.add("");
+      lines.add(
+          String.format(
+              "Bag: %d / %d (%d%%)",
+              Math.round(w.getCarrying()),
+              Math.round(w.getCarryCapacity()),
+              Math.round(w.getCarryPct() * 100)));
+      lines.add(String.format("     %s", w.getCarryingType() != null ? w.getCarryingType() : ""));
+    }
+
     return lines;
   }
 

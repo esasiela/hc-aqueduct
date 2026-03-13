@@ -105,7 +105,7 @@ public class UiRenderer implements Disposable {
             world.getBuildingFactory().get("pump"),
             onConstructionButtonClicked));
 
-    addElement(new CrosshairUiElement());
+    if (C.ENABLE_UI_CROSSHAIR) addElement(new CrosshairUiElement());
   }
 
   public boolean isMinimapDragging() {

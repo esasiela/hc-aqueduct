@@ -48,7 +48,7 @@ public class BuildingFactory {
           case "sprinkler" -> new Sprinkler(world, x, y, w, h);
           default -> throw new InvalidBuildingConfigException("Unknown type: " + type);
         };
-    building.setBuildingType(type);
+    building.setType(type);
 
     building.setDisplayName(def.displayName);
     building.setConstructionUnitsRequired(def.constructionUnitsRequired);

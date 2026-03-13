@@ -4,6 +4,11 @@ import com.badlogic.gdx.graphics.Color;
 
 public class C {
 
+  // ── settings ─────────────────────────────────────────────────────────
+  public static boolean ENABLE_WORLD_CROSSHAIR = false;
+  public static boolean ENABLE_WORLD_TILE_BOX = true;
+  public static boolean ENABLE_UI_CROSSHAIR = false;
+
   // ── screen layout ─────────────────────────────────────────────────────────
   public static final float UI_BOTTOM_HEIGHT = 200f;
   public static final float UI_RIGHT_WIDTH = 0f;

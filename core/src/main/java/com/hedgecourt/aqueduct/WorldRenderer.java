@@ -67,14 +67,15 @@ public class WorldRenderer implements Disposable {
 
     workerLayer = new WorkerLayer(world, fontManager);
     addLayer(new ConstructionPendingLayer(world::getIncompleteBuildings));
-    addLayer(new TileHighlightWorldLayer(world));
+
+    if (C.ENABLE_WORLD_TILE_BOX) addLayer(new TileHighlightWorldLayer(world));
 
     addLayer(new BuildingLayer(world));
     addLayer(new NodeLayer(world));
 
     addLayer(workerLayer);
 
-    addLayer(new CrosshairWorldLayer());
+    if (C.ENABLE_WORLD_CROSSHAIR) addLayer(new CrosshairWorldLayer());
 
     // Make sure this one goes last, cursor on top
     addLayer(new ConstructionPlacementCursorLayer(constructionPlacementEntitySupplier));

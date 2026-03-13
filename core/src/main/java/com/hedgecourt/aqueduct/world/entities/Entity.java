@@ -12,6 +12,9 @@ public abstract class Entity {
   protected AqueductWorld world;
 
   protected String id;
+  protected String displayName;
+
+  protected String type;
 
   protected Vector2 position;
   protected float width;
@@ -101,6 +104,22 @@ public abstract class Entity {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 
   public Vector2 getPosition() {

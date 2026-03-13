@@ -4,9 +4,6 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 
 public abstract class Building extends Entity {
 
-  protected String buildingType;
-  protected String displayName;
-
   protected float constructionUnitsRequired;
   protected float constructionUnitsCompleted;
   protected boolean constructionLocationValid;
@@ -31,7 +28,7 @@ public abstract class Building extends Entity {
   }
 
   public Building freshCopy() {
-    return world.getBuildingFactory().create(buildingType, 0f, 0f);
+    return world.getBuildingFactory().create(type, 0f, 0f);
   }
 
   public boolean isActive() {
@@ -76,14 +73,6 @@ public abstract class Building extends Entity {
 
   public void setConstructionLocationValid(boolean constructionLocationValid) {
     this.constructionLocationValid = constructionLocationValid;
-  }
-
-  public String getBuildingType() {
-    return buildingType;
-  }
-
-  public void setBuildingType(String buildingType) {
-    this.buildingType = buildingType;
   }
 
   public float getConstructionUnitsRequired() {

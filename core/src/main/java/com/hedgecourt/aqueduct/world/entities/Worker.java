@@ -250,7 +250,15 @@ public class Worker extends Unit {
     }
 
     if (targetNode.isEmpty()) {
-      // TODO if worker has capacity, look for nearby suitable nodes
+      // look for nearby work
+      for (Node nextNode : world.getAbundantNodes()) {
+        if (distanceTo(nextNode) <= 150f) {
+          commandHarvest(nextNode, plan.townHall);
+          return;
+        }
+      }
+
+      // no nearby abundant nodes so bring anything you have to a townhall
       if (carrying > 0f) moveTo(plan.townHall);
       else enterState(WorkerState.IDLE);
 
@@ -316,6 +324,7 @@ public class Worker extends Unit {
     if (building.isConstructionComplete()) {
       // look for nearby work
       for (Building nextBuilding : world.getIncompleteBuildings()) {
+        // TODO put worker scan for construction range
         if (distanceTo(nextBuilding) <= 150f) {
           commandConstruct(nextBuilding);
           return;

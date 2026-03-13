@@ -46,7 +46,7 @@ public class TownHall extends Building {
       }
     } else {
       // unsupported training type.
-      Gdx.app.log("TOWNHALL", "cannot train unsupported unit type: " + unit.getUnitType());
+      Gdx.app.log("TOWNHALL", "cannot train unsupported unit type: " + unit.getType());
       trainingQueue.poll();
     }
   }

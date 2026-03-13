@@ -145,6 +145,15 @@ public class AqueductWorld implements Disposable {
     return worldEntities;
   }
 
+  public List<Node> getAbundantNodes() {
+    List<Node> result = new ArrayList<>();
+
+    for (Node node : getEntities(Node.class)) {
+      if (!node.isEmpty()) result.add(node);
+    }
+    return result;
+  }
+
   public List<Building> getIncompleteBuildings() {
     List<Building> result = new ArrayList<>();
 

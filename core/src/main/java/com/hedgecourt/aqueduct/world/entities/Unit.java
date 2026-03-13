@@ -4,9 +4,6 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 
 public abstract class Unit extends Entity {
 
-  protected String unitType;
-  protected String displayName;
-
   // TODO dont hardcode training points required
   protected float trainingPointsRequired = 100f;
   protected float trainingPointsCompleted;
@@ -39,13 +36,5 @@ public abstract class Unit extends Entity {
 
   public float getTrainingPointsCompleted() {
     return trainingPointsCompleted;
-  }
-
-  public String getUnitType() {
-    return unitType;
-  }
-
-  public String getDisplayName() {
-    return displayName;
   }
 }
