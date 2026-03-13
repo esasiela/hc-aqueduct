@@ -14,6 +14,19 @@
           "characters/pipoya/Japanese school characters/teachers/Headmaster fmale.png"
         ]
       }
+    },
+    {
+      "type": "bigWorker",
+      "displayName": "Big Worker",
+      "widthPx": 40,
+      "heightPx": 40,
+      "trainingPointsRequired": 200,
+      "spriteInfo": {
+        "type": "DIRECTIONAL_ANIMATED",
+        "paths": [
+          "characters/pipoya/Enemy/Enemy 07-1.png"
+        ]
+      }
     }
   ],
   "scratch": {

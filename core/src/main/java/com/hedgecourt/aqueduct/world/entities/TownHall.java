@@ -41,7 +41,15 @@ public class TownHall extends Building {
         // Happy Birthday!
         // TODO better rally point for townhall
         trainingQueue.poll();
-        worker.setPosition(position.x - width, position.y - height);
+
+        float spawnX = position.x - width;
+        float spawnY = position.y - height;
+
+        // random jitter to allow applySeparation to work its magic
+        worker.setPosition(
+            (float) (spawnX + (Math.random() - 0.5f) * 2f),
+            (float) (spawnY + (Math.random() - 0.5f) * 2f));
+
         world.add(worker);
       }
     } else {

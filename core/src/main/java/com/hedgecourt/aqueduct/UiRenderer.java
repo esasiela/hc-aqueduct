@@ -79,6 +79,17 @@ public class UiRenderer implements Disposable {
             UI_PADDING,
             trainingButtonWidth,
             trainingButtonHeight,
+            world.getUnitFactory().get("bigWorker"),
+            onTrainingButtonClicked));
+
+    addElement(
+        new TrainingButtonUiElement(
+            world,
+            fontManager,
+            trainingButtonX,
+            UI_PADDING + trainingButtonHeight,
+            trainingButtonWidth,
+            trainingButtonHeight,
             world.getUnitFactory().get("worker"),
             onTrainingButtonClicked));
 

@@ -42,6 +42,7 @@ public class UnitFactory {
     Unit unit =
         switch (type) {
           case "worker" -> new Worker(world, x, y, w, h);
+          case "bigWorker" -> new Worker(world, x, y, w, h);
           default -> throw new InvalidUnitConfigException("unknown type: " + type);
         };
     unit.setType(type);

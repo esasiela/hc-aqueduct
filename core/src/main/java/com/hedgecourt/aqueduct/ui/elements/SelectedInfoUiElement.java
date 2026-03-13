@@ -113,11 +113,10 @@ public class SelectedInfoUiElement extends UiElement {
           lines.add(
               String.format(
                   " Current: %s (%d%%)",
-                  current.getClass().getSimpleName(), Math.round(current.getTrainingPct() * 100f)));
+                  current.getDisplayName(), Math.round(current.getTrainingPct() * 100f)));
 
           queue.stream()
-              .collect(
-                  Collectors.groupingBy(u -> u.getClass().getSimpleName(), Collectors.counting()))
+              .collect(Collectors.groupingBy(Entity::getDisplayName, Collectors.counting()))
               .forEach((name, count) -> lines.add("  " + count + " " + name));
         }
       }
