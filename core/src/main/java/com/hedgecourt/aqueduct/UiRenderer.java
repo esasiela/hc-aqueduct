@@ -135,7 +135,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            world.getBuildingFactory().get("pump"),
+            world.getBuildingFactory().get("wall"),
             onConstructionButtonClicked));
 
     if (C.ENABLE_UI_CROSSHAIR) addElement(new CrosshairUiElement());

@@ -37,6 +37,8 @@ public abstract class Building extends Entity {
 
   // ── construction ───────────────────────────────────────────────────────────
 
+  protected void onConstructionComplete() {}
+
   public void addConstructionUnits(float amount) {
     boolean wasNotStarted = !this.isConstructionStarted();
     boolean wasNotComplete = !this.isConstructionComplete();
@@ -49,6 +51,7 @@ public abstract class Building extends Entity {
     } else if (wasNotComplete && isConstructionComplete()) {
       // grand opening! entity is already in world, nothing to do here.
       world.recomputeWaterNetwork();
+      onConstructionComplete();
     }
   }
 

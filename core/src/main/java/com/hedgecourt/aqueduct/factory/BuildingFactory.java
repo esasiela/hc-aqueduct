@@ -11,6 +11,7 @@ import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Wall;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class BuildingFactory {
           case "townhall" -> new TownHall(world, x, y, w, h);
           case "pipe" -> new Pipe(world, x, y, w, h);
           case "sprinkler" -> new Sprinkler(world, x, y, w, h);
+          case "wall" -> new Wall(world, x, y, w, h);
           default -> throw new InvalidBuildingConfigException("Unknown type: " + type);
         };
     building.setType(type);

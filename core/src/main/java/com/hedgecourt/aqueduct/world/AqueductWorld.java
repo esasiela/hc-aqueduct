@@ -13,6 +13,7 @@ import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.TownHall;
+import com.hedgecourt.aqueduct.world.entities.Wall;
 import com.hedgecourt.aqueduct.world.entities.Worker;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +63,10 @@ public class AqueductWorld implements Disposable {
     if (entity instanceof Building building) {
       recomputeWaterNetwork();
     }
+
+    if (entity instanceof Wall wall) {
+      recomputeWallBitmasks();
+    }
   }
 
   public void remove(Entity entity) {
@@ -74,6 +79,10 @@ public class AqueductWorld implements Disposable {
     if (entity instanceof Building building) {
       if (!building.isWalkable()) updateWalkabilityForEntity(building, true);
       recomputeWaterNetwork();
+    }
+
+    if (entity instanceof Wall wall) {
+      recomputeWallBitmasks();
     }
   }
 
@@ -234,6 +243,29 @@ public class AqueductWorld implements Disposable {
       }
 
       th.setWaterInventory(th.getWaterInventory() - totalDistributed);
+    }
+  }
+
+  public void recomputeWallBitmasks() {
+    List<Wall> walls = getEntities(Wall.class);
+    Set<GridPoint2> wallTiles = new HashSet<>();
+
+    // build set of all wall tiles
+    for (Wall wall : walls) {
+      wallTiles.addAll(getEntityTiles(wall));
+    }
+
+    // for each wall, compute bitmask from cardinal neighbors
+    for (Wall wall : walls) {
+      GridPoint2 origin = getEntityTiles(wall).iterator().next();
+
+      boolean n = wallTiles.contains(new GridPoint2(origin.x, origin.y + 1));
+      boolean e = wallTiles.contains(new GridPoint2(origin.x + 1, origin.y));
+      boolean s = wallTiles.contains(new GridPoint2(origin.x, origin.y - 1));
+      boolean w = wallTiles.contains(new GridPoint2(origin.x - 1, origin.y));
+
+      int bitmask = (n ? 8 : 0) | (e ? 4 : 0) | (s ? 2 : 0) | (w ? 1 : 0);
+      wall.setBitmask(bitmask);
     }
   }
 

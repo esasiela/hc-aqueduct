@@ -48,6 +48,21 @@
       }
     },
     {
+      "type": "wall",
+      "displayName": "Wall",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "constructionUnitsRequired": 50,
+      "waterCapacity": 0,
+      "waterCost": 0,
+      "waterOutputRate": 0,
+      "walkable": false,
+      "spriteInfo": {
+        "type": "WALL_AUTOTILE",
+        "path": "tilegen/wall_tiles.png"
+      }
+    },
+    {
       "type": "pump",
       "displayName": "Pump",
       "widthTiles": 1,
