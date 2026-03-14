@@ -1,20 +1,22 @@
-package com.hedgecourt.aqueduct.world;
+package com.hedgecourt.aqueduct.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hedgecourt.aqueduct.InvalidItemConfigException;
-import com.hedgecourt.aqueduct.SpriteFactory;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ItemFactory {
 
+  @JsonIgnoreProperties("scratch")
   private static class ItemsJson {
     public List<ItemDefinition> items;
+    public Object scratch;
   }
 
   private final Map<String, ItemDefinition> definitions = new HashMap<>();

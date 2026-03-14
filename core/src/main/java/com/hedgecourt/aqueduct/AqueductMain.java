@@ -62,7 +62,7 @@ public class AqueductMain extends ApplicationAdapter {
     world = new AqueductWorld();
     assetManager = new AssetManager();
     loader = new AqueductLoader(world, assetManager);
-    loader.load("items.json", "buildings.json", "units.json", "maps/test2.tmx");
+    loader.load("items.json", "nodes.json", "buildings.json", "units.json", "maps/test2.tmx");
 
     batch = new SpriteBatch();
 

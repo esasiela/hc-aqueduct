@@ -1,0 +1,41 @@
+{
+  "nodes": [
+    {
+      "type": "puddle",
+      "displayName": "Puddle",
+      "itemType": "water",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "walkable": true,
+      "regenRate": 0.5,
+      "regenCooldown": 10.0,
+      "maxInventory": 20.0,
+      "harvestRate": 5.0,
+      "spriteInfo": {
+        "type": "PIPOYA_BASE_NODE",
+        "spriteIdFull": 60,
+        "spriteIdEmpty": 50
+      }
+    },
+    {
+      "type": "lake",
+      "displayName": "Lake",
+      "itemType": "water",
+      "widthTiles": 3,
+      "heightTiles": 3,
+      "walkable": false,
+      "regenRate": 10.0,
+      "regenCooldown": 1.0,
+      "maxInventory": 200.0,
+      "harvestRate": 8.0,
+      "spriteInfo": {
+        "type": "PIPOYA_BASE_NODE",
+        "spriteIdFull": 61,
+        "spriteIdEmpty": 69
+      }
+    }
+  ],
+  "scratch": {
+    "key": "node scratchpad"
+  }
+}

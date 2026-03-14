@@ -3,7 +3,11 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
-import com.hedgecourt.aqueduct.SpriteFactory;
+import com.hedgecourt.aqueduct.factory.BuildingFactory;
+import com.hedgecourt.aqueduct.factory.ItemFactory;
+import com.hedgecourt.aqueduct.factory.NodeFactory;
+import com.hedgecourt.aqueduct.factory.SpriteFactory;
+import com.hedgecourt.aqueduct.factory.UnitFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Entity;
 import com.hedgecourt.aqueduct.world.entities.Node;
@@ -25,8 +29,9 @@ public class AqueductWorld implements Disposable {
   private final Map<TownHall, Set<GridPoint2>> waterNetworkTiles = new HashMap<>();
 
   private SpriteFactory spriteFactory;
-  private BuildingFactory buildingFactory;
   private ItemFactory itemFactory;
+  private NodeFactory nodeFactory;
+  private BuildingFactory buildingFactory;
   private UnitFactory unitFactory;
 
   private TiledMap map;
@@ -348,20 +353,28 @@ public class AqueductWorld implements Disposable {
     this.spriteFactory = spriteFactory;
   }
 
-  public BuildingFactory getBuildingFactory() {
-    return buildingFactory;
-  }
-
-  public void setBuildingFactory(BuildingFactory buildingFactory) {
-    this.buildingFactory = buildingFactory;
-  }
-
   public ItemFactory getItemFactory() {
     return itemFactory;
   }
 
   public void setItemFactory(ItemFactory itemFactory) {
     this.itemFactory = itemFactory;
+  }
+
+  public NodeFactory getNodeFactory() {
+    return nodeFactory;
+  }
+
+  public void setNodeFactory(NodeFactory nodeFactory) {
+    this.nodeFactory = nodeFactory;
+  }
+
+  public BuildingFactory getBuildingFactory() {
+    return buildingFactory;
+  }
+
+  public void setBuildingFactory(BuildingFactory buildingFactory) {
+    this.buildingFactory = buildingFactory;
   }
 
   public UnitFactory getUnitFactory() {

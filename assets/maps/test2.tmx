@@ -195,24 +195,22 @@
 </data>
  </layer>
  <objectgroup id="4" name="entities">
-  <object id="1" name="water" type="node" gid="61" x="576" y="1248" width="32" height="32"/>
-  <object id="7" name="water" type="node" gid="61" x="704" y="1440" width="32" height="32"/>
+  <object id="1" name="puddle" type="node" gid="61" x="576" y="1248" width="32" height="32"/>
+  <object id="7" name="puddle" type="node" gid="61" x="704" y="1440" width="32" height="32"/>
   <object id="2" name="th1" type="townhall" gid="665" x="928" y="1248" width="96" height="96"/>
   <object id="5" name="th2" type="townhall" gid="665" x="928" y="1760" width="96" height="96"/>
-  <object id="8" name="water" type="node" gid="61" x="448" y="1248" width="32" height="32"/>
-  <object id="9" name="water" type="node" gid="61" x="320" y="1248" width="32" height="32"/>
-  <object id="10" name="water" type="node" gid="61" x="192" y="1248" width="32" height="32"/>
-  <object id="11" name="water" type="node" gid="61" x="576" y="1376" width="32" height="32"/>
-  <object id="12" name="water" type="node" gid="61" x="448" y="1376" width="32" height="32"/>
-  <object id="13" name="water" type="node" gid="61" x="320" y="1376" width="32" height="32"/>
-  <object id="14" name="water" type="node" gid="61" x="192" y="1376" width="32" height="32"/>
-  <object id="15" name="water" type="node" gid="61" x="576" y="1536" width="32" height="32"/>
-  <object id="16" name="water" type="node" gid="61" x="448" y="1536" width="32" height="32"/>
-  <object id="17" name="water" type="node" gid="61" x="320" y="1536" width="32" height="32"/>
-  <object id="18" name="water" type="node" gid="61" x="192" y="1536" width="32" height="32"/>
-  <object id="19" name="water" type="node" gid="61" x="576" y="1696" width="32" height="32"/>
-  <object id="20" name="water" type="node" gid="61" x="448" y="1696" width="32" height="32"/>
-  <object id="21" name="water" type="node" gid="61" x="320" y="1696" width="32" height="32"/>
-  <object id="22" name="water" type="node" gid="61" x="192" y="1696" width="32" height="32"/>
+  <object id="8" name="puddle" type="node" gid="61" x="448" y="1248" width="32" height="32"/>
+  <object id="9" name="puddle" type="node" gid="61" x="320" y="1248" width="32" height="32"/>
+  <object id="10" name="lake" type="node" gid="61" x="160" y="1376" width="96" height="96"/>
+  <object id="11" name="puddle" type="node" gid="61" x="576" y="1376" width="32" height="32"/>
+  <object id="12" name="puddle" type="node" gid="61" x="448" y="1376" width="32" height="32"/>
+  <object id="13" name="puddle" type="node" gid="61" x="320" y="1376" width="32" height="32"/>
+  <object id="15" name="puddle" type="node" gid="61" x="576" y="1536" width="32" height="32"/>
+  <object id="16" name="puddle" type="node" gid="61" x="448" y="1536" width="32" height="32"/>
+  <object id="17" name="puddle" type="node" gid="61" x="320" y="1536" width="32" height="32"/>
+  <object id="19" name="puddle" type="node" gid="61" x="576" y="1696" width="32" height="32"/>
+  <object id="20" name="puddle" type="node" gid="61" x="448" y="1696" width="32" height="32"/>
+  <object id="21" name="puddle" type="node" gid="61" x="320" y="1696" width="32" height="32"/>
+  <object id="22" name="lake" type="node" gid="61" x="160" y="1632" width="96" height="96"/>
  </objectgroup>
 </map>

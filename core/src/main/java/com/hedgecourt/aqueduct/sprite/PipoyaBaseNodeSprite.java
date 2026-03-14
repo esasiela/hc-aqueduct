@@ -20,10 +20,10 @@ public class PipoyaBaseNodeSprite extends AbstractEntitySprite {
   private TextureRegion regionFull;
   private TextureRegion regionEmpty;
 
-  private Supplier<Boolean> hasInventory;
+  private Supplier<Boolean> isOnCooldown;
 
-  public void setHasInventory(Supplier<Boolean> hasInventory) {
-    this.hasInventory = hasInventory;
+  public void setIsOnCooldown(Supplier<Boolean> isOnCooldown) {
+    this.isOnCooldown = isOnCooldown;
   }
 
   @Override
@@ -42,7 +42,7 @@ public class PipoyaBaseNodeSprite extends AbstractEntitySprite {
 
   @Override
   public void draw(SpriteBatch batch, float x, float y, float width, float height) {
-    TextureRegion region = (hasInventory != null && hasInventory.get()) ? regionFull : regionEmpty;
+    TextureRegion region = (isOnCooldown != null && isOnCooldown.get()) ? regionEmpty : regionFull;
     if (region != null) batch.draw(region, x, y, width, height);
   }
 

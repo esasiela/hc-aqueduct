@@ -1,13 +1,12 @@
-package com.hedgecourt.aqueduct.world;
+package com.hedgecourt.aqueduct.factory;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hedgecourt.aqueduct.InvalidBuildingConfigException;
-import com.hedgecourt.aqueduct.SpriteFactory;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
+import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Pipe;
 import com.hedgecourt.aqueduct.world.entities.Sprinkler;

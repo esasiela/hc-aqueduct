@@ -3,27 +3,23 @@ package com.hedgecourt.aqueduct.world.entities;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.ItemDefinition;
 
 public class Node extends Entity {
 
-  private final ItemDefinition itemDefinition;
+  private boolean walkable;
+
   private float inventory;
+
+  private String itemType;
+  private float regenRate;
+  private float regenCooldown;
+  private float maxInventory;
+  private float harvestRate;
 
   private float regenCooldownTimer = 0f;
 
-  public Node(
-      AqueductWorld world,
-      float x,
-      float y,
-      float width,
-      float height,
-      ItemDefinition itemDefinition) {
+  public Node(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
-    this.itemDefinition = itemDefinition;
-    this.inventory = itemDefinition.maxInventory;
-
-    setSprite(itemDefinition.sprite);
   }
 
   // ── inventory ─────────────────────────────────────────────────────────────
@@ -33,7 +29,7 @@ public class Node extends Entity {
   }
 
   public boolean isFull() {
-    return inventory >= itemDefinition.maxInventory;
+    return inventory >= maxInventory;
   }
 
   public float getInventory() {
@@ -41,15 +37,55 @@ public class Node extends Entity {
   }
 
   public float getMaxInventory() {
-    return itemDefinition.maxInventory;
+    return maxInventory;
   }
 
   public float getHarvestRate() {
-    return itemDefinition.harvestRate;
+    return harvestRate;
+  }
+
+  public boolean isWalkable() {
+    return walkable;
+  }
+
+  public void setWalkable(boolean walkable) {
+    this.walkable = walkable;
   }
 
   public String getItemType() {
-    return itemDefinition.type;
+    return itemType;
+  }
+
+  public void setItemType(String itemType) {
+    this.itemType = itemType;
+  }
+
+  public void setInventory(float inventory) {
+    this.inventory = inventory;
+  }
+
+  public float getRegenRate() {
+    return regenRate;
+  }
+
+  public void setRegenRate(float regenRate) {
+    this.regenRate = regenRate;
+  }
+
+  public float getRegenCooldown() {
+    return regenCooldown;
+  }
+
+  public void setRegenCooldown(float regenCooldown) {
+    this.regenCooldown = regenCooldown;
+  }
+
+  public void setMaxInventory(float maxInventory) {
+    this.maxInventory = maxInventory;
+  }
+
+  public void setHarvestRate(float harvestRate) {
+    this.harvestRate = harvestRate;
   }
 
   public boolean isOnCooldown() {
@@ -58,10 +94,9 @@ public class Node extends Entity {
 
   @Override
   public void setSprite(EntitySprite sprite) {
-    EntitySprite copy = sprite.freshCopy();
-    super.setSprite(copy);
-    if (copy instanceof PipoyaBaseNodeSprite nodeSprite) {
-      nodeSprite.setHasInventory(() -> this.getInventory() > 0);
+    super.setSprite(sprite);
+    if (sprite instanceof PipoyaBaseNodeSprite nodeSprite) {
+      nodeSprite.setIsOnCooldown(this::isOnCooldown);
     }
   }
 
@@ -80,18 +115,14 @@ public class Node extends Entity {
     }
 
     if (inventory <= 0f) {
-      regenCooldownTimer = itemDefinition.regenCooldown;
+      regenCooldownTimer = regenCooldown;
     }
 
-    inventory = Math.min(inventory + itemDefinition.regenRate * delta, itemDefinition.maxInventory);
+    inventory = Math.min(inventory + regenRate * delta, maxInventory);
   }
 
   @Override
   public String getHoverTooltip() {
-    return itemDefinition.displayName
-        + ": "
-        + String.format("%.1f", inventory)
-        + "/"
-        + itemDefinition.maxInventory;
+    return displayName + ": " + String.format("%.1f", inventory) + "/" + maxInventory;
   }
 }

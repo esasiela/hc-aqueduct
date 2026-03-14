@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
+import com.hedgecourt.aqueduct.factory.BuildingDefinition;
 import com.hedgecourt.aqueduct.ui.UiElement;
-import com.hedgecourt.aqueduct.world.BuildingDefinition;
 import java.util.function.Consumer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 

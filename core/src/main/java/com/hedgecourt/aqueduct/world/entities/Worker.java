@@ -62,9 +62,8 @@ public class Worker extends Unit {
   // ── sprites ───────────────────────────────────────────────────────────────
   @Override
   public void setSprite(EntitySprite sprite) {
-    EntitySprite copy = sprite.freshCopy();
-    super.setSprite(copy);
-    if (copy instanceof DirectionalAnimatedSprite das) {
+    super.setSprite(sprite);
+    if (sprite instanceof DirectionalAnimatedSprite das) {
       das.setFacing(() -> this.facing);
       das.setIsMoving(this::isMoving);
     }

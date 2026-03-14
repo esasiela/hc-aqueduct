@@ -1,4 +1,4 @@
-package com.hedgecourt.aqueduct;
+package com.hedgecourt.aqueduct.factory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

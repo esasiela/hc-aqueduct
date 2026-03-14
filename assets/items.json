@@ -3,15 +3,14 @@
     {
       "type": "water",
       "displayName": "Water",
-      "regenRate": 0.5,
-      "regenCooldown": 5.0,
-      "maxInventory": 20.0,
-      "harvestRate": 5.0,
       "spriteInfo": {
         "type": "PIPOYA_BASE_NODE",
         "spriteIdEmpty": 50,
         "spriteIdFull": 60
       }
     }
-  ]
+  ],
+  "scratch": {
+    "key": "items scratch pad"
+  }
 }

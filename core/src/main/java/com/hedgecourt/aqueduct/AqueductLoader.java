@@ -6,13 +6,15 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.hedgecourt.aqueduct.factory.BuildingFactory;
+import com.hedgecourt.aqueduct.factory.InvalidItemConfigException;
+import com.hedgecourt.aqueduct.factory.ItemFactory;
+import com.hedgecourt.aqueduct.factory.NodeFactory;
+import com.hedgecourt.aqueduct.factory.SpriteFactory;
+import com.hedgecourt.aqueduct.factory.UnitFactory;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.BuildingFactory;
-import com.hedgecourt.aqueduct.world.ItemDefinition;
-import com.hedgecourt.aqueduct.world.ItemFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
-import com.hedgecourt.aqueduct.world.UnitFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Node;
 import com.hedgecourt.aqueduct.world.entities.Unit;
@@ -28,6 +30,7 @@ public class AqueductLoader {
 
   public void load(
       String itemsJsonFilename,
+      String nodesJsonFilename,
       String buildingsJsonFilename,
       String unitsJsonFilename,
       String mapFilename)
@@ -40,11 +43,14 @@ public class AqueductLoader {
     SpriteFactory spriteFactory = new SpriteFactory();
     world.setSpriteFactory(spriteFactory);
 
-    BuildingFactory buildingFactory = new BuildingFactory(world);
-    world.setBuildingFactory(buildingFactory);
-
     ItemFactory itemFactory = new ItemFactory(world);
     world.setItemFactory(itemFactory);
+
+    NodeFactory nodeFactory = new NodeFactory(world);
+    world.setNodeFactory(nodeFactory);
+
+    BuildingFactory buildingFactory = new BuildingFactory(world);
+    world.setBuildingFactory(buildingFactory);
 
     UnitFactory unitFactory = new UnitFactory(world);
     world.setUnitFactory(unitFactory);
@@ -52,8 +58,9 @@ public class AqueductLoader {
     /* ****
      * Load assets
      */
-    buildingFactory.loadAssets(buildingsJsonFilename, assetManager);
     itemFactory.loadAssets(itemsJsonFilename, assetManager);
+    nodeFactory.loadAssets(nodesJsonFilename, assetManager);
+    buildingFactory.loadAssets(buildingsJsonFilename, assetManager);
     unitFactory.loadAssets(unitsJsonFilename, assetManager);
 
     assetManager.finishLoading();
@@ -61,11 +68,14 @@ public class AqueductLoader {
     /* ****
      * Load factory definitions, must go after assetManager is loaded
      */
-    buildingFactory.loadDefinitions(buildingsJsonFilename, assetManager);
-    buildingFactory.buildSprites(assetManager);
-
     itemFactory.loadDefinitions(itemsJsonFilename, assetManager);
     itemFactory.buildSprites(assetManager);
+
+    nodeFactory.loadDefinitions(nodesJsonFilename, assetManager);
+    nodeFactory.buildSprites(assetManager);
+
+    buildingFactory.loadDefinitions(buildingsJsonFilename, assetManager);
+    buildingFactory.buildSprites(assetManager);
 
     unitFactory.loadDefinitions(unitsJsonFilename, assetManager);
     unitFactory.buildSprites(assetManager);
@@ -120,18 +130,17 @@ public class AqueductLoader {
       float centerY = y + h / 2f;
 
       if ("node".equals(objClass)) {
-        String itemType = obj.getName();
-        if (itemType == null || itemType.isEmpty()) {
+        String nodeType = obj.getName();
+        if (nodeType == null || nodeType.isEmpty()) {
           throw new RuntimeException(
-              "EntityLayer: node object missing name (itemType) " + "at (" + x + "," + y + ")");
+              "EntityLayer: node object missing name (nodeType) " + "at (" + x + "," + y + ")");
         }
 
-        ItemDefinition itemDefinition = world.getItemFactory().get(itemType);
-
-        Node node = new Node(world, centerX, centerY, w, h, itemDefinition);
+        Node node = world.getNodeFactory().create(nodeType, centerX, centerY);
         node.setId(id);
 
         world.add(node);
+        world.updateWalkabilityForEntity(node, node.isWalkable());
 
       } else if ("townhall".equals(objClass)) {
 
