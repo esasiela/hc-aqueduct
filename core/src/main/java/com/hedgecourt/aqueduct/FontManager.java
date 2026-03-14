@@ -20,7 +20,8 @@ public class FontManager implements Disposable {
     DEBUG,
     WORKER_PLAN_OVERLAY,
     BUILD_BUTTON_UI,
-    BUILDING_INFO_UI
+    BUILDING_INFO_UI,
+    PAUSE_PANEL
   }
 
   public void load() {
@@ -36,7 +37,15 @@ public class FontManager implements Disposable {
     generateMonoFont(FontType.BUILD_BUTTON_UI, 12);
     generateMonoFont(FontType.BUILDING_INFO_UI, 12);
 
+    generateFont(FontType.PAUSE_PANEL, 16);
+
     generator.dispose();
+  }
+
+  private void generateFont(FontType fontType, float scale) {
+    BitmapFont font = new BitmapFont();
+    font.getData().setScale(scale);
+    fontCache.put(fontType, font);
   }
 
   private void generateMonoFont(FontType fontType, int size) {

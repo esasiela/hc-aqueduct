@@ -54,6 +54,10 @@ public class C {
   public static final Color NODE_INVENTORY_COLOR = BAG_BAR_CARRY_COLOR;
   public static final Color NODE_COOLDOWN_COLOR = Color.RED;
 
+  public static final Color PAUSE_PANEL_TEXT_COLOR = new Color(1f, 1f, 1f, 0.6f);
+  public static final Color PAUSE_PANEL_OVERLAY_COLOR = new Color(0f, 0f, 0f, 0.35f);
+  public static final Color PAUSE_PANEL_LINE_COLOR = Color.BLACK;
+
   // ── camera ────────────────────────────────────────────────────────────────
   public static final float ZOOM_MIN = 0.25f; // 4x zoom in, see the sweat
   public static final float ZOOM_SPEED = 0.1f; // how much each pinch/scroll step zooms

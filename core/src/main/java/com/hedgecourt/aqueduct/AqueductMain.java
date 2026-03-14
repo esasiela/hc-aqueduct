@@ -16,6 +16,7 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.hedgecourt.aqueduct.overlay.PauseOverlayPanel;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Entity;
@@ -42,6 +43,9 @@ public class AqueductMain extends ApplicationAdapter {
   private WorkerLayer workerLayer;
 
   private UiRenderer uiRenderer;
+  private OverlayRenderer overlayRenderer;
+
+  private PauseOverlayPanel pausePanel;
 
   private WorldInputMode worldInputMode = WorldInputMode.NORMAL;
 
@@ -94,6 +98,10 @@ public class AqueductMain extends ApplicationAdapter {
               if (th != null) th.addToTrainingQueue(world.getUnitFactory().create(unitType, 0, 0));
             });
 
+    overlayRenderer = new OverlayRenderer();
+    pausePanel = new PauseOverlayPanel(fontManager);
+    overlayRenderer.addPanel(pausePanel);
+
     /* ****
      * Input Multiplexer
      */
@@ -129,6 +137,11 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            if (overlayRenderer.isModal()) {
+              overlayRenderer.handleClick(screenX, screenY);
+              return true;
+            }
+
             if (button == Input.Buttons.LEFT) {
               /* ****
                * Ui touch down (LEFT)
@@ -155,6 +168,11 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+            if (overlayRenderer.isModal()) {
+              overlayRenderer.handleClick(screenX, screenY);
+              return true;
+            }
+
             boolean shiftIsPressed =
                 Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)
                     || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT);
@@ -277,8 +295,12 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean keyUp(int keycode) {
+            Gdx.app.log("PAUSE", "pause toggle, now is: " + paused);
+
             if (keycode == Input.Keys.SPACE) {
               paused = !paused;
+              if (paused) overlayRenderer.setActivePanel(pausePanel);
+              else overlayRenderer.clearActivePanel();
               return true;
             }
 
@@ -370,6 +392,7 @@ public class AqueductMain extends ApplicationAdapter {
 
     drawWorld();
     drawUi();
+    drawOverlay();
   }
 
   private void updateWorld(float delta) {
@@ -450,6 +473,13 @@ public class AqueductMain extends ApplicationAdapter {
     batch.end();
   }
 
+  private void drawOverlay() {
+    overlayRenderer.applyViewport();
+    batch.begin();
+    overlayRenderer.draw(batch, shapeDrawer);
+    batch.end();
+  }
+
   @Override
   public void dispose() {
     batch.dispose();
@@ -464,6 +494,7 @@ public class AqueductMain extends ApplicationAdapter {
   public void resize(int width, int height) {
     worldRenderer.resize(width, height);
     uiRenderer.resize(width, height);
+    overlayRenderer.resize(width, height);
   }
 
   private enum WorldInputMode {
