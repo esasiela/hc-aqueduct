@@ -68,11 +68,11 @@ public class AqueductWorld implements Disposable {
     worldEntities.remove(entity);
 
     if (entity instanceof Node node) {
-      updateWalkabilityForEntity(node, true);
+      if (!node.isWalkable()) updateWalkabilityForEntity(node, true);
     }
 
     if (entity instanceof Building building) {
-      updateWalkabilityForEntity(building, true);
+      if (!building.isWalkable()) updateWalkabilityForEntity(building, true);
       recomputeWaterNetwork();
     }
   }

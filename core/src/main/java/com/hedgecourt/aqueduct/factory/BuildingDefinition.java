@@ -9,6 +9,7 @@ public class BuildingDefinition {
   public String displayName;
   public float widthTiles;
   public float heightTiles;
+  public boolean walkable;
   public float constructionUnitsRequired;
   public float waterCapacity;
   public float waterCost;

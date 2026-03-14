@@ -48,9 +48,12 @@ public class BuildingFactory {
           default -> throw new InvalidBuildingConfigException("Unknown type: " + type);
         };
     building.setType(type);
-
     building.setDisplayName(def.displayName);
+
+    building.setWalkable(def.walkable);
+
     building.setConstructionUnitsRequired(def.constructionUnitsRequired);
+
     building.setWaterCapacity(def.waterCapacity);
     building.setWaterCost(def.waterCost);
     building.setWaterOutputRate(def.waterOutputRate);

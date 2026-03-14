@@ -4,6 +4,8 @@ import com.hedgecourt.aqueduct.world.AqueductWorld;
 
 public abstract class Building extends Entity {
 
+  protected boolean walkable;
+
   protected float constructionUnitsRequired;
   protected float constructionUnitsCompleted;
   protected boolean constructionLocationValid;
@@ -13,9 +15,6 @@ public abstract class Building extends Entity {
   protected float waterCost;
   protected float waterOutputRate;
   protected boolean waterConnected = false;
-
-  protected int widthTiles;
-  protected int heightTiles;
 
   public Building(AqueductWorld world, float x, float y, float width, float height) {
     super(world, x, y, width, height);
@@ -46,7 +45,7 @@ public abstract class Building extends Entity {
 
     if (wasNotStarted && isConstructionStarted()) {
       // we broke ground!
-      world.updateWalkabilityForEntity(this, false);
+      world.updateWalkabilityForEntity(this, walkable);
     } else if (wasNotComplete && isConstructionComplete()) {
       // grand opening! entity is already in world, nothing to do here.
       world.recomputeWaterNetwork();
@@ -83,12 +82,12 @@ public abstract class Building extends Entity {
     this.constructionUnitsRequired = constructionUnitsRequired;
   }
 
-  public String getDisplayName() {
-    return displayName;
+  public boolean isWalkable() {
+    return walkable;
   }
 
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
+  public void setWalkable(boolean walkable) {
+    this.walkable = walkable;
   }
 
   public float getConstructionUnitsCompleted() {
