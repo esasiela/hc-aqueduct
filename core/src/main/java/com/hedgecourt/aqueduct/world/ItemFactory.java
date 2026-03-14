@@ -4,34 +4,35 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hedgecourt.aqueduct.InvalidResourceConfigException;
+import com.hedgecourt.aqueduct.InvalidItemConfigException;
 import com.hedgecourt.aqueduct.SpriteFactory;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ResourceFactory {
+public class ItemFactory {
 
-  private static class ResourcesJson {
-    public List<ResourceDefinition> resources;
+  private static class ItemsJson {
+    public List<ItemDefinition> items;
   }
 
-  private final Map<String, ResourceDefinition> defs = new HashMap<>();
+  private final Map<String, ItemDefinition> definitions = new HashMap<>();
   private final SpriteFactory spriteFactory;
   private final ObjectMapper jackson = new ObjectMapper();
 
-  public ResourceFactory(AqueductWorld world) {
+  public ItemFactory(AqueductWorld world) {
     this.spriteFactory = world.getSpriteFactory();
   }
 
   public void loadAssets(String jsonPath, AssetManager assetManager) {
     try {
       String json = Gdx.files.internal(jsonPath).readString();
-      ResourcesJson wrapper = jackson.readValue(json, ResourcesJson.class);
-      if (wrapper.resources == null) return;
+      ItemsJson wrapper = jackson.readValue(json, ItemsJson.class);
+      if (wrapper.items == null)
+        throw new InvalidItemConfigException("no items defined in " + jsonPath);
 
-      for (ResourceDefinition def : wrapper.resources) {
+      for (ItemDefinition def : wrapper.items) {
         if (def.spriteInfo == null) continue;
         EntitySprite sprite = spriteFactory.create(def.spriteInfo);
         for (String path : sprite.assetPaths()) {
@@ -39,35 +40,33 @@ public class ResourceFactory {
         }
       }
     } catch (Exception e) {
-      throw new InvalidResourceConfigException(
-          "failed to parse " + jsonPath + ": " + e.getMessage());
+      throw new InvalidItemConfigException("failed to parse " + jsonPath + ": " + e.getMessage());
     }
   }
 
   public void loadDefinitions(String jsonPath, AssetManager assetManager) {
     try {
       String json = Gdx.files.internal(jsonPath).readString();
-      ResourcesJson wrapper = jackson.readValue(json, ResourcesJson.class);
+      ItemsJson wrapper = jackson.readValue(json, ItemsJson.class);
 
-      if (wrapper.resources == null || wrapper.resources.isEmpty())
-        throw new InvalidResourceConfigException("no resources defined in " + jsonPath);
+      if (wrapper.items == null || wrapper.items.isEmpty())
+        throw new InvalidItemConfigException("no items defined in " + jsonPath);
 
-      for (ResourceDefinition def : wrapper.resources) {
+      for (ItemDefinition def : wrapper.items) {
         if (def.spriteInfo != null) {
           def.sprite = spriteFactory.create(def.spriteInfo);
         }
-        defs.put(def.type, def);
+        definitions.put(def.type, def);
       }
-    } catch (InvalidResourceConfigException e) {
+    } catch (InvalidItemConfigException e) {
       throw e;
     } catch (Exception e) {
-      throw new InvalidResourceConfigException(
-          "failed to parse " + jsonPath + ": " + e.getMessage());
+      throw new InvalidItemConfigException("failed to parse " + jsonPath + ": " + e.getMessage());
     }
   }
 
   public void buildSprites(AssetManager assetManager) {
-    for (ResourceDefinition def : defs.values()) {
+    for (ItemDefinition def : definitions.values()) {
       if (def.sprite != null) {
         def.sprite.build(assetManager);
       }
@@ -75,13 +74,13 @@ public class ResourceFactory {
   }
 
   public void clear() {
-    defs.clear();
+    definitions.clear();
   }
 
-  public ResourceDefinition get(String type) {
-    ResourceDefinition def = defs.get(type);
+  public ItemDefinition get(String type) {
+    ItemDefinition def = definitions.get(type);
     if (def == null) {
-      throw new InvalidResourceConfigException("unknown resource type '" + type + "'");
+      throw new InvalidItemConfigException("unknown item type '" + type + "'");
     }
     return def;
   }

@@ -15,8 +15,8 @@ public class TownHall extends Building {
     super(world, x, y, width, height);
   }
 
-  public void deposit(String resourceType, float amount) {
-    if (resourceType.equalsIgnoreCase("water")) waterInventory += amount;
+  public void deposit(String itemType, float amount) {
+    if (itemType.equalsIgnoreCase("water")) waterInventory += amount;
   }
 
   @Override

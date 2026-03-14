@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 
-public class ResourceDefinition {
+public class ItemDefinition {
   public String type;
   public String displayName;
   public float regenRate;
@@ -16,5 +16,5 @@ public class ResourceDefinition {
 
   @JsonIgnore public EntitySprite sprite;
 
-  public ResourceDefinition() {}
+  public ItemDefinition() {}
 }

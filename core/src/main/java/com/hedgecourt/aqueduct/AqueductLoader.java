@@ -1,7 +1,6 @@
 package com.hedgecourt.aqueduct;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -9,10 +8,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 import com.hedgecourt.aqueduct.world.BuildingFactory;
+import com.hedgecourt.aqueduct.world.ItemDefinition;
+import com.hedgecourt.aqueduct.world.ItemFactory;
 import com.hedgecourt.aqueduct.world.MapGraph;
 import com.hedgecourt.aqueduct.world.Pathfinder;
-import com.hedgecourt.aqueduct.world.ResourceDefinition;
-import com.hedgecourt.aqueduct.world.ResourceFactory;
 import com.hedgecourt.aqueduct.world.UnitFactory;
 import com.hedgecourt.aqueduct.world.entities.Building;
 import com.hedgecourt.aqueduct.world.entities.Node;
@@ -28,11 +27,11 @@ public class AqueductLoader {
   }
 
   public void load(
-      String resourcesJsonFilename,
+      String itemsJsonFilename,
       String buildingsJsonFilename,
       String unitsJsonFilename,
       String mapFilename)
-      throws InvalidMapException, InvalidResourceConfigException {
+      throws InvalidMapException, InvalidItemConfigException {
     world.clear();
 
     /* ****
@@ -44,8 +43,8 @@ public class AqueductLoader {
     BuildingFactory buildingFactory = new BuildingFactory(world);
     world.setBuildingFactory(buildingFactory);
 
-    ResourceFactory resourceFactory = new ResourceFactory(world);
-    world.setResourceFactory(resourceFactory);
+    ItemFactory itemFactory = new ItemFactory(world);
+    world.setItemFactory(itemFactory);
 
     UnitFactory unitFactory = new UnitFactory(world);
     world.setUnitFactory(unitFactory);
@@ -53,39 +52,23 @@ public class AqueductLoader {
     /* ****
      * Load assets
      */
-    assetManager.load(C.WORKER_DEFAULT_SPRITE_PATH, Texture.class);
-
-    String pipoyaBaseChipPath = "maps/[Base]BaseChip_pipo.png";
-    String workerSpritePath1 = "characters/pipoya/Animal/Dog-01-3r.png";
-    String workerSpritePath2 = "characters/pipoya/Animal/Cat-01-2r.png";
-    String townhallSpritePath = "maps/TREE_HOUSE4.png";
-    assetManager.load(pipoyaBaseChipPath, Texture.class);
-    assetManager.load(workerSpritePath1, Texture.class);
-    assetManager.load(workerSpritePath2, Texture.class);
-    assetManager.load(townhallSpritePath, Texture.class);
-
     buildingFactory.loadAssets(buildingsJsonFilename, assetManager);
-    resourceFactory.loadAssets(resourcesJsonFilename, assetManager);
+    itemFactory.loadAssets(itemsJsonFilename, assetManager);
     unitFactory.loadAssets(unitsJsonFilename, assetManager);
 
     assetManager.finishLoading();
 
     /* ****
-     * Load buildingFactory, must go after assetManager is loaded
+     * Load factory definitions, must go after assetManager is loaded
      */
     buildingFactory.loadDefinitions(buildingsJsonFilename, assetManager);
     buildingFactory.buildSprites(assetManager);
 
-    resourceFactory.loadDefinitions(resourcesJsonFilename, assetManager);
-    resourceFactory.buildSprites(assetManager);
+    itemFactory.loadDefinitions(itemsJsonFilename, assetManager);
+    itemFactory.buildSprites(assetManager);
 
     unitFactory.loadDefinitions(unitsJsonFilename, assetManager);
     unitFactory.buildSprites(assetManager);
-
-    /* ****
-     * Node Resource Definitions
-     */
-    // world.getResourceConfig().load(resourcesJsonFilename);
 
     /* ****
      * Open Tiled Map
@@ -137,15 +120,15 @@ public class AqueductLoader {
       float centerY = y + h / 2f;
 
       if ("node".equals(objClass)) {
-        String resourceType = obj.getName();
-        if (resourceType == null || resourceType.isEmpty()) {
+        String itemType = obj.getName();
+        if (itemType == null || itemType.isEmpty()) {
           throw new RuntimeException(
-              "EntityLayer: node object missing name (resourceType) " + "at (" + x + "," + y + ")");
+              "EntityLayer: node object missing name (itemType) " + "at (" + x + "," + y + ")");
         }
 
-        ResourceDefinition resourceDefinition = world.getResourceFactory().get(resourceType);
+        ItemDefinition itemDefinition = world.getItemFactory().get(itemType);
 
-        Node node = new Node(world, centerX, centerY, w, h, resourceDefinition);
+        Node node = new Node(world, centerX, centerY, w, h, itemDefinition);
         node.setId(id);
 
         world.add(node);

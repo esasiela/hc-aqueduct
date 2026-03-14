@@ -16,8 +16,6 @@ public class C {
   // ── entities ──────────────────────────────────────────────────────────────
   public static final float ANIMATION_FRAME_DURATION = 0.15f;
 
-  public static final String WORKER_DEFAULT_SPRITE_PATH = "characters/hcr/pinkeye-02.png";
-
   public static final float WORKER_BASE_SPEED = 90f; // pixels per second
   public static final float WORKER_SEPARATION_RADIUS = 20f;
   public static final float WORKER_SEPARATION_STRENGTH = 60f;

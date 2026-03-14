@@ -193,7 +193,7 @@ public class WorkerLayer extends WorldLayer {
       shapeDrawer.filledRectangle(
           worker.getPosition().x - worker.getWidth() / 2f,
           worker.getPosition().y + worker.getHeight() / 2f + barBarYOffset,
-          worker.getWidth() * (worker.getCarrying() / worker.getCarryCapacity()),
+          worker.getWidth() * (worker.getCarryAmount() / worker.getCarryCapacity()),
           bagBarHeight,
           C.BAG_BAR_CARRY_COLOR);
       /* ****
@@ -212,7 +212,7 @@ public class WorkerLayer extends WorldLayer {
 
   @Override
   public void drawEntities(SpriteBatch batch, ShapeDrawer shapeDrawer) {
-    for (Worker worker : world.getEntities(Worker.class)) worker.draw(batch,  shapeDrawer);
+    for (Worker worker : world.getEntities(Worker.class)) worker.draw(batch, shapeDrawer);
     /*
     for (Worker worker : world.getEntities(Worker.class)) {
       TextureRegion frame = worker.getCurrentAnimationFrame();

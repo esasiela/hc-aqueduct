@@ -96,10 +96,10 @@ public class SelectedInfoUiElement extends UiElement {
       lines.add(
           String.format(
               "Bag: %d / %d (%d%%)",
-              Math.round(w.getCarrying()),
+              Math.round(w.getCarryAmount()),
               Math.round(w.getCarryCapacity()),
               Math.round(w.getCarryPct() * 100)));
-      lines.add(String.format("     %s", w.getCarryingType() != null ? w.getCarryingType() : ""));
+      lines.add(String.format("     %s", w.getItemType() != null ? w.getItemType() : ""));
     }
 
     return lines;

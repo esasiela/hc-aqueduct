@@ -26,7 +26,7 @@ public class AqueductWorld implements Disposable {
 
   private SpriteFactory spriteFactory;
   private BuildingFactory buildingFactory;
-  private ResourceFactory resourceFactory;
+  private ItemFactory itemFactory;
   private UnitFactory unitFactory;
 
   private TiledMap map;
@@ -48,7 +48,7 @@ public class AqueductWorld implements Disposable {
   public void clear() {
     worldEntities.clear();
     if (buildingFactory != null) buildingFactory.clear();
-    if (resourceFactory != null) resourceFactory.clear();
+    if (itemFactory != null) itemFactory.clear();
   }
 
   public void add(Entity entity) {
@@ -356,12 +356,12 @@ public class AqueductWorld implements Disposable {
     this.buildingFactory = buildingFactory;
   }
 
-  public ResourceFactory getResourceFactory() {
-    return resourceFactory;
+  public ItemFactory getItemFactory() {
+    return itemFactory;
   }
 
-  public void setResourceFactory(ResourceFactory resourceFactory) {
-    this.resourceFactory = resourceFactory;
+  public void setItemFactory(ItemFactory itemFactory) {
+    this.itemFactory = itemFactory;
   }
 
   public UnitFactory getUnitFactory() {

@@ -3,11 +3,11 @@ package com.hedgecourt.aqueduct.world.entities;
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
 import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
-import com.hedgecourt.aqueduct.world.ResourceDefinition;
+import com.hedgecourt.aqueduct.world.ItemDefinition;
 
 public class Node extends Entity {
 
-  private final ResourceDefinition resourceDefinition;
+  private final ItemDefinition itemDefinition;
   private float inventory;
 
   private float regenCooldownTimer = 0f;
@@ -18,12 +18,12 @@ public class Node extends Entity {
       float y,
       float width,
       float height,
-      ResourceDefinition resourceDefinition) {
+      ItemDefinition itemDefinition) {
     super(world, x, y, width, height);
-    this.resourceDefinition = resourceDefinition;
-    this.inventory = resourceDefinition.maxInventory;
+    this.itemDefinition = itemDefinition;
+    this.inventory = itemDefinition.maxInventory;
 
-    setSprite(resourceDefinition.sprite);
+    setSprite(itemDefinition.sprite);
   }
 
   // ── inventory ─────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ public class Node extends Entity {
   }
 
   public boolean isFull() {
-    return inventory >= resourceDefinition.maxInventory;
+    return inventory >= itemDefinition.maxInventory;
   }
 
   public float getInventory() {
@@ -41,15 +41,15 @@ public class Node extends Entity {
   }
 
   public float getMaxInventory() {
-    return resourceDefinition.maxInventory;
+    return itemDefinition.maxInventory;
   }
 
   public float getHarvestRate() {
-    return resourceDefinition.harvestRate;
+    return itemDefinition.harvestRate;
   }
 
-  public String getResourceType() {
-    return resourceDefinition.type;
+  public String getItemType() {
+    return itemDefinition.type;
   }
 
   public boolean isOnCooldown() {
@@ -80,19 +80,18 @@ public class Node extends Entity {
     }
 
     if (inventory <= 0f) {
-      regenCooldownTimer = resourceDefinition.regenCooldown;
+      regenCooldownTimer = itemDefinition.regenCooldown;
     }
 
-    inventory =
-        Math.min(inventory + resourceDefinition.regenRate * delta, resourceDefinition.maxInventory);
+    inventory = Math.min(inventory + itemDefinition.regenRate * delta, itemDefinition.maxInventory);
   }
 
   @Override
   public String getHoverTooltip() {
-    return resourceDefinition.displayName
+    return itemDefinition.displayName
         + ": "
         + String.format("%.1f", inventory)
         + "/"
-        + resourceDefinition.maxInventory;
+        + itemDefinition.maxInventory;
   }
 }

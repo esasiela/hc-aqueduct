@@ -42,9 +42,9 @@ public class Worker extends Unit {
   private float moveSpeed;
   private Direction facing = Direction.SOUTH;
 
-  private float carrying = 0f;
+  private float carryAmount = 0f;
   private float carryCapacity;
-  private String carryingType = null;
+  private String itemType = null;
 
   private final LinkedList<String> nodeMemory = new LinkedList<>();
 
@@ -246,7 +246,7 @@ public class Worker extends Unit {
       }
 
       // no nearby abundant nodes so bring anything you have to a townhall
-      if (carrying > 0f) moveTo(plan.townHall);
+      if (carryAmount > 0f) moveTo(plan.townHall);
       else enterState(WorkerState.IDLE);
 
       return;
@@ -254,12 +254,12 @@ public class Worker extends Unit {
 
     float amount = targetNode.getHarvestRate() * delta;
     float harvested = targetNode.harvest(Math.min(amount, capacityRemaining()));
-    carrying += harvested;
-    carryingType = targetNode.getResourceType();
+    carryAmount += harvested;
+    itemType = targetNode.getItemType();
 
     if (capacityRemaining() <= 0) {
       // clamp bag contents to capacity
-      carrying = carryCapacity;
+      carryAmount = carryCapacity;
       moveAdjacentTo(plan.townHall);
     }
   }
@@ -275,19 +275,19 @@ public class Worker extends Unit {
     if (!townHall.isConstructionComplete()) return;
 
     // TODO check townhall has capacity to receive delivery
-    if (carrying > 0f && carryingType != null) {
+    if (carryAmount > 0f && itemType != null) {
       // TODO make DELIVER_RATE townHall-specific
       float amount = C.DELIVER_RATE * delta;
 
-      townHall.deposit(carryingType, amount);
+      townHall.deposit(itemType, amount);
 
-      carrying -= amount;
+      carryAmount -= amount;
     }
 
-    if (carrying <= 0) {
+    if (carryAmount <= 0) {
       // clamp bag contents to 0
-      carrying = 0;
-      carryingType = null;
+      carryAmount = 0;
+      itemType = null;
 
       if (plan.planType == PlanType.HARVEST) {
         moveAdjacentTo(plan.node);
@@ -390,8 +390,8 @@ public class Worker extends Unit {
     return facing;
   }
 
-  public float getCarrying() {
-    return carrying;
+  public float getCarryAmount() {
+    return carryAmount;
   }
 
   public float getCarryCapacity() {
@@ -399,15 +399,15 @@ public class Worker extends Unit {
   }
 
   public float capacityRemaining() {
-    return carryCapacity - carrying;
+    return carryCapacity - carryAmount;
   }
 
   public float getCarryPct() {
-    return (carryCapacity == 0) ? 1f : carrying / carryCapacity;
+    return (carryCapacity == 0) ? 1f : carryAmount / carryCapacity;
   }
 
-  public String getCarryingType() {
-    return carryingType;
+  public String getItemType() {
+    return itemType;
   }
 
   public float getMoveSpeed() {
