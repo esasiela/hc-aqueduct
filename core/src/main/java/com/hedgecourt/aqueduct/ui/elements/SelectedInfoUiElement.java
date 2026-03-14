@@ -2,6 +2,7 @@ package com.hedgecourt.aqueduct.ui.elements;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.FontManager;
 import com.hedgecourt.aqueduct.FontManager.FontType;
@@ -23,6 +24,8 @@ public class SelectedInfoUiElement extends UiElement {
 
   private final AqueductWorld world;
   private final BitmapFont font;
+
+  private final Rectangle delBounds = new Rectangle();
 
   public SelectedInfoUiElement(
       AqueductWorld world, FontManager fontManager, float x, float y, float width, float height) {
@@ -59,6 +62,24 @@ public class SelectedInfoUiElement extends UiElement {
     }
 
     font.draw(batch, String.join("\n", lines), bounds.x + 5f, bounds.y + bounds.height - 5f);
+
+    if (selectedEntities.size() == 1) {
+      delBounds.set(bounds.x + bounds.width - 30f, bounds.y + bounds.height - 30f, 30f, 30f);
+      shapeDrawer.line(
+          delBounds.x,
+          delBounds.y,
+          delBounds.x + delBounds.width,
+          delBounds.y + delBounds.height,
+          C.UI_DELETE_LINE_COLOR);
+      shapeDrawer.line(
+          delBounds.x,
+          delBounds.y + delBounds.height,
+          delBounds.x + delBounds.width,
+          delBounds.y,
+          C.UI_DELETE_LINE_COLOR);
+      shapeDrawer.rectangle(
+          delBounds, C.UI_LINE_COLOR, delBounds.contains(mouseX, mouseY) ? 4f : 1f);
+    }
 
     shapeDrawer.rectangle(bounds, C.UI_LINE_COLOR, 1f);
   }
@@ -142,5 +163,19 @@ public class SelectedInfoUiElement extends UiElement {
     return counts.entrySet().stream()
         .map(entry -> entry.getValue() + " " + entry.getKey())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void onClick(float mouseX, float mouseY) {
+    if (!delBounds.contains(mouseX, mouseY)) return;
+
+    List<Entity> selectedEntities = new ArrayList<>();
+    for (Entity entity : world.getEntities()) {
+      if (entity.isSelected()) selectedEntities.add(entity);
+    }
+
+    if (selectedEntities.size() != 1) return;
+
+    world.remove(selectedEntities.getFirst());
   }
 }
