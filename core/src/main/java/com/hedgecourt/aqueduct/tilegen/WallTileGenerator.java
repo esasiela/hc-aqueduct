@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class WallTileGenerator {
@@ -19,11 +20,16 @@ public class WallTileGenerator {
   static final boolean ENABLE_ENDCAPS = true;
   static final boolean ENABLE_BORDER = true;
   static final boolean ENABLE_ROUND_ELBOWS = true;
+  static final int ELBOW_INSET = 3;
 
   static final Color WALL_COLOR = new Color(80, 80, 80, 255);
   static final Color BORDER_COLOR = new Color(0, 0, 0, 255);
 
   public static void main(String[] args) throws Exception {
+    generate();
+  }
+
+  public static void generate() throws IOException {
     int imgW = TILE_SIZE * COLS;
     int imgH = TILE_SIZE * ROWS;
 
@@ -48,10 +54,11 @@ public class WallTileGenerator {
     File out = new File("assets/tilegen/wall_tiles.png");
     out.getParentFile().mkdirs();
     ImageIO.write(sheet, "PNG", out);
-    System.out.println("Written: " + out.getAbsolutePath());
+    System.out.println("WallTileGenerator - Written: " + out.getAbsolutePath());
   }
 
   static void drawTile(Graphics2D g, int ox, int oy, int bitmask) {
+    boolean c = true;
     boolean n = (bitmask & 8) != 0;
     boolean e = (bitmask & 4) != 0;
     boolean s = (bitmask & 2) != 0;
@@ -60,26 +67,47 @@ public class WallTileGenerator {
 
     int cx = ox + TILE_SIZE / 2;
     int cy = oy + TILE_SIZE / 2;
-    int half = TILE_SIZE / 2;
+    int ft = TILE_SIZE;
+    int ht = TILE_SIZE / 2;
+    int fw = WALL_THICKNESS;
     int hw = WALL_THICKNESS / 2;
     int b = BORDER_THICKNESS;
 
+    // start off with center rect + rect from each edge to center, and prune them as you go.
+    java.awt.Rectangle cRect = new java.awt.Rectangle(cx - hw, cy - hw, fw, fw);
+    java.awt.Rectangle nRect = new java.awt.Rectangle(cx - hw, oy, fw, ht);
+    java.awt.Rectangle eRect = new java.awt.Rectangle(cx, cy - hw, ht, fw);
+    java.awt.Rectangle sRect = new java.awt.Rectangle(cx - hw, cy, fw, ht);
+    java.awt.Rectangle wRect = new java.awt.Rectangle(ox, cy - hw, ht, fw);
+
     if (ENABLE_ROUND_ELBOWS) {
       if (n && e && !s && !w) {
-        drawRoundedElbow(g, ox + TILE_SIZE, oy, 180);
-        return;
-      }
-      if (n && w && !s && !e) {
-        drawRoundedElbow(g, ox, oy, 270);
-        return;
-      }
-      if (s && e && !n && !w) {
-        drawRoundedElbow(g, ox + TILE_SIZE, oy + TILE_SIZE, 90);
-        return;
-      }
-      if (s && w && !n && !e) {
-        drawRoundedElbow(g, ox, oy + TILE_SIZE, 0);
-        return;
+        drawRoundedElbow(g, ox + TILE_SIZE - ELBOW_INSET, oy + ELBOW_INSET, 180);
+        c = false;
+        nRect.height = ELBOW_INSET;
+        eRect.x = ox + ft - ELBOW_INSET;
+        eRect.width = ELBOW_INSET;
+
+      } else if (n && w && !s && !e) {
+        drawRoundedElbow(g, ox + ELBOW_INSET, oy + ELBOW_INSET, 270);
+        c = false;
+        nRect.height = ELBOW_INSET;
+        wRect.width = ELBOW_INSET;
+
+      } else if (s && e && !n && !w) {
+        drawRoundedElbow(g, ox + TILE_SIZE - ELBOW_INSET, oy + TILE_SIZE - ELBOW_INSET, 90);
+        c = false;
+        sRect.y = sRect.y + (ht - ELBOW_INSET);
+        sRect.height = ELBOW_INSET;
+        eRect.x = eRect.x + (ht - ELBOW_INSET);
+        eRect.width = ELBOW_INSET;
+
+      } else if (s && w && !n && !e) {
+        drawRoundedElbow(g, ox + ELBOW_INSET, oy + TILE_SIZE - ELBOW_INSET, 0);
+        c = false;
+        sRect.y = sRect.y + (ht - ELBOW_INSET);
+        sRect.height = ELBOW_INSET;
+        wRect.width = ELBOW_INSET;
       }
     }
 
@@ -88,13 +116,13 @@ public class WallTileGenerator {
       g.setColor(BORDER_COLOR);
 
       // center
-      g.fillRect(cx - hw - b, cy - hw - b, WALL_THICKNESS + b * 2, WALL_THICKNESS + b * 2);
+      if (c) g.fillRect(cRect.x - b, cRect.y - b, cRect.width + b * 2, cRect.height + b * 2);
 
       // arms
-      if (n) g.fillRect(cx - hw - b, oy, WALL_THICKNESS + b * 2, half);
-      if (s) g.fillRect(cx - hw - b, cy, WALL_THICKNESS + b * 2, half);
-      if (e) g.fillRect(cx, cy - hw - b, half, WALL_THICKNESS + b * 2);
-      if (w) g.fillRect(ox, cy - hw - b, half, WALL_THICKNESS + b * 2);
+      if (n) g.fillRect(nRect.x - b, nRect.y, nRect.width + b * 2, nRect.height);
+      if (e) g.fillRect(eRect.x, eRect.y - b, eRect.width, eRect.height + b * 2);
+      if (s) g.fillRect(sRect.x - b, sRect.y, sRect.width + b * 2, sRect.height);
+      if (w) g.fillRect(wRect.x, wRect.y - b, wRect.width, wRect.height + b * 2);
 
       // endcap borders
       if (ENABLE_ENDCAPS) {
@@ -110,13 +138,13 @@ public class WallTileGenerator {
 
     // arms
     // center
-    g.fillRect(cx - hw, cy - hw, WALL_THICKNESS, WALL_THICKNESS);
+    if (c) g.fillRect(cRect.x, cRect.y, cRect.width, cRect.height);
 
     // arms
-    if (n) g.fillRect(cx - hw, oy, WALL_THICKNESS, half);
-    if (s) g.fillRect(cx - hw, cy, WALL_THICKNESS, half);
-    if (e) g.fillRect(cx, cy - hw, half, WALL_THICKNESS);
-    if (w) g.fillRect(ox, cy - hw, half, WALL_THICKNESS);
+    if (n) g.fillRect(nRect.x, nRect.y, nRect.width, nRect.height);
+    if (e) g.fillRect(eRect.x, eRect.y, eRect.width, eRect.height);
+    if (s) g.fillRect(sRect.x, sRect.y, sRect.width, sRect.height);
+    if (w) g.fillRect(wRect.x, wRect.y, wRect.width, wRect.height);
 
     // endcap fills
     if (ENABLE_ENDCAPS) {
@@ -134,27 +162,27 @@ public class WallTileGenerator {
   static void drawRoundedElbow(Graphics2D g, int arcCenterX, int arcCenterY, int startAngle) {
     int hw = WALL_THICKNESS / 2;
     int b = BORDER_THICKNESS;
+    int r = TILE_SIZE / 2 - ELBOW_INSET;
 
     // border pass
     if (ENABLE_BORDER) {
       g.setColor(BORDER_COLOR);
-      fillArcCentered(g, arcCenterX, arcCenterY, TILE_SIZE / 2 + hw + b, startAngle);
+      fillArcCentered(g, arcCenterX, arcCenterY, r + hw + b, startAngle);
     }
 
     // wall fill pass
     g.setColor(WALL_COLOR);
-    fillArcCentered(g, arcCenterX, arcCenterY, TILE_SIZE / 2 + hw, startAngle);
+    fillArcCentered(g, arcCenterX, arcCenterY, r + hw, startAngle);
 
     // inner border ring
     if (ENABLE_BORDER) {
       g.setColor(BORDER_COLOR);
-      fillArcCentered(g, arcCenterX, arcCenterY, TILE_SIZE / 2 - hw, startAngle);
+      fillArcCentered(g, arcCenterX, arcCenterY, r - hw, startAngle);
     }
 
     // Hassan, CHOP!
     g.setComposite(AlphaComposite.Clear);
-    fillArcCentered(
-        g, arcCenterX, arcCenterY, TILE_SIZE / 2 - hw - (ENABLE_BORDER ? b : 0), startAngle);
+    fillArcCentered(g, arcCenterX, arcCenterY, r - hw - (ENABLE_BORDER ? b : 0), startAngle);
     g.setComposite(AlphaComposite.SrcOver);
   }
 
