@@ -48,8 +48,8 @@
       }
     },
     {
-      "type": "wall",
-      "displayName": "Wall",
+      "type": "wall4",
+      "displayName": "Wall 4",
       "widthTiles": 1,
       "heightTiles": 1,
       "constructionUnitsRequired": 50,
@@ -58,8 +58,23 @@
       "waterOutputRate": 0,
       "walkable": false,
       "spriteInfo": {
-        "type": "WALL_AUTOTILE",
-        "path": "tilegen/wall_tiles.png"
+        "type": "WALL_AUTOTILE_4",
+        "path": "tilegen/wall_tiles_4directions.png"
+      }
+    },
+    {
+      "type": "wall8",
+      "displayName": "Wall 8",
+      "widthTiles": 1,
+      "heightTiles": 1,
+      "constructionUnitsRequired": 50,
+      "waterCapacity": 0,
+      "waterCost": 0,
+      "waterOutputRate": 0,
+      "walkable": false,
+      "spriteInfo": {
+        "type": "WALL_AUTOTILE_8",
+        "path": "tilegen/wall_tiles_8directions.png"
       }
     },
     {

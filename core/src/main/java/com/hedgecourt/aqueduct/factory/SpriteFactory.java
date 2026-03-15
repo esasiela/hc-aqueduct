@@ -8,7 +8,8 @@ import com.hedgecourt.aqueduct.sprite.PipoyaBaseNodeSprite;
 import com.hedgecourt.aqueduct.sprite.PipoyaBaseSprite;
 import com.hedgecourt.aqueduct.sprite.SingleTextureSprite;
 import com.hedgecourt.aqueduct.sprite.TwoFramePngSprite;
-import com.hedgecourt.aqueduct.sprite.WallAutotileSprite;
+import com.hedgecourt.aqueduct.sprite.WallAutotile4Sprite;
+import com.hedgecourt.aqueduct.sprite.WallAutotile8Sprite;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +27,10 @@ public class SpriteFactory {
           TwoFramePngSprite.class,
           "DIRECTIONAL_ANIMATED",
           DirectionalAnimatedSprite.class,
-          "WALL_AUTOTILE",
-          WallAutotileSprite.class);
+          "WALL_AUTOTILE_4",
+          WallAutotile4Sprite.class,
+          "WALL_AUTOTILE_8",
+          WallAutotile8Sprite.class);
 
   private final ObjectMapper jackson = new ObjectMapper();
 

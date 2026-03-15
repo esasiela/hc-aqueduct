@@ -1,7 +1,8 @@
 package com.hedgecourt.aqueduct.world.entities;
 
 import com.hedgecourt.aqueduct.sprite.EntitySprite;
-import com.hedgecourt.aqueduct.sprite.WallAutotileSprite;
+import com.hedgecourt.aqueduct.sprite.WallAutotile4Sprite;
+import com.hedgecourt.aqueduct.sprite.WallAutotile8Sprite;
 import com.hedgecourt.aqueduct.world.AqueductWorld;
 
 public class Wall extends Building {
@@ -23,9 +24,8 @@ public class Wall extends Building {
   @Override
   public void setSprite(EntitySprite sprite) {
     super.setSprite(sprite);
-    if (sprite instanceof WallAutotileSprite wallSprite) {
-      wallSprite.setBitmaskSupplier(() -> this.bitmask);
-    }
+    if (sprite instanceof WallAutotile4Sprite s) s.setBitmaskSupplier(() -> this.bitmask);
+    if (sprite instanceof WallAutotile8Sprite s) s.setBitmaskSupplier(() -> this.bitmask);
   }
 
   @Override

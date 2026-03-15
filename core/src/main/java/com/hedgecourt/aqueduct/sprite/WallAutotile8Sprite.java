@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class WallAutotileSprite extends AbstractEntitySprite {
+public class WallAutotile8Sprite extends AbstractEntitySprite {
 
   @JsonProperty(required = true)
   private String path;
@@ -28,11 +28,13 @@ public class WallAutotileSprite extends AbstractEntitySprite {
 
   @Override
   public void build(AssetManager assetManager) {
+    int ROWS = 16, COLS = 16;
+
     Texture texture = assetManager.get(path, Texture.class);
     TextureRegion[][] grid = TextureRegion.split(texture, 32, 32);
-    regions = new TextureRegion[16];
-    for (int i = 0; i < 16; i++) {
-      regions[i] = grid[i / 4][i % 4];
+    regions = new TextureRegion[ROWS * COLS];
+    for (int i = 0; i < ROWS * COLS; i++) {
+      regions[i] = grid[i / COLS][i % COLS];
     }
   }
 
@@ -45,7 +47,7 @@ public class WallAutotileSprite extends AbstractEntitySprite {
 
   @Override
   public EntitySprite freshCopy() {
-    WallAutotileSprite copy = new WallAutotileSprite();
+    WallAutotile8Sprite copy = new WallAutotile8Sprite();
     copy.path = this.path;
     copy.regions = this.regions;
     return copy;

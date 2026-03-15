@@ -3,6 +3,7 @@ package com.hedgecourt.aqueduct.world;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.utils.Disposable;
+import com.hedgecourt.aqueduct.C;
 import com.hedgecourt.aqueduct.factory.BuildingFactory;
 import com.hedgecourt.aqueduct.factory.ItemFactory;
 import com.hedgecourt.aqueduct.factory.NodeFactory;
@@ -264,7 +265,27 @@ public class AqueductWorld implements Disposable {
       boolean s = wallTiles.contains(new GridPoint2(origin.x, origin.y - 1));
       boolean w = wallTiles.contains(new GridPoint2(origin.x - 1, origin.y));
 
-      int bitmask = (n ? 8 : 0) | (e ? 4 : 0) | (s ? 2 : 0) | (w ? 1 : 0);
+      /*
+      boolean ne = n && e && wallTiles.contains(new GridPoint2(origin.x + 1, origin.y + 1));
+      boolean se = s && e && wallTiles.contains(new GridPoint2(origin.x + 1, origin.y - 1));
+      boolean sw = s && w && wallTiles.contains(new GridPoint2(origin.x - 1, origin.y - 1));
+      boolean nw = n && w && wallTiles.contains(new GridPoint2(origin.x - 1, origin.y + 1));
+      */
+      boolean ne = wallTiles.contains(new GridPoint2(origin.x + 1, origin.y + 1));
+      boolean se = wallTiles.contains(new GridPoint2(origin.x + 1, origin.y - 1));
+      boolean sw = wallTiles.contains(new GridPoint2(origin.x - 1, origin.y - 1));
+      boolean nw = wallTiles.contains(new GridPoint2(origin.x - 1, origin.y + 1));
+
+      int bitmask =
+          (n ? C.WALL_BIT_N : 0)
+              | (ne ? C.WALL_BIT_NE : 0)
+              | (e ? C.WALL_BIT_E : 0)
+              | (se ? C.WALL_BIT_SE : 0)
+              | (s ? C.WALL_BIT_S : 0)
+              | (sw ? C.WALL_BIT_SW : 0)
+              | (w ? C.WALL_BIT_W : 0)
+              | (nw ? C.WALL_BIT_NW : 0);
+
       wall.setBitmask(bitmask);
     }
   }

@@ -115,7 +115,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            world.getBuildingFactory().get("townhall"),
+            world.getBuildingFactory().get("wall8"),
             onConstructionButtonClicked));
 
     addElement(
@@ -135,7 +135,7 @@ public class UiRenderer implements Disposable {
             UI_PADDING + buildButtonHeight,
             buildButtonWidth,
             buildButtonHeight,
-            world.getBuildingFactory().get("wall"),
+            world.getBuildingFactory().get("wall4"),
             onConstructionButtonClicked));
 
     if (C.ENABLE_UI_CROSSHAIR) addElement(new CrosshairUiElement());

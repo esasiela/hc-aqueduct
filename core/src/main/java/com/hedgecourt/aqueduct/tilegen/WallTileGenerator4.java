@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class WallTileGenerator {
+public class WallTileGenerator4 {
 
   static final int TILE_SIZE = 32;
   static final int COLS = 4;
@@ -51,10 +51,11 @@ public class WallTileGenerator {
 
     g.dispose();
 
-    File out = new File("assets/tilegen/wall_tiles.png");
+    File out = new File("assets/tilegen/wall_tiles_4directions.png");
     out.getParentFile().mkdirs();
     ImageIO.write(sheet, "PNG", out);
-    System.out.println("WallTileGenerator - Written: " + out.getAbsolutePath());
+    System.out.println(
+        WallTileGenerator4.class.getSimpleName() + " - written: " + out.getAbsolutePath());
   }
 
   static void drawTile(Graphics2D g, int ox, int oy, int bitmask) {

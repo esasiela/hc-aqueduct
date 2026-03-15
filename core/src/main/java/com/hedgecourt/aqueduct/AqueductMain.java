@@ -295,8 +295,6 @@ public class AqueductMain extends ApplicationAdapter {
 
           @Override
           public boolean keyUp(int keycode) {
-            Gdx.app.log("PAUSE", "pause toggle, now is: " + paused);
-
             if (keycode == Input.Keys.SPACE) {
               paused = !paused;
               if (paused) overlayRenderer.setActivePanel(pausePanel);

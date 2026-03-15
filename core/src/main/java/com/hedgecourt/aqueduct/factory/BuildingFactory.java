@@ -46,7 +46,8 @@ public class BuildingFactory {
           case "townhall" -> new TownHall(world, x, y, w, h);
           case "pipe" -> new Pipe(world, x, y, w, h);
           case "sprinkler" -> new Sprinkler(world, x, y, w, h);
-          case "wall" -> new Wall(world, x, y, w, h);
+          case "wall4" -> new Wall(world, x, y, w, h);
+          case "wall8" -> new Wall(world, x, y, w, h);
           default -> throw new InvalidBuildingConfigException("Unknown type: " + type);
         };
     building.setType(type);

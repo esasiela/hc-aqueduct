@@ -64,4 +64,13 @@ public class C {
   // ── misc ────────────────────────────────────────────────────────────────
   public static final float DRAG_THRESHOLD = 6f;
   public static final String PIPOYA_BASE_PATH = "maps/[Base]BaseChip_pipo.png";
+
+  public static final int WALL_BIT_N = 128;
+  public static final int WALL_BIT_NE = 64;
+  public static final int WALL_BIT_E = 32;
+  public static final int WALL_BIT_SE = 16;
+  public static final int WALL_BIT_S = 8;
+  public static final int WALL_BIT_SW = 4;
+  public static final int WALL_BIT_W = 2;
+  public static final int WALL_BIT_NW = 1;
 }
